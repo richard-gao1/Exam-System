@@ -8,4 +8,4 @@
 | --- | --- | --- |-------------------| --- | --- | --- |
 | **TANG, Wai Kin** | WaiKinTANG | wktangaf | task-2            | Y | N | Task 2 |
 | **MA, Wai Him Wesley** | whwmaust2125 | whwma |                   | N | N | Task 3 |
-| **GAO, Richard Daniel** | richard-gao1 | rdgao |                   | N | Y | Task 1 |
+| **GAO, Richard Daniel** | richard-gao1 | rdgao |  task_1           | N | Y | Task 1 |
