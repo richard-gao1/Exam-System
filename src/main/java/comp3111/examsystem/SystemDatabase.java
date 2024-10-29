@@ -8,7 +8,7 @@ public class SystemDatabase {
      */
     // keep different account types separate
     // maps Username -> Password -> Instance of Account
-    HashMap<String,HashMap<String, Student>> studentLogin;
+//    HashMap<String,HashMap<String, Student>> studentLogin;
 //    HashMap<String, HashMap<String, Teacher>> teacherLogin;
 //    HashMap<String, HashMap<String, Manager>> managerLogin;
 
