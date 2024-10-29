@@ -25,7 +25,17 @@ class SystemDatabaseTest {
         // normal registration
         SystemDatabase db = new SystemDatabase();
         Student registeredStudent = db.studentRegister("user", "pass", "name", "male", 21, "department");
+
+        // proper login
         Student loggedInStudent = db.studentLogin("user", "pass");
         assertEquals(registeredStudent, loggedInStudent);
+
+        // incorrect username
+        loggedInStudent = db.studentLogin("wrong", "pass");
+        assertNull(loggedInStudent);
+
+        // incorrect password
+        loggedInStudent = db.studentLogin("user", "wrong");
+        assertNull(loggedInStudent);
     }
 }
