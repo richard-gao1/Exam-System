@@ -1,6 +1,7 @@
 package comp3111.examsystem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Exam {
     private String examName;
@@ -8,8 +9,9 @@ public class Exam {
     private boolean isPublished;
     private int duration;
     private ArrayList<Question> questions;
+    private HashMap<Student, Integer> studentToGrades = new HashMap<>();
 
-    public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions){
+    public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         this.examName = examName;
         this.course = course;
         this.isPublished = isPublished;
@@ -17,47 +19,47 @@ public class Exam {
         this.questions = questions;
     }
 
-    public String getExamName(){
+    public String getExamName() {
         return this.examName;
     }
 
-    public void setExamName(String examName){
+    public void setExamName(String examName) {
         this.examName = examName;
     }
 
-    public Course getCourse(){
+    public Course getCourse() {
         return this.course;
     }
 
-    public void setCourse(Course course){
+    public void setCourse(Course course) {
         this.course = course;
     }
 
-    public boolean getIsPublished(){
+    public boolean getIsPublished() {
         return this.isPublished;
     }
 
-    public void setIsPublished(boolean isPublished){
+    public void setIsPublished(boolean isPublished) {
         this.isPublished = isPublished;
     }
 
-    public int getDuration(){
+    public int getDuration() {
         return this.duration;
     }
 
-    public void setDuration(int duration){
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
-    public ArrayList<Question> getQuestions(){
+    public ArrayList<Question> getQuestions() {
         return this.questions;
     }
 
-    public void setQuestions(ArrayList<Question> questions){
+    public void setQuestions(ArrayList<Question> questions) {
         this.questions = questions;
     }
 
-    public void addQuestion(Question question){
+    public void addQuestion(Question question) {
         if (this.questions == null) {
             this.questions = new ArrayList<>();
         }
@@ -67,10 +69,15 @@ public class Exam {
         this.questions.add(question);
     }
 
-    public void removeQuestion(Question question){
+    public void removeQuestion(Question question) {
         if (!this.questions.contains(question)) {
             throw new IllegalArgumentException("Question does not exist in the exam");
         }
         this.questions.remove(question);
     }
-   
+
+    public Integer grade(ArrayList<Integer> answers){
+        // TODO: implement
+        return 0;
+    }
+}
