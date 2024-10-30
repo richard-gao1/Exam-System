@@ -1,5 +1,6 @@
 package comp3111.examsystem;
 
+
 public class Question {
     enum TypeChoice{ // enum for question type, do we have long question?
         SINGLE ,
@@ -70,4 +71,4 @@ public class Question {
         this.typeChoice = (typeChoice > 0) ? TypeChoice.MULTIPLE : TypeChoice.SINGLE;
     }
     
-}
+

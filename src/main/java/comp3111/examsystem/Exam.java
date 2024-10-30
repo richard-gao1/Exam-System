@@ -73,5 +73,4 @@ public class Exam {
         }
         this.questions.remove(question);
     }
-    
-}
+   
