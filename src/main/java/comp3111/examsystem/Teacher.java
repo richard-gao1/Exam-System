@@ -11,15 +11,25 @@ public class Teacher extends User {
         super(username, password, name, gender, age, department);
         this.position = position;
     }
-    private ArrayList<Question> questionBank;
-    private ArrayList<Course> courses;
+    private ArrayList<Question> questionBank = new ArrayList<>();
+    private ArrayList<Course> courses = new ArrayList<>();
     private HashMap<String, Double> course_scores;
     private HashMap<String, Double> student_scores;
     private HashMap<String, Double> exam_scores;
+    // private List<Grade> grades;
 
     public void createExam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
-        Exam exam = new Exam(examName, course, isPublished, duration, questions);
-        //SystemDatabase.addExam(exam);
+        createExam(examName, course.getName(), isPublished, duration, questions);
+    }
+
+    public void createExam(String examName, String courseName, boolean isPublished, int duration, ArrayList<Question> questions) {
+        for (Course course: courses){
+            if (course.getName().equals(courseName)){
+                Exam exam = new Exam(examName, course, isPublished, duration, questions);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No such course");
     }
 
     public Teacher update(String username, String password, String name, String gender, int age, String department, String position) {
@@ -29,19 +39,48 @@ public class Teacher extends User {
     }
 
     public void addCourse(Course course){
-        courses.add(course);
+        if (!courses.contains(course)){
+            courses.add(course);
+            // only call this method via Course class
+        }
+    }
+
+    public void dropCourse(Course course){
+            courses.remove(course);
+            // only call this method via Course class
     }
 
     public void viewExam() {
         // TODO
     }
 
-    public void deleteExam(String examName) {
-        // TODO
+    public void deleteExam(String examName, String courseName) {
+        for (Course course: courses){
+            if (course.getName().equals(courseName)){
+                course.dropExam(examName);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No such course");
     }
 
-    public void updateExam(String examName, Exam exam) {
-        // TODO
+    public void updateExam(String examName, Exam exam, String courseName) {
+        for (Course course: courses){
+            if (course.getName().equals(courseName)){
+                course.updateExam(examName, exam);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No such course");
+    }
+
+    public void updateExam(String examName, Exam exam, Course course) {
+        if (course.getTeacher().equals(this)){
+            course.updateExam(examName, exam);
+        }
+        else{
+            throw new IllegalArgumentException("Not allowed to access this course");
+        }
     }
 
     public void viewStudent() {
