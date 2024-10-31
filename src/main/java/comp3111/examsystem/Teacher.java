@@ -1,5 +1,6 @@
 package comp3111.examsystem;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,12 +21,11 @@ public class Teacher extends User {
         super(username, password, name, gender, age, department);
         this.position = position;
     }
+    private ArrayList<Course> courses = new ArrayList<>();
 
     public Teacher update(String username, String password, String name, String gender, int age, String department, String position) {
-        String oldName = this.getName();
         super.update(username, password, name, gender, age, department);
         this.position = position;
-        SystemDatabase.updateTeacher(this,oldName);
         return this;
     }
 

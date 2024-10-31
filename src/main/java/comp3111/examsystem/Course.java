@@ -18,6 +18,10 @@ public class Course {
     private ArrayList<String> studentUsernames = new ArrayList<>();
     private HashMap<String, HashMap<String, Integer>> studentToGrade = new HashMap<>();
     private ArrayList<Exam> exams;
+    public Course(String name, String department,ArrayList<Student> students, ArrayList<Exam> exams) {
+        this(name, null,department, students, exams);
+    }
+
 
     public Course(String courseID, String name, String department, Teacher teacher, ArrayList<Student> students, ArrayList<Exam> exams) {
         this.courseID = courseID.replace(" ", "").trim().toUpperCase();
@@ -186,6 +190,7 @@ public class Course {
     public ArrayList<Exam> getExams() {
         return exams;
     }
+
 
     public Course update(String courseID, String name, String department) {
         this.courseID = courseID;
