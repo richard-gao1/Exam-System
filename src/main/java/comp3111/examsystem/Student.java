@@ -14,7 +14,22 @@ public class Student extends User{
     }
 
     public void addCourse(Course course){
-        // need to check for dups
-        courses.add(course);
+        // only call this method via Course class
+        if (!courses.contains(course)){
+            courses.add(course);
+        }
+        else{
+            throw new IllegalArgumentException("Already enrolled in this course");
+        }
+    }
+
+    public void dropCourse(Course course){
+        // only call this method via Course class
+        if (courses.contains(course)){
+            courses.remove(course);
+        }
+        else{
+            throw new IllegalArgumentException("No such course");
+        }
     }
 }
