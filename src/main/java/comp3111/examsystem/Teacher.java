@@ -3,8 +3,10 @@ package comp3111.examsystem;
 import java.util.ArrayList;
 
 public class Teacher extends User {
-    public Teacher(String username, String password, String name, String gender, int age, String department) {
+    String position;
+    public Teacher(String username, String password, String name, String gender, int age, String department, String position) {
         super(username, password, name, gender, age, department);
+        this.position = position;
     }
     private ArrayList<Question> questionBank;
     private ArrayList<Course> courses;

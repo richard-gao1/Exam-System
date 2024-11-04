@@ -1,6 +1,7 @@
 package comp3111.examsystem;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ public class SystemDatabase {
 
     private boolean createFile(String filepath) {
         File file = new File(filepath);
+        if (file.exists()) return true;
         try {
             return file.createNewFile();
         } catch (IOException e) {
@@ -57,7 +59,7 @@ public class SystemDatabase {
 
         // create Manager
         Manager manager = new Manager("admin", "comp3111");
-        try {registerManager(manager);} catch (IOException e) { System.out.println(e); }
+        try {registerManager(manager);} catch (IOException e) { System.out.println(e); };
     }
 
     private AccountType getAccountType(Account account) {
@@ -67,16 +69,16 @@ public class SystemDatabase {
     }
 
     private String getNameListFilePath(AccountType type) {
-        String folder = "students";
-        switch (type) {
-            case STUDENT -> folder = "students";
-            case TEACHER -> folder = "teachers";
-            case MANAGER -> folder = "managers";
-        }
+        String folder = switch (type) {
+            case STUDENT -> "students";
+            case TEACHER -> "teachers";
+            case MANAGER -> "managers";
+        };
         return "account/" + folder + data_filetype;
     }
 
     private String getAccountFilePath(String username, AccountType type) {
+        if (username.isEmpty()) return "";
         String folder = switch (type) {
             case STUDENT -> "student";
             case TEACHER -> "teacher";
@@ -87,7 +89,7 @@ public class SystemDatabase {
 
     // perhaps login is done through the system.
     public Account login(String username, String password, AccountType type) throws IOException, ClassNotFoundException {
-        readAccount(type);
+        readAccounts(type);
         Account account = switch (type) {
             case STUDENT -> students.get(username);
             case TEACHER -> teachers.get(username);
@@ -97,13 +99,12 @@ public class SystemDatabase {
         return account;
     }
 
-    public void readAccount(AccountType type) throws IOException, ClassNotFoundException {
+    public void readAccounts(AccountType type) throws IOException, ClassNotFoundException {
         switch (type) {
             case STUDENT -> students.clear();
             case TEACHER -> teachers.clear();
             case MANAGER -> managers.clear();
         }
-
         String[] user_list = getUsernameList(type);
         for (String username : user_list) {
             String filepath = getAccountFilePath(username, type);
@@ -144,15 +145,14 @@ public class SystemDatabase {
     private String[] getUsernameList(AccountType type) throws IOException, ClassNotFoundException {
         String filename = getNameListFilePath(type);
         FileInputStream fis = new FileInputStream(filename);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        String list_str = (String) ois.readObject();
-        ois.close();
+        byte[] bytes = fis.readAllBytes();
+        String list_str = new String(bytes, StandardCharsets.UTF_8);
         fis.close();
         return list_str.split(";");
     }
 
     private void writeToUsernameList(AccountType type) throws IOException {
-        List<String> username_list = new ArrayList<>();
+        List<String> username_list;
         String filename = getNameListFilePath(type);
         username_list = switch (type) {
             case STUDENT -> students.keySet().stream().toList();
@@ -160,9 +160,8 @@ public class SystemDatabase {
             case MANAGER -> managers.keySet().stream().toList();
         };
         FileOutputStream fos = new FileOutputStream(filename);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(String.join(";", username_list));
-        oos.close();
+        byte[] bytes = String.join(";", username_list).getBytes(StandardCharsets.UTF_8);
+        fos.write(bytes);
         fos.close();
     }
 
@@ -208,7 +207,7 @@ public class SystemDatabase {
     * Function for updating student information
     * */
     private void updateStudent(Student student, String old_username) throws IOException, ClassNotFoundException {
-        readAccount(AccountType.STUDENT);
+        readAccounts(AccountType.STUDENT);
         if (!Objects.equals(old_username, student.getUsername())) removeStudent(old_username);
         writeToStudent(student);
     }
@@ -217,7 +216,7 @@ public class SystemDatabase {
      * Function for updating teacher information
      * */
     private void updateTeacher(Teacher teacher, String old_username) throws IOException, ClassNotFoundException {
-        readAccount(AccountType.TEACHER);
+        readAccounts(AccountType.TEACHER);
         if (!Objects.equals(old_username, teacher.getUsername())) removeTeacher(old_username);
         writeToTeacher(teacher);
     }
