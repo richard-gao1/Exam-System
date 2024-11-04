@@ -1,9 +1,6 @@
 package comp3111.examsystem;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +54,10 @@ public class SystemDatabase {
         createFile("account/students" + data_filetype);
         createFile("account/teachers" + data_filetype);
         createFile("account/managers" + data_filetype);
+
+        // create Manager
+        Manager manager = new Manager("admin", "comp3111");
+        try {registerManager(manager);} catch (IOException e) { System.out.println(e); }
     }
 
     private AccountType getAccountType(Account account) {
@@ -179,7 +180,7 @@ public class SystemDatabase {
 
     private void writeToTeacher(Teacher teacher) throws IOException {
         String username = teacher.getUsername();
-        String filepath = "account/teacher/" + username + data_filetype;
+        String filepath = getAccountFilePath(username, AccountType.TEACHER);
         teachers.put(username, teacher);
         createFile(filepath);
         FileOutputStream fos = new FileOutputStream(filepath);
@@ -188,6 +189,19 @@ public class SystemDatabase {
         oos.close();
         fos.close();
         writeToUsernameList(AccountType.TEACHER);
+    }
+
+    private void writeToManager(Manager manager) throws IOException {
+        String username = manager.getUsername();
+        String filepath = getAccountFilePath(username, AccountType.MANAGER);
+        managers.put(username, manager);
+        createFile(filepath);
+        FileOutputStream fos = new FileOutputStream(filepath);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(manager);
+        oos.close();
+        fos.close();
+        writeToUsernameList(AccountType.MANAGER);
     }
 
     /*
@@ -233,7 +247,7 @@ public class SystemDatabase {
     /*
     * Called for register / add a student / teacher
     * */
-    public Student registerStudent(Student student) throws IOException, ClassNotFoundException {
+    public Student registerStudent(Student student) throws IOException {
         String username = student.getUsername();
         if (students.get(username) != null) {
             // teacher with this username already exists
@@ -244,7 +258,7 @@ public class SystemDatabase {
         return student;
     }
 
-    public Teacher registerTeacher(Teacher teacher) throws IOException, ClassNotFoundException {
+    public Teacher registerTeacher(Teacher teacher) throws IOException {
         String username = teacher.getUsername();
         if (teachers.get(username) != null) {
             // teacher with this username already exists
@@ -253,5 +267,16 @@ public class SystemDatabase {
         }
         writeToTeacher(teacher);
         return teacher;
+    }
+
+    public Manager registerManager(Manager manager) throws IOException {
+        String username = manager.getUsername();
+        if (managers.get(username) != null) {
+            // teacher with this username already exists
+            System.out.println("Teacher username " + manager.getUsername() + " already exist");
+            return null;
+        }
+        writeToManager(manager);
+        return manager;
     }
 }
