@@ -2,10 +2,6 @@ package comp3111.examsystem;
 
 import java.io.Serializable;
 
-enum AccountType {
-    STUDENT, TEACHER, MANAGER
-}
-
 public class Account implements Serializable {
     private String username;
     private String password;

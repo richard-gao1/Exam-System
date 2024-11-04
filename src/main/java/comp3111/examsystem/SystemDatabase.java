@@ -1,10 +1,17 @@
 package comp3111.examsystem;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+enum AccountType {
+    STUDENT, TEACHER, MANAGER
+}
 
 public class SystemDatabase {
     /*
@@ -12,69 +19,111 @@ public class SystemDatabase {
      */
     // keep different account types separate
     // maps Username -> Instance of Account
-    HashMap<String, Student> students;
-    HashMap<String, Teacher> teachers;
-    HashMap<String, Manager> managers;
+    HashMap<String, Student> students = new HashMap<>();
+    HashMap<String, Teacher> teachers = new HashMap<>();
+    HashMap<String, Manager> managers = new HashMap<>();
 
-    public SystemDatabase() {}
+    final String data_filetype = ".txt";
+
+    private boolean createFolder(String directory) {
+        File folder = new File(directory);
+        if (!folder.exists()) return folder.mkdir();
+        return true;
+    }
+
+    private boolean createFile(String filepath) {
+        File file = new File(filepath);
+        try {
+            return file.createNewFile();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        return false;
+    }
+
+    private boolean removeFile(String filepath) {
+        File file = new File(filepath);
+        return file.delete();
+    }
+
+    public SystemDatabase() {
+        // create folders if not exist
+        createFolder("account");
+        createFolder("account/student");
+        createFolder("account/teacher");
+        createFolder("account/manager");
+
+        // create files if not exist
+        createFile("account/students" + data_filetype);
+        createFile("account/teachers" + data_filetype);
+        createFile("account/managers" + data_filetype);
+    }
+
+    private AccountType getAccountType(Account account) {
+        if (account instanceof Student) return AccountType.STUDENT;
+        if (account instanceof Teacher) return AccountType.TEACHER;
+        return AccountType.MANAGER;
+    }
+
+    private String getNameListFilePath(AccountType type) {
+        String folder = "students";
+        switch (type) {
+            case STUDENT -> folder = "students";
+            case TEACHER -> folder = "teachers";
+            case MANAGER -> folder = "managers";
+        }
+        return "account/" + folder + data_filetype;
+    }
+
+    private String getAccountFilePath(String username, AccountType type) {
+        String folder = switch (type) {
+            case STUDENT -> "student";
+            case TEACHER -> "teacher";
+            case MANAGER -> "manager";
+        };
+        return "account/" + folder + "/" + username + data_filetype;
+    }
 
     // perhaps login is done through the system.
     public Account login(String username, String password, AccountType type) throws IOException, ClassNotFoundException {
-        Account account = null;
-        switch (type) {
-            case STUDENT:
-                readStudents();
-                account = students.get(username);
-                break;
-            case TEACHER:
-                readTeachers();
-                account = teachers.get(username);
-                break;
-            case MANAGER:
-                readManagers();
-                account = managers.get(username);
-                break;
-        }
+        readAccount(type);
+        Account account = switch (type) {
+            case STUDENT -> students.get(username);
+            case TEACHER -> teachers.get(username);
+            case MANAGER -> managers.get(username);
+        };
         if (account == null || !Objects.equals(account.getPassword(), password)) return null;
         return account;
     }
 
-    public void readStudents() throws IOException, ClassNotFoundException {
-        students.clear();
-        String[] user_list = getUsernameList("account/students.txt");
-        for (String username : user_list) {
-            FileInputStream fis = new FileInputStream("account/student/" + username + ".txt");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Student student = (Student) ois.readObject();
-            ois.close();
-            fis.close();
-            students.put(username, student);
+    public void readAccount(AccountType type) throws IOException, ClassNotFoundException {
+        switch (type) {
+            case STUDENT -> students.clear();
+            case TEACHER -> teachers.clear();
+            case MANAGER -> managers.clear();
         }
-    }
 
-    public void readTeachers() throws IOException, ClassNotFoundException {
-        teachers.clear();
-        String[] user_list = getUsernameList("account/teachers.txt");
+        String[] user_list = getUsernameList(type);
         for (String username : user_list) {
-            FileInputStream fis = new FileInputStream("account/teacher/" + username + ".txt");
+            String filepath = getAccountFilePath(username, type);
+            FileInputStream fis = new FileInputStream(filepath);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            Teacher teacher = (Teacher) ois.readObject();
+            switch (type) {
+                case STUDENT:
+                    Student student = (Student) ois.readObject();
+                    students.put(username, student);
+                    break;
+                case TEACHER:
+                    Teacher teacher = (Teacher) ois.readObject();
+                    teachers.put(username, teacher);
+                    break;
+                case MANAGER:
+                    Manager manager = (Manager) ois.readObject();
+                    managers.put(username, manager);
+                    break;
+            }
             ois.close();
             fis.close();
-            teachers.put(username, teacher);
-        }
-    }
-
-    public void readManagers() throws IOException, ClassNotFoundException {
-        managers.clear();
-        String[] user_list = getUsernameList("account/managers.txt");
-        for (String username : user_list) {
-            FileInputStream fis = new FileInputStream("account/manager/" + username + ".txt");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Manager manager = (Manager) ois.readObject();
-            ois.close();
-            fis.close();
-            managers.put(username, manager);
         }
     }
 
@@ -91,7 +140,8 @@ public class SystemDatabase {
     * The username list of students, teachers, and managers are stored in different .tmp
     * each username is separated by ';'
     * */
-    private String[] getUsernameList(String filename) throws IOException, ClassNotFoundException {
+    private String[] getUsernameList(AccountType type) throws IOException, ClassNotFoundException {
+        String filename = getNameListFilePath(type);
         FileInputStream fis = new FileInputStream(filename);
         ObjectInputStream ois = new ObjectInputStream(fis);
         String list_str = (String) ois.readObject();
@@ -100,21 +150,13 @@ public class SystemDatabase {
         return list_str.split(";");
     }
 
-    private void writeUsernameList(AccountType type) throws IOException {
+    private void writeToUsernameList(AccountType type) throws IOException {
         List<String> username_list = new ArrayList<>();
-        String filename = switch (type) {
-            case STUDENT -> {
-                username_list = students.keySet().stream().toList();
-                yield "account/students.tmp";
-            }
-            case TEACHER -> {
-                username_list = teachers.keySet().stream().toList();
-                yield "account/teachers.tmp";
-            }
-            case MANAGER -> {
-                username_list = managers.keySet().stream().toList();
-                yield "account/managers.tmp";
-            }
+        String filename = getNameListFilePath(type);
+        username_list = switch (type) {
+            case STUDENT -> students.keySet().stream().toList();
+            case TEACHER -> teachers.keySet().stream().toList();
+            case MANAGER -> managers.keySet().stream().toList();
         };
         FileOutputStream fos = new FileOutputStream(filename);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -123,42 +165,47 @@ public class SystemDatabase {
         fos.close();
     }
 
-    /*
-    * Function for updating (add, modify) student information
-    * */
-    private void updateStudent(Student student, String old_username) throws IOException, ClassNotFoundException {
-        readStudents();
-        if (students.get(old_username) != null) {
-            students.remove(old_username);
-            new File("account/student/" + old_username + ".txt").delete();
-        }
+    private void writeToStudent(Student student) throws IOException {
         String username = student.getUsername();
+        String filepath = getAccountFilePath(username, AccountType.STUDENT);
         students.put(username, student);
-        FileOutputStream fos = new FileOutputStream("account/student/" + username + ".txt");
+        FileOutputStream fos = new FileOutputStream(filepath);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(student);
         oos.close();
         fos.close();
-        writeUsernameList(AccountType.STUDENT);
+        writeToUsernameList(AccountType.STUDENT);
     }
 
-    /*
-     * Function for updating (add, modify) teacher information
-     * */
-    private void updateTeacher(Teacher teacher, String old_username) throws IOException, ClassNotFoundException {
-        readTeachers();
-        if (teachers.get(old_username) != null) {
-            teachers.remove(old_username);
-            new File("account/teacher/" + old_username + ".txt").delete();
-        }
+    private void writeToTeacher(Teacher teacher) throws IOException {
         String username = teacher.getUsername();
+        String filepath = "account/teacher/" + username + data_filetype;
         teachers.put(username, teacher);
-        FileOutputStream fos = new FileOutputStream("account/teacher/" + username + ".txt");
+        createFile(filepath);
+        FileOutputStream fos = new FileOutputStream(filepath);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(teacher);
         oos.close();
         fos.close();
-        writeUsernameList(AccountType.TEACHER);
+        writeToUsernameList(AccountType.TEACHER);
+    }
+
+    /*
+    * Function for updating student information
+    * */
+    private void updateStudent(Student student, String old_username) throws IOException, ClassNotFoundException {
+        readAccount(AccountType.STUDENT);
+        if (!Objects.equals(old_username, student.getUsername())) removeStudent(old_username);
+        writeToStudent(student);
+    }
+
+    /*
+     * Function for updating teacher information
+     * */
+    private void updateTeacher(Teacher teacher, String old_username) throws IOException, ClassNotFoundException {
+        readAccount(AccountType.TEACHER);
+        if (!Objects.equals(old_username, teacher.getUsername())) removeTeacher(old_username);
+        writeToTeacher(teacher);
     }
 
     /*
@@ -167,20 +214,20 @@ public class SystemDatabase {
     private void removeStudent(String username) throws IOException {
         if (students.get(username) != null) {
             students.remove(username);
-            new File("account/student/" + username + ".txt").delete();
+            removeFile("account/student/" + username + data_filetype);
         }
-        writeUsernameList(AccountType.STUDENT);
+        writeToUsernameList(AccountType.STUDENT);
     }
 
     /*
      * Function for removing teacher from database
      * */
     private void removeTeacher(String username) throws IOException {
-        if (students.get(username) != null) {
-            students.remove(username);
-            new File("account/teacher/" + username + ".txt").delete();
+        if (teachers.get(username) != null) {
+            teachers.remove(username);
+            removeFile("account/teacher/" + username + data_filetype);
         }
-        writeUsernameList(AccountType.TEACHER);
+        writeToUsernameList(AccountType.TEACHER);
     }
 
     /*
@@ -190,9 +237,10 @@ public class SystemDatabase {
         String username = student.getUsername();
         if (students.get(username) != null) {
             // teacher with this username already exists
+            System.out.println("Student username " + student.getUsername() + " already exist");
             return null;
         }
-        updateStudent(student, "");
+        writeToStudent(student);
         return student;
     }
 
@@ -200,9 +248,10 @@ public class SystemDatabase {
         String username = teacher.getUsername();
         if (teachers.get(username) != null) {
             // teacher with this username already exists
+            System.out.println("Teacher username " + teacher.getUsername() + " already exist");
             return null;
         }
-        updateTeacher(teacher, "");
+        writeToTeacher(teacher);
         return teacher;
     }
 }
