@@ -36,10 +36,11 @@ public class Exam {
     }
 
     public void setCourse(Course course) {
-        if (this.course != null){
-            this.course.dropExam(this);
-        }
         if (course != null){
+            if (this.course != null){
+                // remove exam from the original course if needed
+                this.course.dropExam(this);
+            }
             this.course = course;
             course.addExam(this);
         }
