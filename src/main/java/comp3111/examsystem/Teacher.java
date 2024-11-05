@@ -1,6 +1,9 @@
 package comp3111.examsystem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 public class Teacher extends User {
     String position;
@@ -10,6 +13,10 @@ public class Teacher extends User {
     }
     private ArrayList<Question> questionBank;
     private ArrayList<Course> courses;
+    private HashMap<String, Double> course_scores;
+    private HashMap<String, Double> student_scores;
+    private HashMap<String, Double> exam_scores;
+    // private List<Grade> grades;
 
     public void createExam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         Exam exam = new Exam(examName, course, isPublished, duration, questions);
@@ -67,5 +74,13 @@ public class Teacher extends User {
         // TODO: implement
     }
 
+    /* public List<Grade> getGradeList() {
 
+    }
+     */
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other) && (Objects.equals(this.position, ((Teacher) other).position));
+    }
 }

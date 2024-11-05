@@ -17,4 +17,9 @@ public class Student extends User {
         // need to check for dups
         courses.add(course);
     }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
+    }
 }

@@ -21,6 +21,8 @@ public class SystemDatabase {
     HashMap<String, Teacher> teachers = new HashMap<>();
     HashMap<String, Manager> managers = new HashMap<>();
 
+    HashMap<String, Course> courses = new HashMap<>();
+
     final String data_filetype = ".txt";
 
     private boolean createFolder(String directory) {
@@ -47,19 +49,29 @@ public class SystemDatabase {
 
     public SystemDatabase() {
         // create folders if not exist
-        createFolder("account");
-        createFolder("account/student");
-        createFolder("account/teacher");
-        createFolder("account/manager");
+        createFolder("data/");
+        createFolder("data/account");
+        createFolder("data/account/student");
+        createFolder("data/account/teacher");
+        createFolder("data/account/manager");
+        createFolder("data/course");
 
         // create files if not exist
-        createFile("account/students" + data_filetype);
-        createFile("account/teachers" + data_filetype);
-        createFile("account/managers" + data_filetype);
+        createFile("data/account/students" + data_filetype);
+        createFile("data/account/teachers" + data_filetype);
+        createFile("data/account/managers" + data_filetype);
+        createFile("data/courses" + data_filetype);
 
         // create Manager
         Manager manager = new Manager("admin", "comp3111");
         try {registerManager(manager);} catch (IOException e) { System.out.println(e); };
+        try {
+            readAccounts(AccountType.STUDENT);
+            readAccounts(AccountType.TEACHER);
+            readCourses();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private AccountType getAccountType(Account account) {
@@ -74,7 +86,7 @@ public class SystemDatabase {
             case TEACHER -> "teachers";
             case MANAGER -> "managers";
         };
-        return "account/" + folder + data_filetype;
+        return "data/account/" + folder + data_filetype;
     }
 
     private String getAccountFilePath(String username, AccountType type) {
@@ -84,7 +96,7 @@ public class SystemDatabase {
             case TEACHER -> "teacher";
             case MANAGER -> "manager";
         };
-        return "account/" + folder + "/" + username + data_filetype;
+        return "data/account/" + folder + "/" + username + data_filetype;
     }
 
     // perhaps login is done through the system.
@@ -99,13 +111,14 @@ public class SystemDatabase {
         return account;
     }
 
-    public void readAccounts(AccountType type) throws IOException, ClassNotFoundException {
+    private void readAccounts(AccountType type) throws IOException, ClassNotFoundException {
         switch (type) {
             case STUDENT -> students.clear();
             case TEACHER -> teachers.clear();
             case MANAGER -> managers.clear();
         }
         String[] user_list = getUsernameList(type);
+        if (user_list == null) return;
         for (String username : user_list) {
             String filepath = getAccountFilePath(username, type);
             FileInputStream fis = new FileInputStream(filepath);
@@ -129,12 +142,58 @@ public class SystemDatabase {
         }
     }
 
-    public List<Teacher> getTeacherList(Manager manager) {
-        return teachers.values().stream().toList();
+    private String[] getCourseList() throws IOException {
+        String filename = "data/courses" + data_filetype;
+        FileInputStream fis = new FileInputStream(filename);
+        byte[] bytes = fis.readAllBytes();
+        if (bytes.length == 0) {
+            return null;
+        }
+        String list_str = new String(bytes, StandardCharsets.UTF_8);
+        fis.close();
+        return list_str.split(";");
     }
 
-    public List<Student> getStudentList(Manager manager) {
-        return students.values().stream().toList();
+    private void readCourses() throws IOException, ClassNotFoundException {
+        String[] course_list = getCourseList();
+        if (course_list == null) return;
+        for (String courseID : course_list) {
+            String filepath = "data/course/" + courseID + data_filetype;
+            FileInputStream fis = new FileInputStream(filepath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            Course course = (Course) ois.readObject();
+            courses.put(courseID, course);
+            ois.close();
+            fis.close();
+        }
+    }
+
+    /*
+    * Functions that filter students.
+    * Leave empty for no filter
+    * */
+    public List<Student> getStudentList(Manager manager, String username, String name, String department) {
+        return students.values().stream().filter(s ->
+                s.getUsername().contains(username) &&
+                        s.getName().contains(name) &&
+                        s.getDepartment().contains(department)
+        ).toList();
+    }
+
+    /*
+     * Functions that filter teachers.
+     * Leave empty for no filter
+     * */
+    public List<Teacher> getTeacherList(Manager manager, String username, String name, String department) {
+        return teachers.values().stream().filter(t ->
+                t.getUsername().contains(username) &&
+                        t.getName().contains(name) &&
+                        t.getDepartment().contains(department)
+        ).toList();
+    }
+
+    public List<Course> getCourseList(String courseID, String courseName, String department) {
+        return new ArrayList<>();
     }
 
     /*
@@ -146,6 +205,9 @@ public class SystemDatabase {
         String filename = getNameListFilePath(type);
         FileInputStream fis = new FileInputStream(filename);
         byte[] bytes = fis.readAllBytes();
+        if (bytes.length == 0) {
+            return null;
+        }
         String list_str = new String(bytes, StandardCharsets.UTF_8);
         fis.close();
         return list_str.split(";");
@@ -163,6 +225,10 @@ public class SystemDatabase {
         byte[] bytes = String.join(";", username_list).getBytes(StandardCharsets.UTF_8);
         fos.write(bytes);
         fos.close();
+    }
+
+    private void writeToCourseList() throws IOException {
+
     }
 
     private void writeToStudent(Student student) throws IOException {
@@ -203,31 +269,64 @@ public class SystemDatabase {
         writeToUsernameList(AccountType.MANAGER);
     }
 
+    private void writeToCourse(Course course) throws IOException {
+        String courseID = course.getCourseID();
+        String filepath = "data/course/" + courseID + data_filetype;
+        courses.put(courseID, course);
+        FileOutputStream fos = new FileOutputStream(filepath);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(course);
+        oos.close();
+        fos.close();
+    }
+
     /*
     * Function for updating student information
     * */
-    private void updateStudent(Student student, String old_username) throws IOException, ClassNotFoundException {
+    public void updateStudent(Student newStudent, String old_username, Manager manager) throws IOException, ClassNotFoundException {
+        if (manager == null) {
+            System.out.println("Require Manager account");
+            return;
+        }
         readAccounts(AccountType.STUDENT);
-        if (!Objects.equals(old_username, student.getUsername())) removeStudent(old_username);
-        writeToStudent(student);
+        if (!Objects.equals(old_username, newStudent.getUsername())) removeStudent(old_username, manager);
+        writeToStudent(newStudent);
     }
 
     /*
      * Function for updating teacher information
      * */
-    private void updateTeacher(Teacher teacher, String old_username) throws IOException, ClassNotFoundException {
+    public void updateTeacher(Teacher newTeacher, String old_username, Manager manager) throws IOException, ClassNotFoundException {
+        if (manager == null) {
+            System.out.println("Require Manager account");
+            return;
+        }
         readAccounts(AccountType.TEACHER);
-        if (!Objects.equals(old_username, teacher.getUsername())) removeTeacher(old_username);
-        writeToTeacher(teacher);
+        if (!Objects.equals(old_username, newTeacher.getUsername())) removeTeacher(old_username, manager);
+        writeToTeacher(newTeacher);
+    }
+
+    public void modifyCourse(Course newCourse, String old_courseID, Manager manager) throws IOException, ClassNotFoundException {
+        if (manager == null) {
+            System.out.println("Require Manager account");
+            return;
+        }
+        readCourses();
+        if (!Objects.equals(old_courseID, newCourse.getCourseID())) removeCourse(old_courseID, manager);
+        writeToCourseList();
     }
 
     /*
     * Function for removing student from database
     * */
-    private void removeStudent(String username) throws IOException {
+    public void removeStudent(String username, Manager manager) throws IOException {
+        if (manager == null) {
+            System.out.println("Require Manager Account");
+            return;
+        }
         if (students.get(username) != null) {
             students.remove(username);
-            removeFile("account/student/" + username + data_filetype);
+            removeFile(getAccountFilePath(username, AccountType.STUDENT));
         }
         writeToUsernameList(AccountType.STUDENT);
     }
@@ -235,12 +334,28 @@ public class SystemDatabase {
     /*
      * Function for removing teacher from database
      * */
-    private void removeTeacher(String username) throws IOException {
+    public void removeTeacher(String username, Manager manager) throws IOException {
+        if (manager == null) {
+            System.out.println("Require Manager Account");
+            return;
+        }
         if (teachers.get(username) != null) {
             teachers.remove(username);
-            removeFile("account/teacher/" + username + data_filetype);
+            removeFile(getAccountFilePath(username, AccountType.TEACHER));
         }
         writeToUsernameList(AccountType.TEACHER);
+    }
+
+    public void removeCourse(String courseID, Manager manager) throws IOException {
+        if (manager == null) {
+            System.out.println("Require Manager Account");
+            return;
+        }
+        if (courses.get(courseID) != null) {
+            courses.remove(courseID);
+            removeFile("data/course/" + courseID + data_filetype);
+        }
+        writeToCourseList();
     }
 
     /*
@@ -268,14 +383,24 @@ public class SystemDatabase {
         return teacher;
     }
 
-    public Manager registerManager(Manager manager) throws IOException {
+    private Manager registerManager(Manager manager) throws IOException {
         String username = manager.getUsername();
         if (managers.get(username) != null) {
             // teacher with this username already exists
-            System.out.println("Teacher username " + manager.getUsername() + " already exist");
+            System.out.println("Manager username " + manager.getUsername() + " already exist");
             return null;
         }
         writeToManager(manager);
         return manager;
+    }
+
+    public Course createCourse(Course course) throws IOException {
+        String courseID = course.getCourseID();
+        if (courses.get(courseID) != null) {
+            System.out.println("Course ID " + courseID + " already exist");
+            return null;
+        }
+        writeToCourse(course);
+        return course;
     }
 }

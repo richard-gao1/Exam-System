@@ -1,5 +1,7 @@
 package comp3111.examsystem;
 
+import java.util.Objects;
+
 public class User extends Account{
     private String name;
     private String gender;
@@ -54,5 +56,14 @@ public class User extends Account{
     public void setDepartment(String department) {
         // UI should ensure department is valid
         this.department = department;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other) &&
+                Objects.equals(this.name, ((User) other).getName()) &&
+                Objects.equals(this.gender, ((User) other).getGender()) &&
+                (this.age == ((User) other).getAge()) &&
+                Objects.equals(this.department, ((User) other).getDepartment());
     }
 }
