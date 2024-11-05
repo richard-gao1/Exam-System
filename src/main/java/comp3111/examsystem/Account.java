@@ -1,6 +1,9 @@
 package comp3111.examsystem;
 
-public class Account {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Account implements Serializable {
     private String username;
     private String password;
 
@@ -33,5 +36,11 @@ public class Account {
         } else {
             throw new IllegalArgumentException("Password cannot be empty");
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        Account account = (Account) other;
+        return (Objects.equals(this.username, account.username)) && (Objects.equals(this.password, account.password));
     }
 }

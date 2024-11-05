@@ -2,7 +2,7 @@ package comp3111.examsystem;
 
 import java.util.ArrayList;
 
-public class Student extends User{
+public class Student extends User {
     private ArrayList<Course> courses = new ArrayList<>();
 
     public Student(String username, String password, String name, String gender, int age, String department){
