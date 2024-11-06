@@ -7,10 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-enum AccountType {
-    STUDENT, TEACHER, MANAGER
-}
-
 public class SystemDatabase {
     /*
     Used to store all important, shared information the system requires
