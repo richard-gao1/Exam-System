@@ -1,5 +1,6 @@
 package comp3111.examsystem;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public class User extends Account{

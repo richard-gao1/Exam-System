@@ -1,6 +1,8 @@
 package comp3111.examsystem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Student extends User {
     private ArrayList<Course> courses = new ArrayList<>();

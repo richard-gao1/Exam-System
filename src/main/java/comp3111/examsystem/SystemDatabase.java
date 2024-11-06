@@ -1,15 +1,15 @@
 package comp3111.examsystem;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-
-enum AccountType {
-    STUDENT, TEACHER, MANAGER
-}
 
 public class SystemDatabase {
     /*
@@ -23,7 +23,11 @@ public class SystemDatabase {
 
     HashMap<String, Course> courses = new HashMap<>();
 
-    final String data_filetype = ".txt";
+    final String data_filetype = ".json";
+
+    private void errorMessage(String msg) {
+        System.out.println(msg);
+    }
 
     private boolean createFolder(String directory) {
         File folder = new File(directory);
@@ -64,7 +68,7 @@ public class SystemDatabase {
 
         // create Manager
         Manager manager = new Manager("admin", "comp3111");
-        try {registerManager(manager);} catch (IOException e) { System.out.println(e); };
+        try {registerManager(manager);} catch (IOException e) { System.out.println(e); }
         try {
             readAccounts(AccountType.STUDENT);
             readAccounts(AccountType.TEACHER);
@@ -111,7 +115,46 @@ public class SystemDatabase {
         return account;
     }
 
-    private void readAccounts(AccountType type) throws IOException, ClassNotFoundException {
+    public String studentToJsonString(Student student) {
+        return new Gson().toJson(student);
+    }
+
+    public Student jsonStringToStudent(String input) {
+        Gson gson = new Gson();
+        return gson.fromJson(input, Student.class);
+    }
+
+    public Teacher jsonStringToTeacher(String input) {
+        Gson gson = new Gson();
+        return gson.fromJson(input, Teacher.class);
+    }
+
+    public Manager jsonStringToManager(String input) {
+        Gson gson = new Gson();
+        return gson.fromJson(input, Manager.class);
+    }
+
+    public Course jsonStringToCourse(String input) {
+        Gson gson = new Gson();
+        return gson.fromJson(input, Course.class);
+    }
+
+    public Course getCourse(String courseID) {
+        String filepath = "data/course/" + courseID + data_filetype;
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(filepath);
+            byte[] content = fis.readAllBytes();
+            if (content.length == 0) return null;
+            String text = new String(content, StandardCharsets.UTF_8);
+            return jsonStringToCourse(text);
+        } catch (IOException e) {
+
+        }
+        return null;
+    }
+
+    private void readAccounts(AccountType type) {
         switch (type) {
             case STUDENT -> students.clear();
             case TEACHER -> teachers.clear();
@@ -121,24 +164,29 @@ public class SystemDatabase {
         if (user_list == null) return;
         for (String username : user_list) {
             String filepath = getAccountFilePath(username, type);
-            FileInputStream fis = new FileInputStream(filepath);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            switch (type) {
-                case STUDENT:
-                    Student student = (Student) ois.readObject();
-                    students.put(username, student);
-                    break;
-                case TEACHER:
-                    Teacher teacher = (Teacher) ois.readObject();
-                    teachers.put(username, teacher);
-                    break;
-                case MANAGER:
-                    Manager manager = (Manager) ois.readObject();
-                    managers.put(username, manager);
-                    break;
+            try {
+                FileInputStream fis = new FileInputStream(filepath);
+                byte[] content = fis.readAllBytes();
+                if (content.length == 0) continue;
+                String text = new String(content, StandardCharsets.UTF_8);
+                switch (type) {
+                    case STUDENT:
+                        Student student = jsonStringToStudent(text);
+                        students.put(username, student);
+                        break;
+                    case TEACHER:
+                        Teacher teacher = jsonStringToTeacher(text);
+                        teachers.put(username, teacher);
+                        break;
+                    case MANAGER:
+                        Manager manager = jsonStringToManager(text);
+                        managers.put(username, manager);
+                        break;
+                }
+                fis.close();
+            } catch (IOException e) {
+
             }
-            ois.close();
-            fis.close();
         }
     }
 
@@ -201,19 +249,24 @@ public class SystemDatabase {
     * The username list of students, teachers, and managers are stored in different .tmp
     * each username is separated by ';'
     * */
-    private String[] getUsernameList(AccountType type) throws IOException, ClassNotFoundException {
-        String filename = getNameListFilePath(type);
-        FileInputStream fis = new FileInputStream(filename);
-        byte[] bytes = fis.readAllBytes();
-        if (bytes.length == 0) {
-            return null;
+    private String[] getUsernameList(AccountType type) {
+        try {
+            String filename = getNameListFilePath(type);
+            FileInputStream fis = new FileInputStream(filename);
+            byte[] bytes = fis.readAllBytes();
+            if (bytes.length == 0) {
+                return null;
+            }
+            String list_str = new String(bytes, StandardCharsets.UTF_8);
+            fis.close();
+            return list_str.split(";");
+        } catch (IOException e) {
+
         }
-        String list_str = new String(bytes, StandardCharsets.UTF_8);
-        fis.close();
-        return list_str.split(";");
+        return null;
     }
 
-    private void writeToUsernameList(AccountType type) throws IOException {
+    private void writeToUsernameList(AccountType type) {
         List<String> username_list;
         String filename = getNameListFilePath(type);
         username_list = switch (type) {
@@ -221,69 +274,75 @@ public class SystemDatabase {
             case TEACHER -> teachers.keySet().stream().toList();
             case MANAGER -> managers.keySet().stream().toList();
         };
-        FileOutputStream fos = new FileOutputStream(filename);
-        byte[] bytes = String.join(";", username_list).getBytes(StandardCharsets.UTF_8);
-        fos.write(bytes);
-        fos.close();
+        try {
+            FileOutputStream fos = new FileOutputStream(filename);
+            byte[] bytes = String.join(";", username_list).getBytes(StandardCharsets.UTF_8);
+            fos.write(bytes);
+            fos.close();
+        } catch (IOException e) {
+
+        }
+
     }
 
-    private void writeToCourseList() throws IOException {
+    private void writeToCourseList() {
 
     }
 
-    private void writeToStudent(Student student) throws IOException {
+    private void writeJson(String filepath, String text) {
+        try {
+            FileOutputStream fos = new FileOutputStream(filepath);
+            byte[] content = text.getBytes(StandardCharsets.UTF_8);
+            fos.write(content);
+            fos.close();
+        } catch (IOException e) {
+
+        }
+    }
+
+    private void writeToStudent(Student student) {
         String username = student.getUsername();
         String filepath = getAccountFilePath(username, AccountType.STUDENT);
+        createFile(filepath);
+        String text = new Gson().toJson(student);
+        writeJson(filepath, text);
         students.put(username, student);
-        FileOutputStream fos = new FileOutputStream(filepath);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(student);
-        oos.close();
-        fos.close();
         writeToUsernameList(AccountType.STUDENT);
     }
 
-    private void writeToTeacher(Teacher teacher) throws IOException {
+    private void writeToTeacher(Teacher teacher) {
         String username = teacher.getUsername();
         String filepath = getAccountFilePath(username, AccountType.TEACHER);
-        teachers.put(username, teacher);
         createFile(filepath);
-        FileOutputStream fos = new FileOutputStream(filepath);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(teacher);
-        oos.close();
-        fos.close();
+        String text = new Gson().toJson(teacher);
+        writeJson(filepath, text);
+        teachers.put(username, teacher);
         writeToUsernameList(AccountType.TEACHER);
     }
 
-    private void writeToManager(Manager manager) throws IOException {
+    private void writeToManager(Manager manager) {
         String username = manager.getUsername();
         String filepath = getAccountFilePath(username, AccountType.MANAGER);
-        managers.put(username, manager);
         createFile(filepath);
-        FileOutputStream fos = new FileOutputStream(filepath);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(manager);
-        oos.close();
-        fos.close();
+        String text = new Gson().toJson(manager);
+        writeJson(filepath, text);
+        managers.put(username, manager);
         writeToUsernameList(AccountType.MANAGER);
     }
 
-    private void writeToCourse(Course course) throws IOException {
+    private void writeToCourse(Course course) {
         String courseID = course.getCourseID();
         String filepath = "data/course/" + courseID + data_filetype;
+        String text = new Gson().toJson(course);
+        writeJson(filepath, text);
         courses.put(courseID, course);
-        FileOutputStream fos = new FileOutputStream(filepath);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(course);
-        oos.close();
-        fos.close();
+        writeToCourseList();
     }
 
     /*
     * Function for updating student information
     * */
-    public void updateStudent(Student newStudent, String old_username, Manager manager) throws IOException, ClassNotFoundException {
+    public void updateStudent(Student newStudent, String old_username, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager account");
             return;
@@ -296,7 +355,7 @@ public class SystemDatabase {
     /*
      * Function for updating teacher information
      * */
-    public void updateTeacher(Teacher newTeacher, String old_username, Manager manager) throws IOException, ClassNotFoundException {
+    public void updateTeacher(Teacher newTeacher, String old_username, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager account");
             return;
@@ -319,7 +378,7 @@ public class SystemDatabase {
     /*
     * Function for removing student from database
     * */
-    public void removeStudent(String username, Manager manager) throws IOException {
+    public void removeStudent(String username, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager Account");
             return;
@@ -334,7 +393,7 @@ public class SystemDatabase {
     /*
      * Function for removing teacher from database
      * */
-    public void removeTeacher(String username, Manager manager) throws IOException {
+    public void removeTeacher(String username, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager Account");
             return;
@@ -346,7 +405,7 @@ public class SystemDatabase {
         writeToUsernameList(AccountType.TEACHER);
     }
 
-    public void removeCourse(String courseID, Manager manager) throws IOException {
+    public void removeCourse(String courseID, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager Account");
             return;
@@ -361,7 +420,7 @@ public class SystemDatabase {
     /*
     * Called for register / add a student / teacher
     * */
-    public Student registerStudent(Student student) throws IOException {
+    public Student registerStudent(Student student) {
         String username = student.getUsername();
         if (students.get(username) != null) {
             // teacher with this username already exists
