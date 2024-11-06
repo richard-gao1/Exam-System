@@ -1,10 +1,8 @@
 package comp3111.examsystem;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +47,10 @@ public class SystemDatabase {
     private boolean removeFile(String filepath) {
         File file = new File(filepath);
         return file.delete();
+    }
+
+    public void removeAll() {
+        new File("data").delete();
     }
 
     public SystemDatabase() {
@@ -208,10 +210,11 @@ public class SystemDatabase {
         for (String courseID : course_list) {
             String filepath = "data/course/" + courseID + data_filetype;
             FileInputStream fis = new FileInputStream(filepath);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Course course = (Course) ois.readObject();
+            byte[] content = fis.readAllBytes();
+            if (content.length == 0) continue;
+            String text = new String(content, StandardCharsets.UTF_8);
+            Course course = jsonStringToCourse(text);
             courses.put(courseID, course);
-            ois.close();
             fis.close();
         }
     }
@@ -286,7 +289,17 @@ public class SystemDatabase {
     }
 
     private void writeToCourseList() {
+        List<String> course_list;
+        String filename = "data/courses" + data_filetype;
+        course_list = courses.keySet().stream().toList();
+        try {
+            FileOutputStream fos = new FileOutputStream(filename);
+            byte[] bytes = String.join(";", course_list).getBytes(StandardCharsets.UTF_8);
+            fos.write(bytes);
+            fos.close();
+        } catch (IOException e) {
 
+        }
     }
 
     private void writeJson(String filepath, String text) {

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Course implements Serializable {
+public class Course {
     private String courseID;
     private String name;
     private Teacher teacher;
