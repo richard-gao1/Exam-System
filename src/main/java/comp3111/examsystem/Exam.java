@@ -9,7 +9,7 @@ public class Exam {
     private boolean isPublished;
     private int duration;
     private ArrayList<Question> questions;
-    private HashMap<Student, Integer> studentToGrades = new HashMap<>();
+    private HashMap<Student, Grade> studentGrades;
 
     public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         this.examName = examName;
@@ -79,5 +79,9 @@ public class Exam {
     public Integer grade(ArrayList<Integer> answers){
         // TODO: implement
         return 0;
+    }
+
+    public HashMap<Student, Grade> getStudentGrades() {
+        return studentGrades;
     }
 }

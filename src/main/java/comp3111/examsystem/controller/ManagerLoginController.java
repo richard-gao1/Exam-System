@@ -40,12 +40,14 @@ public class ManagerLoginController implements Initializable {
         } else {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("ManagerMainUI.fxml"));
             Stage stage = new Stage();
-            stage.setTitle("Hi " + usernameTxt.getText() +", Welcome to HKUST Examination System");
+            stage.setTitle("Hi " + manager.getUsername() +", Welcome to HKUST Examination System");
             try {
                 stage.setScene(new Scene(fxmlLoader.load()));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+            ManagerMainController mmc = fxmlLoader.getController();
+            mmc.setManager(manager);
             stage.show();
             ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
         }

@@ -16,7 +16,6 @@ public class Teacher extends User {
     private HashMap<String, Double> course_scores;
     private HashMap<String, Double> student_scores;
     private HashMap<String, Double> exam_scores;
-    // private List<Grade> grades;
 
     public void createExam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         Exam exam = new Exam(examName, course, isPublished, duration, questions);
@@ -74,13 +73,20 @@ public class Teacher extends User {
         // TODO: implement
     }
 
-    /* public List<Grade> getGradeList() {
-
+    public List<Exam> getExams() {
+        List<Exam> exams = new ArrayList<>();
+        for (Course course : courses) {
+            exams.addAll(course.getExams());
+        }
+        return exams;
     }
-     */
 
     @Override
     public boolean equals(Object other) {
         return super.equals(other) && (Objects.equals(this.position, ((Teacher) other).position));
+    }
+
+    public List<Course> getCourses() {
+        return courses;
     }
 }
