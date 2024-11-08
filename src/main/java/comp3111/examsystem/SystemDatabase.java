@@ -106,7 +106,7 @@ public class SystemDatabase {
     }
 
     // perhaps login is done through the system.
-    public Account login(String username, String password, AccountType type) throws IOException, ClassNotFoundException {
+    public Account login(String username, String password, AccountType type) {
         readAccounts(type);
         Account account = switch (type) {
             case STUDENT -> students.get(username);

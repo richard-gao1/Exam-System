@@ -10,6 +10,7 @@ public class Manager extends Account {
     public Course makeCourse() {
         // TODO: to be implemented
         return null;
+
     }
 
     @Override
