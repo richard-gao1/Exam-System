@@ -44,6 +44,8 @@ public class ManagerMainController implements Initializable {
             Stage stage = new Stage();
             stage.setTitle("Teacher Management");
             stage.setScene(new Scene(fxmlLoader.load()));
+            TeacherManagementController tmc = fxmlLoader.getController();
+            tmc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

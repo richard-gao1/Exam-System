@@ -57,15 +57,15 @@
     <left>
         <VBox prefHeight="720.0" prefWidth="980.0" BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="gradeTable" prefHeight="649.0" prefWidth="980.0">
+                <TableView fx:id="accountTable" prefHeight="649.0" prefWidth="980.0" onMouseClicked="#selected">
                     <columns>
-                        <TableColumn fx:id="username" prefWidth="140.0" text="Username" />
-                        <TableColumn fx:id="name" prefWidth="140.0" text="Name" />
-                        <TableColumn fx:id="gender" prefWidth="140.0" text="Gender" />
-                        <TableColumn fx:id="age" prefWidth="140.0" text="Age" />
-                        <TableColumn fx:id="position" prefWidth="140.0" text="Position" />
-                        <TableColumn fx:id="department" prefWidth="140.0" text="Department" />
-                        <TableColumn fx:id="password" prefWidth="140.0" text="Password" />
+                        <TableColumn fx:id="usernameColumn" prefWidth="140.0" text="Username" />
+                        <TableColumn fx:id="nameColumn" prefWidth="140.0" text="Name" />
+                        <TableColumn fx:id="genderColumn" prefWidth="140.0" text="Gender" />
+                        <TableColumn fx:id="ageColumn" prefWidth="140.0" text="Age" />
+                        <TableColumn fx:id="positionColumn" prefWidth="140.0" text="Position" />
+                        <TableColumn fx:id="departmentColumn" prefWidth="140.0" text="Department" />
+                        <TableColumn fx:id="passwordColumn" prefWidth="140.0" text="Password" />
                     </columns>
                 </TableView>
                 <HBox alignment="CENTER_RIGHT" prefHeight="71.0" prefWidth="980.0" BorderPane.alignment="CENTER">
@@ -138,6 +138,18 @@
                                         left="10.0" right="10.0"/>
                             </VBox.margin>
                         </TextField>
+                        <Label text="Position:">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <ChoiceBox fx:id="positionSet" prefWidth="150.0">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </ChoiceBox>
                         <Label text="Department:">
                             <VBox.margin>
                                 <Insets top="10.0"

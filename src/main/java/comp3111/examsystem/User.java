@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class User extends Account{
-    private String name;
-    private String gender;
-    private int age;
-    private String department;
+    public String name;
+    public String gender;
+    public int age;
+    public String department;
 
     public User(String username, String password, String name, String gender, int age, String department ) {
         super(username, password);

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Teacher extends User {
-    String position;
+    public String position;
     public Teacher(String username, String password, String name, String gender, int age, String department, String position) {
         super(username, password, name, gender, age, department);
         this.position = position;

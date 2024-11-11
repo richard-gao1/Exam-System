@@ -70,7 +70,7 @@ public class SystemDatabase {
 
         // create Manager
         Manager manager = new Manager("admin", "comp3111");
-        try {registerManager(manager);} catch (IOException e) { System.out.println(e); }
+        registerManager(manager);
         try {
             readAccounts(AccountType.STUDENT);
             readAccounts(AccountType.TEACHER);
@@ -154,6 +154,18 @@ public class SystemDatabase {
 
         }
         return null;
+    }
+
+    public Student getStudent(String username) {
+        return students.get(username);
+    }
+
+    public Teacher getTeacher(String username) {
+        return teachers.get(username);
+    }
+
+    public Manager getManager(String username) {
+        return managers.get(username);
     }
 
     private void readAccounts(AccountType type) {
@@ -444,7 +456,7 @@ public class SystemDatabase {
         return student;
     }
 
-    public Teacher registerTeacher(Teacher teacher) throws IOException {
+    public Teacher registerTeacher(Teacher teacher) {
         String username = teacher.getUsername();
         if (teachers.get(username) != null) {
             // teacher with this username already exists
@@ -455,7 +467,7 @@ public class SystemDatabase {
         return teacher;
     }
 
-    private Manager registerManager(Manager manager) throws IOException {
+    private Manager registerManager(Manager manager) {
         String username = manager.getUsername();
         if (managers.get(username) != null) {
             // teacher with this username already exists
