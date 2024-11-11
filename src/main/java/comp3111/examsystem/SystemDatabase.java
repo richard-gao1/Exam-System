@@ -71,13 +71,9 @@ public class SystemDatabase {
         // create Manager
         Manager manager = new Manager("admin", "comp3111");
         registerManager(manager);
-        try {
-            readAccounts(AccountType.STUDENT);
-            readAccounts(AccountType.TEACHER);
-            readCourses();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        readAccounts(AccountType.STUDENT);
+        readAccounts(AccountType.TEACHER);
+        readCourses();
     }
 
     private AccountType getAccountType(Account account) {
@@ -204,30 +200,38 @@ public class SystemDatabase {
         }
     }
 
-    private String[] getCourseList() throws IOException {
+    private String[] getCourseIDList() {
         String filename = "data/courses" + data_filetype;
-        FileInputStream fis = new FileInputStream(filename);
-        byte[] bytes = fis.readAllBytes();
-        if (bytes.length == 0) {
+        try {
+            FileInputStream fis = new FileInputStream(filename);
+            byte[] bytes = fis.readAllBytes();
+            if (bytes.length == 0) {
+                return null;
+            }
+            String list_str = new String(bytes, StandardCharsets.UTF_8);
+            fis.close();
+            return list_str.split(";");
+        } catch (IOException e) {
             return null;
         }
-        String list_str = new String(bytes, StandardCharsets.UTF_8);
-        fis.close();
-        return list_str.split(";");
     }
 
-    private void readCourses() throws IOException, ClassNotFoundException {
-        String[] course_list = getCourseList();
+    private void readCourses() {
+        String[] course_list = getCourseIDList();
         if (course_list == null) return;
         for (String courseID : course_list) {
             String filepath = "data/course/" + courseID + data_filetype;
-            FileInputStream fis = new FileInputStream(filepath);
-            byte[] content = fis.readAllBytes();
-            if (content.length == 0) continue;
-            String text = new String(content, StandardCharsets.UTF_8);
-            Course course = jsonStringToCourse(text);
-            courses.put(courseID, course);
-            fis.close();
+            try {
+                FileInputStream fis = new FileInputStream(filepath);
+                byte[] content = fis.readAllBytes();
+                if (content.length == 0) continue;
+                String text = new String(content, StandardCharsets.UTF_8);
+                Course course = jsonStringToCourse(text);
+                courses.put(courseID, course);
+                fis.close();
+            } catch (IOException e) {
+
+            }
         }
     }
 
@@ -256,7 +260,11 @@ public class SystemDatabase {
     }
 
     public List<Course> getCourseList(String courseID, String courseName, String department) {
-        return new ArrayList<>();
+        return courses.values().stream().filter(c ->
+                c.getCourseID().contains(courseID) &&
+                        c.getCourseName().contains(courseName) &&
+                        c.getDepartment().contains(department)
+        ).toList();
     }
 
     /*
@@ -390,7 +398,7 @@ public class SystemDatabase {
         writeToTeacher(newTeacher);
     }
 
-    public void modifyCourse(Course newCourse, String old_courseID, Manager manager) throws IOException, ClassNotFoundException {
+    public void modifyCourse(Course newCourse, String old_courseID, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager account");
             return;
@@ -478,7 +486,7 @@ public class SystemDatabase {
         return manager;
     }
 
-    public Course createCourse(Course course) throws IOException {
+    public Course createCourse(Course course) {
         String courseID = course.getCourseID();
         if (courses.get(courseID) != null) {
             System.out.println("Course ID " + courseID + " already exist");

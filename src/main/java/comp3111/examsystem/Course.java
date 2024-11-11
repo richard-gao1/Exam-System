@@ -8,13 +8,15 @@ import java.util.List;
 public class Course {
     private String courseID;
     private String name;
+    private String department;
     private Teacher teacher;
     private ArrayList<Student> students;
     private ArrayList<Exam> exams;
 
-    public Course(String courseID, String name, ArrayList<Student> students, ArrayList<Exam> exams) {
+    public Course(String courseID, String name, String department, ArrayList<Student> students, ArrayList<Exam> exams) {
         this.courseID = courseID;
         this.name = name;
+        this.department = department;
         this.students = students;
         this.exams = exams;
     }
@@ -24,4 +26,8 @@ public class Course {
     }
 
     public String getCourseID() { return this.courseID; }
+
+    public String getCourseName() { return this.name; }
+
+    public String getDepartment() { return this.department; }
 }

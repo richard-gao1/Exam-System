@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Teacher extends User {
-    public String position;
+    private String position;
     public Teacher(String username, String password, String name, String gender, int age, String department, String position) {
         super(username, password, name, gender, age, department);
         this.position = position;
@@ -79,6 +79,10 @@ public class Teacher extends User {
             exams.addAll(course.getExams());
         }
         return exams;
+    }
+
+    public String getPosition() {
+        return this.position;
     }
 
     @Override

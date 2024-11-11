@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Account {
-    public String username;
-    public String password;
+    private String username;
+    private String password;
 
     public Account(String username, String password) {
         this.username = username;

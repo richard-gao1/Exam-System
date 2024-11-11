@@ -1,14 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<AnchorPane xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="comp3111.examsystem.controller.CourseManagementController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="800.0" prefWidth="1080.0">
+    <top>
+        <HBox alignment="CENTER" prefHeight="80.0" prefWidth="1080.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Course ID:">
+                    <HBox.margin>
+                        <Insets right="10.0"/>
+                    </HBox.margin>
+                </Label>
+                <TextField fx:id="courseIDFilter"/>
+                <Label text="Course Name:">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0"/>
+                    </HBox.margin>
+                </Label>
+                <TextField fx:id="courseNameFilter"/>
+                <Label text="Department:">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0"/>
+                    </HBox.margin>
+                </Label>
+                <TextField fx:id="departmentFilter"/>
+                <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#reset" text="Reset">
+                    <HBox.margin>
+                        <Insets left="10.0"/>
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="filterBtn" mnemonicParsing="false" onAction="#query" text="Filter">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0"/>
+                    </HBox.margin>
+                </Button>
+            </children>
+        </HBox>
+    </top>
+    <left>
+        <VBox prefHeight="720.0" prefWidth="924.0" BorderPane.alignment="CENTER">
+            <children>
+                <TableView fx:id="accountTable" prefHeight="649.0" prefWidth="924.0" onMouseClicked="#selected">
+                    <columns>
+                        <TableColumn fx:id="courseIDColumn" prefWidth="308.0" text="Course ID" />
+                        <TableColumn fx:id="courseNameColumn" prefWidth="308.0" text="Course Name" />
+                        <TableColumn fx:id="departmentColumn" prefWidth="308.0" text="Department" /></columns>
+                </TableView>
+                <HBox alignment="CENTER_RIGHT" prefHeight="71.0" prefWidth="924.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#delete" text="Delete">
+                            <HBox.margin>
+                                <Insets right="20.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#refresh" text="Refresh">
+                            <HBox.margin>
+                                <Insets right="40.0" />
+                            </HBox.margin>
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </left>
+    <right>
+        <VBox prefHeight="720.0" prefWidth="150.0" BorderPane.alignment="CENTER">
+            <children>
+                <VBox prefHeight="649.0" prefWidth="150.0" BorderPane.alignment="TOP_CENTER">
+                    <children>
+                        <Label text="Course ID:">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <TextField fx:id="courseIDSet">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </TextField>
+                        <Label text="Course Name:">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <TextField fx:id="courseNameSet">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </TextField>
+                        <Label text="Department:">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <TextField fx:id="departmentSet">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </TextField>
+                    </children>
+                </VBox>
+                <HBox alignment="CENTER_LEFT" prefHeight="71.0" prefWidth="980.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#add" text="Add">
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#modify" text="Modify">
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin>
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </right>
 
-</AnchorPane>
+</BorderPane>

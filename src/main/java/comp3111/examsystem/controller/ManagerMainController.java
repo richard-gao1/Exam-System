@@ -31,6 +31,8 @@ public class ManagerMainController implements Initializable {
             Stage stage = new Stage();
             stage.setTitle("Student Management");
             stage.setScene(new Scene(fxmlLoader.load()));
+            StudentManagementController smc = fxmlLoader.getController();
+            smc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,6 +61,8 @@ public class ManagerMainController implements Initializable {
             Stage stage = new Stage();
             stage.setTitle("Course Management");
             stage.setScene(new Scene(fxmlLoader.load()));
+            CourseManagementController cmc = fxmlLoader.getController();
+            cmc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -62,6 +63,8 @@ public class TeacherManagementController implements Initializable {
     @FXML
     private TextField nameSet;
 
+    private boolean filtering = false;
+
     ObservableList<Teacher> teacherList = FXCollections.observableArrayList();
     ObservableList<String> genderList = FXCollections.observableArrayList();
     ObservableList<String> positionList = FXCollections.observableArrayList();
@@ -70,7 +73,7 @@ public class TeacherManagementController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         systemDatabase = new SystemDatabase();
         // get all teachers
-        getTeacherList(false);
+        getTeacherList();
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
@@ -78,6 +81,7 @@ public class TeacherManagementController implements Initializable {
         positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
         departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
         passwordColumn.setCellValueFactory(new PropertyValueFactory<>("password"));
+        accountTable.setItems(teacherList);
 
         genderList.addAll(Gender.list);
         genderSet.setItems(genderList);
@@ -90,34 +94,35 @@ public class TeacherManagementController implements Initializable {
         this.manager = manager;
     }
 
-    private void getTeacherList(boolean haveFilter) {
+    private void getTeacherList() {
         String username = "";
         String name = "";
         String department = "";
-        if (haveFilter) {
+        if (filtering) {
             username = usernameFilter.getText();
             name = nameFilter.getText();
             department = departmentFilter.getText();
         }
         List<Teacher> teachers = systemDatabase.getTeacherList(manager, username, name, department);
+        teacherList.clear();
         teacherList.addAll(teachers);
-        accountTable.setItems(teacherList);
     }
 
     @FXML
     public void refresh() {
-        List<Teacher> teachers = systemDatabase.getTeacherList(manager, "", "", "");
-        teacherList.addAll(teachers);
+        getTeacherList();
     }
 
     @FXML
     public void reset() {
-        getTeacherList(false);
+        filtering = false;
+        getTeacherList();
     }
 
     @FXML
     public void query() {
-        getTeacherList(true);
+        filtering = true;
+        getTeacherList();
     }
 
     private Teacher newTeacher() {
@@ -141,6 +146,7 @@ public class TeacherManagementController implements Initializable {
     public void add() {
         Teacher newTeacher = newTeacher();
         systemDatabase.registerTeacher(newTeacher);
+        refresh();
     }
 
     @FXML
@@ -148,10 +154,11 @@ public class TeacherManagementController implements Initializable {
         if (updating == null) {
             // no teacher is selected
         } else {
-            String old_username = updating.username;
+            String old_username = updating.getUsername();
+            System.out.println("Updating teacher " + old_username);
             Teacher newTeacher = newTeacher();
             systemDatabase.updateTeacher(newTeacher, old_username, manager);
-            getTeacherList(true);
+            refresh();
         }
     }
 
@@ -160,16 +167,23 @@ public class TeacherManagementController implements Initializable {
         if (updating == null) {
             // no teacher is selected
         } else {
-            String username = updating.username;
+            String username = updating.getUsername();
             systemDatabase.removeTeacher(username, manager);
-            getTeacherList(true);
+            refresh();
         }
     }
 
     public void selected(MouseEvent mouseEvent) {
-        Teacher updating = (Teacher) accountTable.getSelectionModel().getSelectedItem();
-        if (updating != null) {
+        Teacher selectedItem = (Teacher) accountTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null && selectedItem != updating) {
+            updating = selectedItem;
             usernameSet.setText(updating.getUsername());
+            nameSet.setText(updating.getName());
+            genderSet.getSelectionModel().select(updating.getGender());
+            ageSet.setText(String.valueOf(updating.getAge()));
+            positionSet.getSelectionModel().select(updating.getPosition());
+            departmentSet.setText(updating.getDepartment());
+            passwordSet.setText(updating.getPassword());
         }
     }
 }
