@@ -2,15 +2,12 @@ package comp3111.examsystem.controller;
 
 import comp3111.examsystem.Course;
 import comp3111.examsystem.Manager;
-import comp3111.examsystem.Student;
 import comp3111.examsystem.SystemDatabase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 
@@ -103,7 +100,12 @@ public class CourseManagementController implements Initializable {
     @FXML
     public void add() {
         Course newCourse = newCourse();
-        systemDatabase.createCourse(newCourse);
+        String msg = systemDatabase.createCourse(newCourse);
+        if (!msg.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
+            alert.setTitle("Creation error");
+            alert.show();
+        }
         refresh();
     }
 

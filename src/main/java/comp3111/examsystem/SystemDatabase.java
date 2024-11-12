@@ -483,13 +483,11 @@ public class SystemDatabase {
         return "";
     }
 
-    public Course createCourse(Course course) {
+    public String createCourse(Course course) {
         String courseID = course.getCourseID();
         if (courses.get(courseID) != null) {
-            System.out.println("Course ID " + courseID + " already exist");
-            return null;
+            return "Course ID " + courseID + " already exist";
         }
-        writeToCourse(course);
-        return course;
+        return "";
     }
 }

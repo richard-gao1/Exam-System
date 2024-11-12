@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ManagerLoginController implements Initializable {
@@ -38,18 +39,24 @@ public class ManagerLoginController implements Initializable {
             alert.setTitle("Login error");
             alert.show();
         } else {
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("ManagerMainUI.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Hi " + manager.getUsername() +", Welcome to HKUST Examination System");
-            try {
-                stage.setScene(new Scene(fxmlLoader.load()));
-            } catch (IOException e1) {
-                e1.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, null, ButtonType.OK);
+            alert.setTitle("Hint");
+            alert.setHeaderText("Login successful");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("ManagerMainUI.fxml"));
+                Stage stage = new Stage();
+                stage.setTitle("Hi " + manager.getUsername() +", Welcome to HKUST Examination System");
+                try {
+                    stage.setScene(new Scene(fxmlLoader.load()));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                ManagerMainController mmc = fxmlLoader.getController();
+                mmc.setManager(manager);
+                stage.show();
+                ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
             }
-            ManagerMainController mmc = fxmlLoader.getController();
-            mmc.setManager(manager);
-            stage.show();
-            ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
         }
     }
 
