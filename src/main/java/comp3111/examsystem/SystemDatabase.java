@@ -138,6 +138,7 @@ public class SystemDatabase {
     }
 
     public Course getCourse(String courseID) {
+        courseID = courseID.replace(" ", "");
         String filepath = "data/course/" + courseID + data_filetype;
         FileInputStream fis = null;
         try {

@@ -114,7 +114,7 @@ public class StudentManagementController implements Initializable {
         getStudentList();
     }
 
-    private Student newStudent() {
+    private Student newStudent(boolean existing) {
         String username = usernameSet.getText();
         String name = nameSet.getText();
         String gender = (String) genderSet.getSelectionModel().getSelectedItem();
@@ -127,12 +127,16 @@ public class StudentManagementController implements Initializable {
         }
         String department = departmentSet.getText();
         String password = passwordSet.getText();
-        return new Student(username, password, name, gender, age, department);
+        if (existing && updating != null) {
+            return updating.update(username, password, name, gender, age, department);
+        } else {
+            return new Student(username, password, name, gender, age, department);
+        }
     }
 
     @FXML
     public void add() {
-        Student newStudent = newStudent();
+        Student newStudent = newStudent(false);
         String msg = systemDatabase.registerStudent(newStudent);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
@@ -149,7 +153,7 @@ public class StudentManagementController implements Initializable {
         } else {
             String old_username = updating.getUsername();
             System.out.println("Updating student " + old_username);
-            Student newStudent = newStudent();
+            Student newStudent = newStudent(true);
             systemDatabase.updateStudent(newStudent, old_username, manager);
             refresh();
         }

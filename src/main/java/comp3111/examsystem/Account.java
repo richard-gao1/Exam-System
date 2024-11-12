@@ -26,6 +26,11 @@ public class Account {
         }
     }
 
+    public void update(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public String getPassword() {
         return this.password;
     }

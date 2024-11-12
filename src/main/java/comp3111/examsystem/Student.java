@@ -24,4 +24,9 @@ public class Student extends User {
     public boolean equals(Object other) {
         return super.equals(other);
     }
+
+    public Student update(String username, String password, String name, String gender, int age, String department) {
+        super.update(username, password, name, gender, age, department);
+        return this;
+    }
 }

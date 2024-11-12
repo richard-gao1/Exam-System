@@ -22,6 +22,12 @@ public class Teacher extends User {
         //SystemDatabase.addExam(exam);
     }
 
+    public Teacher update(String username, String password, String name, String gender, int age, String department, String position) {
+        super.update(username, password, name, gender, age, department);
+        this.position = position;
+        return this;
+    }
+
     public void addCourse(Course course){
         courses.add(course);
     }

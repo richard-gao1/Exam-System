@@ -125,7 +125,7 @@ public class TeacherManagementController implements Initializable {
         getTeacherList();
     }
 
-    private Teacher newTeacher() {
+    private Teacher newTeacher(boolean existing) {
         String username = usernameSet.getText();
         String name = nameSet.getText();
         String gender = (String) genderSet.getSelectionModel().getSelectedItem();
@@ -139,12 +139,16 @@ public class TeacherManagementController implements Initializable {
         String department = departmentSet.getText();
         String password = passwordSet.getText();
         String position = (String) positionSet.getSelectionModel().getSelectedItem();
-        return new Teacher(username, password, name, gender, age, department, position);
+        if (existing && updating != null) {
+            return updating.update(username, password, name, gender, age, department, position);
+        } else {
+            return new Teacher(username, password, name, gender, age, department, position);
+        }
     }
 
     @FXML
     public void add() {
-        Teacher newTeacher = newTeacher();
+        Teacher newTeacher = newTeacher(false);
         String msg = systemDatabase.registerTeacher(newTeacher);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
@@ -161,7 +165,7 @@ public class TeacherManagementController implements Initializable {
         } else {
             String old_username = updating.getUsername();
             System.out.println("Updating teacher " + old_username);
-            Teacher newTeacher = newTeacher();
+            Teacher newTeacher = newTeacher(true);
             systemDatabase.updateTeacher(newTeacher, old_username, manager);
             refresh();
         }
