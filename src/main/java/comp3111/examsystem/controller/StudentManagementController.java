@@ -133,7 +133,12 @@ public class StudentManagementController implements Initializable {
     @FXML
     public void add() {
         Student newStudent = newStudent();
-        systemDatabase.registerStudent(newStudent);
+        String msg = systemDatabase.registerStudent(newStudent);
+        if (!msg.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
+            alert.setTitle("Register error");
+            alert.show();
+        }
         refresh();
     }
 

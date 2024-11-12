@@ -145,7 +145,12 @@ public class TeacherManagementController implements Initializable {
     @FXML
     public void add() {
         Teacher newTeacher = newTeacher();
-        systemDatabase.registerTeacher(newTeacher);
+        String msg = systemDatabase.registerTeacher(newTeacher);
+        if (!msg.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
+            alert.setTitle("Register error");
+            alert.show();
+        }
         refresh();
     }
 

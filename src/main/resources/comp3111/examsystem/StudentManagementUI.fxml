@@ -50,12 +50,12 @@
             <children>
                 <TableView fx:id="accountTable" prefHeight="649.0" prefWidth="924.0" onMouseClicked="#selected">
                     <columns>
-                        <TableColumn fx:id="usernameColumn" prefWidth="161.0" text="Username" />
-                        <TableColumn fx:id="nameColumn" prefWidth="161.0" text="Name" />
-                        <TableColumn fx:id="genderColumn" prefWidth="161.0" text="Gender" />
-                        <TableColumn fx:id="ageColumn" prefWidth="161.0" text="Age" />
-                        <TableColumn fx:id="departmentColumn" prefWidth="161.0" text="Department" />
-                        <TableColumn fx:id="passwordColumn" prefWidth="161.0" text="Password" />
+                        <TableColumn fx:id="usernameColumn" prefWidth="154.0" text="Username" />
+                        <TableColumn fx:id="nameColumn" prefWidth="154.0" text="Name" />
+                        <TableColumn fx:id="genderColumn" prefWidth="154.0" text="Gender" />
+                        <TableColumn fx:id="ageColumn" prefWidth="154.0" text="Age" />
+                        <TableColumn fx:id="departmentColumn" prefWidth="154.0" text="Department" />
+                        <TableColumn fx:id="passwordColumn" prefWidth="154.0" text="Password" />
                     </columns>
                 </TableView>
                 <HBox alignment="CENTER_RIGHT" prefHeight="71.0" prefWidth="924.0" BorderPane.alignment="CENTER">

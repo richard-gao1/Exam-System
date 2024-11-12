@@ -453,37 +453,34 @@ public class SystemDatabase {
     /*
     * Called for register / add a student / teacher
     * */
-    public Student registerStudent(Student student) {
+    public String registerStudent(Student student) {
         String username = student.getUsername();
         if (students.get(username) != null) {
             // teacher with this username already exists
-            System.out.println("Student username " + student.getUsername() + " already exist");
-            return null;
+            return "Student username " + student.getUsername() + " already exist";
         }
         writeToStudent(student);
-        return student;
+        return "";
     }
 
-    public Teacher registerTeacher(Teacher teacher) {
+    public String registerTeacher(Teacher teacher) {
         String username = teacher.getUsername();
         if (teachers.get(username) != null) {
             // teacher with this username already exists
-            System.out.println("Teacher username " + teacher.getUsername() + " already exist");
-            return null;
+            return "Teacher username " + teacher.getUsername() + " already exist";
         }
         writeToTeacher(teacher);
-        return teacher;
+        return "";
     }
 
-    private Manager registerManager(Manager manager) {
+    private String registerManager(Manager manager) {
         String username = manager.getUsername();
         if (managers.get(username) != null) {
             // teacher with this username already exists
-            System.out.println("Manager username " + manager.getUsername() + " already exist");
-            return null;
+            return "Manager username " + manager.getUsername() + " already exist";
         }
         writeToManager(manager);
-        return manager;
+        return "";
     }
 
     public Course createCourse(Course course) {
