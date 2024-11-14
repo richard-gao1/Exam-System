@@ -96,14 +96,7 @@ public class TeacherGradeStatisticController implements Initializable {
 
     private void loadChart() {
         XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();
-        /* List<Course> courses = teacher.getCourses();
-        List<Grade> grades = new ArrayList<>();
-        courses.forEach((course) -> {
-            course.getExams().forEach((exam) -> {
-                grades.addAll(exam.getStudentGrades().values());
-            });
-        });
-        */
+
         seriesBar.getData().clear();
         barChart.getData().clear();
         for (int i = 0;  i < 5; i++) {

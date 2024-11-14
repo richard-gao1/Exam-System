@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class SystemDatabase {
     /*
@@ -15,13 +12,13 @@ public class SystemDatabase {
      */
     // keep different account types separate
     // maps Username -> Instance of Account
-    HashMap<String, Student> students = new HashMap<>();
-    HashMap<String, Teacher> teachers = new HashMap<>();
-    HashMap<String, Manager> managers = new HashMap<>();
+    /*static HashMap<String, Student> students = new HashMap<>();
+    static HashMap<String, Teacher> teachers = new HashMap<>();
+    static HashMap<String, Manager> managers = new HashMap<>();
 
-    HashMap<String, Course> courses = new HashMap<>();
-
-    final String data_filetype = ".json";
+    static HashMap<String, Course> courses = new HashMap<>();
+    */
+    static final String data_filetype = ".json";
 
     private void errorMessage(String msg) {
         System.out.println(msg);
@@ -33,7 +30,7 @@ public class SystemDatabase {
         return true;
     }
 
-    private boolean createFile(String filepath) {
+    private static boolean createFile(String filepath) {
         File file = new File(filepath);
         if (file.exists()) return true;
         try {
@@ -44,7 +41,7 @@ public class SystemDatabase {
         return false;
     }
 
-    private boolean removeFile(String filepath) {
+    private static boolean removeFile(String filepath) {
         File file = new File(filepath);
         return file.delete();
     }
@@ -71,18 +68,14 @@ public class SystemDatabase {
         // create Manager
         Manager manager = new Manager("admin", "comp3111");
         registerManager(manager);
+        /*
         readAccounts(AccountType.STUDENT);
         readAccounts(AccountType.TEACHER);
         readCourses();
+        */
     }
 
-    private AccountType getAccountType(Account account) {
-        if (account instanceof Student) return AccountType.STUDENT;
-        if (account instanceof Teacher) return AccountType.TEACHER;
-        return AccountType.MANAGER;
-    }
-
-    private String getNameListFilePath(AccountType type) {
+    private static String getNameListFilePath(AccountType type) {
         String folder = switch (type) {
             case STUDENT -> "students";
             case TEACHER -> "teachers";
@@ -91,7 +84,7 @@ public class SystemDatabase {
         return "data/account/" + folder + data_filetype;
     }
 
-    private String getAccountFilePath(String username, AccountType type) {
+    private static String getAccountFilePath(String username, AccountType type) {
         if (username.isEmpty()) return "";
         String folder = switch (type) {
             case STUDENT -> "student";
@@ -102,42 +95,41 @@ public class SystemDatabase {
     }
 
     // perhaps login is done through the system.
-    public Account login(String username, String password, AccountType type) {
-        readAccounts(type);
+    public static Account login(String username, String password, AccountType type) {
         Account account = switch (type) {
-            case STUDENT -> students.get(username);
-            case TEACHER -> teachers.get(username);
-            case MANAGER -> managers.get(username);
+            case STUDENT -> getStudent(username);
+            case TEACHER -> getTeacher(username);
+            case MANAGER -> getManager(username);
         };
-        if (account == null || !Objects.equals(account.getPassword(), password)) return null;
+        if (account == null || !account.login(password)) return null;
         return account;
     }
 
-    public String studentToJsonString(Student student) {
+    public static String studentToJsonString(Student student) {
         return new Gson().toJson(student);
     }
 
-    public Student jsonStringToStudent(String input) {
+    public static Student jsonStringToStudent(String input) {
         Gson gson = new Gson();
         return gson.fromJson(input, Student.class);
     }
 
-    public Teacher jsonStringToTeacher(String input) {
+    public static Teacher jsonStringToTeacher(String input) {
         Gson gson = new Gson();
         return gson.fromJson(input, Teacher.class);
     }
 
-    public Manager jsonStringToManager(String input) {
+    public static Manager jsonStringToManager(String input) {
         Gson gson = new Gson();
         return gson.fromJson(input, Manager.class);
     }
 
-    public Course jsonStringToCourse(String input) {
+    public static Course jsonStringToCourse(String input) {
         Gson gson = new Gson();
         return gson.fromJson(input, Course.class);
     }
 
-    public Course getCourse(String courseID) {
+    public static Course getCourse(String courseID) {
         courseID = courseID.replace(" ", "");
         String filepath = "data/course/" + courseID + data_filetype;
         FileInputStream fis = null;
@@ -153,55 +145,52 @@ public class SystemDatabase {
         return null;
     }
 
-    public Student getStudent(String username) {
-        return students.get(username);
-    }
-
-    public Teacher getTeacher(String username) {
-        return teachers.get(username);
-    }
-
-    public Manager getManager(String username) {
-        return managers.get(username);
-    }
-
-    private void readAccounts(AccountType type) {
-        switch (type) {
-            case STUDENT -> students.clear();
-            case TEACHER -> teachers.clear();
-            case MANAGER -> managers.clear();
-        }
-        String[] user_list = getUsernameList(type);
-        if (user_list == null) return;
-        for (String username : user_list) {
-            String filepath = getAccountFilePath(username, type);
-            try {
-                FileInputStream fis = new FileInputStream(filepath);
-                byte[] content = fis.readAllBytes();
-                if (content.length == 0) continue;
-                String text = new String(content, StandardCharsets.UTF_8);
-                switch (type) {
-                    case STUDENT:
-                        Student student = jsonStringToStudent(text);
-                        students.put(username, student);
-                        break;
-                    case TEACHER:
-                        Teacher teacher = jsonStringToTeacher(text);
-                        teachers.put(username, teacher);
-                        break;
-                    case MANAGER:
-                        Manager manager = jsonStringToManager(text);
-                        managers.put(username, manager);
-                        break;
-                }
-                fis.close();
-            } catch (IOException e) {
-
-            }
+    public static Student getStudent(String username) {
+        String filepath = getAccountFilePath(username, AccountType.STUDENT);
+        try {
+            FileInputStream fis = new FileInputStream(filepath);
+            byte[] content = fis.readAllBytes();
+            if (content.length == 0) return null;
+            String text = new String(content, StandardCharsets.UTF_8);
+            Student student = jsonStringToStudent(text);
+            fis.close();
+            return student;
+        } catch (IOException e) {
+            return null;
         }
     }
 
-    private String[] getCourseIDList() {
+    public static Teacher getTeacher(String username) {
+        String filepath = getAccountFilePath(username, AccountType.TEACHER);
+        try {
+            FileInputStream fis = new FileInputStream(filepath);
+            byte[] content = fis.readAllBytes();
+            if (content.length == 0) return null;
+            String text = new String(content, StandardCharsets.UTF_8);
+            Teacher teacher = jsonStringToTeacher(text);
+            fis.close();
+            return teacher;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public static Manager getManager(String username) {
+        String filepath = getAccountFilePath(username, AccountType.MANAGER);
+        try {
+            FileInputStream fis = new FileInputStream(filepath);
+            byte[] content = fis.readAllBytes();
+            if (content.length == 0) return null;
+            String text = new String(content, StandardCharsets.UTF_8);
+            Manager manager = jsonStringToManager(text);
+            fis.close();
+            return manager;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static String[] getCourseIDArray() {
         String filename = "data/courses" + data_filetype;
         try {
             FileInputStream fis = new FileInputStream(filename);
@@ -211,28 +200,9 @@ public class SystemDatabase {
             }
             String list_str = new String(bytes, StandardCharsets.UTF_8);
             fis.close();
-            return list_str.split(";");
+            return new Gson().fromJson(list_str, String[].class);
         } catch (IOException e) {
             return null;
-        }
-    }
-
-    private void readCourses() {
-        String[] course_list = getCourseIDList();
-        if (course_list == null) return;
-        for (String courseID : course_list) {
-            String filepath = "data/course/" + courseID + data_filetype;
-            try {
-                FileInputStream fis = new FileInputStream(filepath);
-                byte[] content = fis.readAllBytes();
-                if (content.length == 0) continue;
-                String text = new String(content, StandardCharsets.UTF_8);
-                Course course = jsonStringToCourse(text);
-                courses.put(courseID, course);
-                fis.close();
-            } catch (IOException e) {
-
-            }
         }
     }
 
@@ -240,11 +210,20 @@ public class SystemDatabase {
     * Functions that filter students.
     * Leave empty for no filter
     * */
-    public List<Student> getStudentList(Manager manager, String username, String name, String department) {
-        return students.values().stream().filter(s ->
-                s.getUsername().contains(username) &&
-                        s.getName().contains(name) &&
-                        s.getDepartment().contains(department)
+    public static List<Student> getStudentList(String usernameFilter, String nameFilter, String departmentFilter) {
+        List<Student> studentList = new ArrayList<>();
+        String[] username_array = getUsernameArray(AccountType.STUDENT);
+        Student student;
+        if (username_array == null) return studentList;
+        for (String username : username_array) {
+            if ((student = getStudent(username)) != null) {
+                studentList.add(student);
+            }
+        }
+        return studentList.stream().filter(s ->
+                s.getUsername().contains(usernameFilter) &&
+                        s.getName().contains(nameFilter) &&
+                        s.getDepartment().contains(departmentFilter)
         ).toList();
     }
 
@@ -252,19 +231,37 @@ public class SystemDatabase {
      * Functions that filter teachers.
      * Leave empty for no filter
      * */
-    public List<Teacher> getTeacherList(Manager manager, String username, String name, String department) {
-        return teachers.values().stream().filter(t ->
-                t.getUsername().contains(username) &&
-                        t.getName().contains(name) &&
-                        t.getDepartment().contains(department)
+    public static List<Teacher> getTeacherList(String usernameFilter, String nameFilter, String departmentFilter) {
+        List<Teacher> teacherList = new ArrayList<>();
+        String[] username_array = getUsernameArray(AccountType.TEACHER);
+        Teacher teacher;
+        if (username_array == null) return teacherList;
+        for (String username : username_array) {
+            if ((teacher = getTeacher(username)) != null) {
+                teacherList.add(teacher);
+            }
+        }
+        return teacherList.stream().filter(t ->
+                t.getUsername().contains(usernameFilter) &&
+                        t.getName().contains(nameFilter) &&
+                        t.getDepartment().contains(departmentFilter)
         ).toList();
     }
 
-    public List<Course> getCourseList(String courseID, String courseName, String department) {
-        return courses.values().stream().filter(c ->
-                c.getCourseID().contains(courseID) &&
-                        c.getCourseName().contains(courseName) &&
-                        c.getDepartment().contains(department)
+    public static List<Course> getCourseList(String courseIDFilter, String courseNameFilter, String departmentFilter) {
+        List<Course> courseList = new ArrayList<>();
+        String[] courseID_array = getCourseIDArray();
+        Course course;
+        if (courseID_array == null) return courseList;
+        for (String courseID : courseID_array) {
+            if ((course = getCourse(courseID)) != null) {
+                courseList.add(course);
+            }
+        }
+        return courseList.stream().filter(c ->
+                c.getCourseID().contains(courseIDFilter) &&
+                        c.getCourseName().contains(courseNameFilter) &&
+                        c.getDepartment().contains(departmentFilter)
         ).toList();
     }
 
@@ -273,34 +270,29 @@ public class SystemDatabase {
     * The username list of students, teachers, and managers are stored in different .tmp
     * each username is separated by ';'
     * */
-    private String[] getUsernameList(AccountType type) {
+    private static String[] getUsernameArray(AccountType type) {
         try {
             String filename = getNameListFilePath(type);
             FileInputStream fis = new FileInputStream(filename);
             byte[] bytes = fis.readAllBytes();
             if (bytes.length == 0) {
-                return null;
+                return new String[0];
             }
             String list_str = new String(bytes, StandardCharsets.UTF_8);
             fis.close();
-            return list_str.split(";");
+            return new Gson().fromJson(list_str, String[].class);
         } catch (IOException e) {
 
         }
-        return null;
+        return new String[0];
     }
 
-    private void writeToUsernameList(AccountType type) {
-        List<String> username_list;
+    private static void writeUsernameFile(String[] username_array, AccountType type) {
         String filename = getNameListFilePath(type);
-        username_list = switch (type) {
-            case STUDENT -> students.keySet().stream().toList();
-            case TEACHER -> teachers.keySet().stream().toList();
-            case MANAGER -> managers.keySet().stream().toList();
-        };
         try {
             FileOutputStream fos = new FileOutputStream(filename);
-            byte[] bytes = String.join(";", username_list).getBytes(StandardCharsets.UTF_8);
+            String text = new Gson().toJson(username_array);
+            byte[] bytes = text.getBytes();
             fos.write(bytes);
             fos.close();
         } catch (IOException e) {
@@ -309,13 +301,13 @@ public class SystemDatabase {
 
     }
 
-    private void writeToCourseList() {
-        List<String> course_list;
+    private static void writeCourseIDFile(String[] course_array) {
         String filename = "data/courses" + data_filetype;
-        course_list = courses.keySet().stream().toList();
         try {
             FileOutputStream fos = new FileOutputStream(filename);
-            byte[] bytes = String.join(";", course_list).getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = (course_array != null) ?
+                    String.join(";", course_array).getBytes(StandardCharsets.UTF_8) :
+                    new byte[0];
             fos.write(bytes);
             fos.close();
         } catch (IOException e) {
@@ -323,7 +315,7 @@ public class SystemDatabase {
         }
     }
 
-    private void writeJson(String filepath, String text) {
+    private static void writeJson(String filepath, String text) {
         try {
             FileOutputStream fos = new FileOutputStream(filepath);
             byte[] content = text.getBytes(StandardCharsets.UTF_8);
@@ -334,161 +326,187 @@ public class SystemDatabase {
         }
     }
 
-    private void writeToStudent(Student student) {
+    private static void writeStudentFile(Student student) {
         String username = student.getUsername();
         String filepath = getAccountFilePath(username, AccountType.STUDENT);
         createFile(filepath);
         String text = new Gson().toJson(student);
         writeJson(filepath, text);
-        students.put(username, student);
-        writeToUsernameList(AccountType.STUDENT);
+        String[] username_array = getUsernameArray(AccountType.STUDENT);
+        username_array = addToList(username, username_array);
+        writeUsernameFile(username_array, AccountType.STUDENT);
     }
 
-    private void writeToTeacher(Teacher teacher) {
+    private static void writeTeacherFile(Teacher teacher) {
         String username = teacher.getUsername();
         String filepath = getAccountFilePath(username, AccountType.TEACHER);
         createFile(filepath);
         String text = new Gson().toJson(teacher);
         writeJson(filepath, text);
-        teachers.put(username, teacher);
-        writeToUsernameList(AccountType.TEACHER);
+        String[] username_array = getUsernameArray(AccountType.TEACHER);
+        username_array = addToList(username, username_array);
+        writeUsernameFile(username_array, AccountType.TEACHER);
     }
 
-    private void writeToManager(Manager manager) {
+    private static void writeManagerFile(Manager manager) {
         String username = manager.getUsername();
         String filepath = getAccountFilePath(username, AccountType.MANAGER);
         createFile(filepath);
         String text = new Gson().toJson(manager);
         writeJson(filepath, text);
-        managers.put(username, manager);
-        writeToUsernameList(AccountType.MANAGER);
+        String[] username_array = getUsernameArray(AccountType.MANAGER);
+        username_array = addToList(username, username_array);
+        writeUsernameFile(username_array, AccountType.MANAGER);
     }
 
-    private void writeToCourse(Course course) {
+    private static void writeCourseFile(Course course) {
         String courseID = course.getCourseID();
         String filepath = "data/course/" + courseID + data_filetype;
         String text = new Gson().toJson(course);
         writeJson(filepath, text);
-        courses.put(courseID, course);
-        writeToCourseList();
+        String[] courseID_array = getCourseIDArray();
+        courseID_array = addToList(courseID, courseID_array);
+        writeCourseIDFile(courseID_array);
     }
 
     /*
     * Function for updating student information
     * */
-    public void updateStudent(Student newStudent, String old_username, Manager manager) {
+    public static void updateStudent(Student newStudent, String old_username, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager account");
             return;
         }
-        readAccounts(AccountType.STUDENT);
         if (!Objects.equals(old_username, newStudent.getUsername())) removeStudent(old_username, manager);
-        writeToStudent(newStudent);
+        writeStudentFile(newStudent);
     }
 
     /*
      * Function for updating teacher information
      * */
-    public void updateTeacher(Teacher newTeacher, String old_username, Manager manager) {
+    public static void updateTeacher(Teacher newTeacher, String old_username, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager account");
             return;
         }
-        readAccounts(AccountType.TEACHER);
         if (!Objects.equals(old_username, newTeacher.getUsername())) removeTeacher(old_username, manager);
-        writeToTeacher(newTeacher);
+        writeTeacherFile(newTeacher);
     }
 
-    public void modifyCourse(Course newCourse, String old_courseID, Manager manager) {
+    public static void modifyCourse(Course newCourse, String old_courseID, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager account");
             return;
         }
-        readCourses();
         if (!Objects.equals(old_courseID, newCourse.getCourseID())) removeCourse(old_courseID, manager);
-        writeToCourseList();
+        writeCourseFile(newCourse);
     }
 
     /*
     * Function for removing student from database
     * */
-    public void removeStudent(String username, Manager manager) {
+
+    private static String[] removeFromList(String item, String[] array) {
+        if (array == null || array.length == 0) return new String[0];
+        List<String> list = new ArrayList<>();
+        Collections.addAll(list, array);
+        if (!list.contains(item)) return array;
+        list.remove(item);
+        if (list.isEmpty()) return new String[0];
+        return list.toArray(new String[0]);
+    }
+
+    private static String[] addToList(String item, String[] array) {
+        List<String> list = new ArrayList<>();
+        if (array != null && array.length > 0) {
+            Collections.addAll(list, array);
+        }
+        if (list.contains(item)) return array;
+        list.add(item);
+        return list.toArray(new String[0]);
+    }
+
+    public static void removeStudent(String username, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager Account");
             return;
         }
-        if (students.get(username) != null) {
-            students.remove(username);
+        if (getStudent(username) != null) {
             removeFile(getAccountFilePath(username, AccountType.STUDENT));
+            String[] username_array = getUsernameArray(AccountType.STUDENT);
+            removeFromList(username, username_array);
+            writeUsernameFile(username_array, AccountType.STUDENT);
         }
-        writeToUsernameList(AccountType.STUDENT);
     }
 
     /*
      * Function for removing teacher from database
      * */
-    public void removeTeacher(String username, Manager manager) {
+    public static void removeTeacher(String username, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager Account");
             return;
         }
-        if (teachers.get(username) != null) {
-            teachers.remove(username);
+        if (getTeacher(username) != null) {
             removeFile(getAccountFilePath(username, AccountType.TEACHER));
+            String[] username_array = getUsernameArray(AccountType.TEACHER);
+            removeFromList(username, username_array);
+            writeUsernameFile(username_array, AccountType.TEACHER);
         }
-        writeToUsernameList(AccountType.TEACHER);
     }
 
-    public void removeCourse(String courseID, Manager manager) {
+    public static void removeCourse(String courseID, Manager manager) {
         if (manager == null) {
             System.out.println("Require Manager Account");
             return;
         }
-        if (courses.get(courseID) != null) {
-            courses.remove(courseID);
+        if (getCourse(courseID) != null) {
             removeFile("data/course/" + courseID + data_filetype);
+            String[] course_array = getCourseIDArray();
+            removeFromList(courseID, course_array);
+            writeCourseIDFile(course_array);
         }
-        writeToCourseList();
     }
 
     /*
     * Called for register / add a student / teacher
     * */
-    public String registerStudent(Student student) {
+    public static String registerStudent(Student student) {
         String username = student.getUsername();
-        if (students.get(username) != null) {
+        if (getStudent(username) != null) {
             // teacher with this username already exists
             return "Student username " + student.getUsername() + " already exist";
         }
-        writeToStudent(student);
+        writeStudentFile(student);
         return "";
     }
 
-    public String registerTeacher(Teacher teacher) {
+    public static String registerTeacher(Teacher teacher) {
         String username = teacher.getUsername();
-        if (teachers.get(username) != null) {
+        if (getTeacher(username) != null) {
             // teacher with this username already exists
             return "Teacher username " + teacher.getUsername() + " already exist";
         }
-        writeToTeacher(teacher);
+        writeTeacherFile(teacher);
         return "";
     }
 
-    private String registerManager(Manager manager) {
+    private static String registerManager(Manager manager) {
         String username = manager.getUsername();
-        if (managers.get(username) != null) {
+        if (getManager(username) != null) {
             // teacher with this username already exists
             return "Manager username " + manager.getUsername() + " already exist";
         }
-        writeToManager(manager);
+        writeManagerFile(manager);
         return "";
     }
 
-    public String createCourse(Course course) {
+    public static String createCourse(Course course) {
         String courseID = course.getCourseID();
-        if (courses.get(courseID) != null) {
+        if (getCourse(courseID) != null) {
             return "Course ID " + courseID + " already exist";
         }
+        writeCourseFile(course);
         return "";
     }
 }
