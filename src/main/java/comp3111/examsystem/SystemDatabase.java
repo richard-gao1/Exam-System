@@ -305,9 +305,8 @@ public class SystemDatabase {
         String filename = "data/courses" + data_filetype;
         try {
             FileOutputStream fos = new FileOutputStream(filename);
-            byte[] bytes = (course_array != null) ?
-                    String.join(";", course_array).getBytes(StandardCharsets.UTF_8) :
-                    new byte[0];
+            String text = new Gson().toJson(course_array);
+            byte[] bytes = text.getBytes();
             fos.write(bytes);
             fos.close();
         } catch (IOException e) {
