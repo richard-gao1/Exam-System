@@ -1,5 +1,6 @@
 package comp3111.examsystem;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,13 +13,13 @@ public class Teacher extends User {
         this.position = position;
     }
     private ArrayList<Question> questionBank;
-    private ArrayList<Course> courses;
+    private ArrayList<String> courseIDs;
     private HashMap<String, Double> course_scores;
     private HashMap<String, Double> student_scores;
     private HashMap<String, Double> exam_scores;
 
-    public void createExam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
-        Exam exam = new Exam(examName, course, isPublished, duration, questions);
+    public void createExam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
+        Exam exam = new Exam(examName, courseID, isPublished, duration, questions);
         //SystemDatabase.addExam(exam);
     }
 
@@ -28,8 +29,8 @@ public class Teacher extends User {
         return this;
     }
 
-    public void addCourse(Course course){
-        courses.add(course);
+    public void addCourse(String courseID){
+        courseIDs.add(courseID);
     }
 
     public void viewExam() {
@@ -81,8 +82,11 @@ public class Teacher extends User {
 
     public List<Exam> getExams() {
         List<Exam> exams = new ArrayList<>();
-        for (Course course : courses) {
-            exams.addAll(course.getExams());
+        for (String courseID : this.courseIDs) {
+            Course course = SystemDatabase.getCourse(courseID);
+            if (course != null){
+                exams.addAll(course.getExams());
+            }
         }
         return exams;
     }
@@ -97,6 +101,13 @@ public class Teacher extends User {
     }
 
     public List<Course> getCourses() {
+        ArrayList<Course> courses = new ArrayList<>();
+        for (String courseID : this.courseIDs) {
+            Course course = SystemDatabase.getCourse(courseID);
+            if (course != null){
+                courses.add(course);
+            }
+        }
         return courses;
     }
 }
