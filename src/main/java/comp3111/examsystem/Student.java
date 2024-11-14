@@ -1,6 +1,8 @@
 package comp3111.examsystem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Student extends User {
     private ArrayList<Course> courses = new ArrayList<>();
@@ -31,5 +33,15 @@ public class Student extends User {
         else{
             throw new IllegalArgumentException("No such course");
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
+    }
+
+    public Student update(String username, String password, String name, String gender, int age, String department) {
+        super.update(username, password, name, gender, age, department);
+        return this;
     }
 }

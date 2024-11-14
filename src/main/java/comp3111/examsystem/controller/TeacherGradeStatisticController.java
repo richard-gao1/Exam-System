@@ -1,5 +1,6 @@
 package comp3111.examsystem.controller;
 
+import comp3111.examsystem.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,31 +12,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class TeacherGradeStatisticController implements Initializable {
-    public static class GradeExampleClass {
-        public String getStudentName() {
-            return "student";
-        }
-        public String getCourseNum() {
-            return "comp3111";
-        }
-        public String getExamName() {
-            return "final";
-        }
-        public String getScore() {
-            return "100";
-        }
-        public String getFullScore() {
-            return "100";
-        }
-        public String getTimeSpend() {
-            return "60";
-        }
+
+    private Teacher teacher;
+
+    public void getTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
 
     @FXML
@@ -45,19 +29,19 @@ public class TeacherGradeStatisticController implements Initializable {
     @FXML
     private ChoiceBox<String> studentCombox;
     @FXML
-    private TableView<GradeExampleClass> gradeTable;
+    private TableView<Grade> gradeTable;
     @FXML
-    private TableColumn<GradeExampleClass, String> studentColumn;
+    private TableColumn<Grade, String> studentColumn;
     @FXML
-    private TableColumn<GradeExampleClass, String> courseColumn;
+    private TableColumn<Grade, String> courseColumn;
     @FXML
-    private TableColumn<GradeExampleClass, String> examColumn;
+    private TableColumn<Grade, String> examColumn;
     @FXML
-    private TableColumn<GradeExampleClass, String> scoreColumn;
+    private TableColumn<Grade, String> scoreColumn;
     @FXML
-    private TableColumn<GradeExampleClass, String> fullScoreColumn;
+    private TableColumn<Grade, String> fullScoreColumn;
     @FXML
-    private TableColumn<GradeExampleClass, String> timeSpendColumn;
+    private TableColumn<Grade, String> timeSpendColumn;
     @FXML
     BarChart<String, Number> barChart;
     @FXML
@@ -73,7 +57,7 @@ public class TeacherGradeStatisticController implements Initializable {
     @FXML
     PieChart pieChart;
 
-    private final ObservableList<GradeExampleClass> gradeList = FXCollections.observableArrayList();
+    private final ObservableList<Grade> gradeList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -86,7 +70,14 @@ public class TeacherGradeStatisticController implements Initializable {
         categoryAxisLine.setLabel("Exam");
         numberAxisLine.setLabel("Avg. Score");
 
-        gradeList.add(new GradeExampleClass());
+        gradeList.add(new Grade(
+                "student",
+                "comp3111",
+                "final",
+                100,
+                100,
+                60
+        ));
         gradeTable.setItems(gradeList);
         studentColumn.setCellValueFactory(new PropertyValueFactory<>("studentName"));
         courseColumn.setCellValueFactory(new PropertyValueFactory<>("courseNum"));
@@ -105,6 +96,14 @@ public class TeacherGradeStatisticController implements Initializable {
 
     private void loadChart() {
         XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();
+        /* List<Course> courses = teacher.getCourses();
+        List<Grade> grades = new ArrayList<>();
+        courses.forEach((course) -> {
+            course.getExams().forEach((exam) -> {
+                grades.addAll(exam.getStudentGrades().values());
+            });
+        });
+        */
         seriesBar.getData().clear();
         barChart.getData().clear();
         for (int i = 0;  i < 5; i++) {

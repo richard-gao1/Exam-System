@@ -1,9 +1,10 @@
 package comp3111.examsystem;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Objects;
 
-public class Account implements Serializable {
+public class Account {
     private String username;
     private String password;
 
@@ -25,6 +26,11 @@ public class Account implements Serializable {
         }
     }
 
+    public void update(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public String getPassword() {
         return this.password;
     }
@@ -41,6 +47,7 @@ public class Account implements Serializable {
     @Override
     public boolean equals(Object other) {
         Account account = (Account) other;
+        if (other == null) return false;
         return (Objects.equals(this.username, account.username)) && (Objects.equals(this.password, account.password));
     }
 }
