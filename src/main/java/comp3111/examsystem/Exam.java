@@ -5,15 +5,15 @@ import java.util.HashMap;
 
 public class Exam {
     private String examName;
-    private Course course;
+    private String courseID;
     private boolean isPublished;
     private int duration;
     private ArrayList<Question> questions;
     private HashMap<Student, Grade> studentGrades;
 
-    public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
+    public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
         this.examName = examName;
-        this.course = course;
+        this.courseID = courseID;
         this.isPublished = isPublished;
         this.duration = duration;
         this.questions = questions;
@@ -28,11 +28,11 @@ public class Exam {
     }
 
     public Course getCourse() {
-        return this.course;
+        return SystemDatabase.getCourse(this.courseID);
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setCourse(String courseID) {
+        this.courseID = courseID;
     }
 
     public boolean getIsPublished() {
