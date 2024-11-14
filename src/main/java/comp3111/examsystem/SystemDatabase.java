@@ -12,17 +12,7 @@ public class SystemDatabase {
      */
     // keep different account types separate
     // maps Username -> Instance of Account
-    /*static HashMap<String, Student> students = new HashMap<>();
-    static HashMap<String, Teacher> teachers = new HashMap<>();
-    static HashMap<String, Manager> managers = new HashMap<>();
-
-    static HashMap<String, Course> courses = new HashMap<>();
-    */
     static final String data_filetype = ".json";
-
-    private void errorMessage(String msg) {
-        System.out.println(msg);
-    }
 
     private boolean createFolder(String directory) {
         File folder = new File(directory);
@@ -68,11 +58,6 @@ public class SystemDatabase {
         // create Manager
         Manager manager = new Manager("admin", "comp3111");
         registerManager(manager);
-        /*
-        readAccounts(AccountType.STUDENT);
-        readAccounts(AccountType.TEACHER);
-        readCourses();
-        */
     }
 
     private static String getNameListFilePath(AccountType type) {
@@ -371,33 +356,29 @@ public class SystemDatabase {
     /*
     * Function for updating student information
     * */
-    public static void updateStudent(Student newStudent, String old_username, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager account");
-            return;
-        }
-        if (!Objects.equals(old_username, newStudent.getUsername())) removeStudent(old_username, manager);
+    public static void updateStudent(Student newStudent, String old_username) {
+        if (!Objects.equals(old_username, newStudent.getUsername())) removeStudent(old_username);
         writeStudentFile(newStudent);
+    }
+
+    public static void updateStudent(Student newStudent) {
+        updateStudent(newStudent, newStudent.getUsername());
     }
 
     /*
      * Function for updating teacher information
      * */
-    public static void updateTeacher(Teacher newTeacher, String old_username, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager account");
-            return;
-        }
-        if (!Objects.equals(old_username, newTeacher.getUsername())) removeTeacher(old_username, manager);
+    public static void updateTeacher(Teacher newTeacher, String old_username) {
+        if (!Objects.equals(old_username, newTeacher.getUsername())) removeTeacher(old_username);
         writeTeacherFile(newTeacher);
     }
 
-    public static void modifyCourse(Course newCourse, String old_courseID, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager account");
-            return;
-        }
-        if (!Objects.equals(old_courseID, newCourse.getCourseID())) removeCourse(old_courseID, manager);
+    public static void updateTeacher(Teacher newTeacher) {
+        updateTeacher(newTeacher, newTeacher.getUsername());
+    }
+
+    public static void modifyCourse(Course newCourse, String old_courseID) {
+        if (!Objects.equals(old_courseID, newCourse.getCourseID())) removeCourse(old_courseID);
         writeCourseFile(newCourse);
     }
 
@@ -425,15 +406,11 @@ public class SystemDatabase {
         return list.toArray(new String[0]);
     }
 
-    public static void removeStudent(String username, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager Account");
-            return;
-        }
+    public static void removeStudent(String username) {
         if (getStudent(username) != null) {
             removeFile(getAccountFilePath(username, AccountType.STUDENT));
             String[] username_array = getUsernameArray(AccountType.STUDENT);
-            removeFromList(username, username_array);
+            username_array = removeFromList(username, username_array);
             writeUsernameFile(username_array, AccountType.STUDENT);
         }
     }
@@ -441,29 +418,21 @@ public class SystemDatabase {
     /*
      * Function for removing teacher from database
      * */
-    public static void removeTeacher(String username, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager Account");
-            return;
-        }
+    public static void removeTeacher(String username) {
         if (getTeacher(username) != null) {
             removeFile(getAccountFilePath(username, AccountType.TEACHER));
             String[] username_array = getUsernameArray(AccountType.TEACHER);
-            removeFromList(username, username_array);
+            username_array = removeFromList(username, username_array);
             writeUsernameFile(username_array, AccountType.TEACHER);
         }
     }
 
-    public static void removeCourse(String courseID, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager Account");
-            return;
-        }
+    public static void removeCourse(String courseID) {
         if (getCourse(courseID) != null) {
             removeFile("data/course/" + courseID + data_filetype);
-            String[] course_array = getCourseIDArray();
-            removeFromList(courseID, course_array);
-            writeCourseIDFile(course_array);
+            String[] courseID_array = getCourseIDArray();
+            courseID_array = removeFromList(courseID, courseID_array);
+            writeCourseIDFile(courseID_array);
         }
     }
 
