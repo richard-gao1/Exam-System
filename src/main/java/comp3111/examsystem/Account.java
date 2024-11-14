@@ -31,6 +31,10 @@ public class Account {
         this.password = password;
     }
 
+    public boolean login(String password) {
+        return Objects.equals(this.password, password);
+    }
+
     public String getPassword() {
         return this.password;
     }

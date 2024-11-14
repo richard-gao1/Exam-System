@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 	public void start(Stage primaryStage) {
+		// load systemDatabase
+		SystemDatabase database = new SystemDatabase();
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("LoginUI.fxml"));
 			Scene scene = new Scene(fxmlLoader.load(), 640, 480);

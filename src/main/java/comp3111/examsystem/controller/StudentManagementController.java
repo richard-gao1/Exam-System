@@ -48,8 +48,6 @@ public class StudentManagementController implements Initializable {
     private Manager manager;
     private Student updating;
 
-    SystemDatabase systemDatabase;
-
     @FXML
     private TableView accountTable;
     @FXML
@@ -64,7 +62,6 @@ public class StudentManagementController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        systemDatabase = new SystemDatabase();
         // get all students
         getStudentList();
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -92,7 +89,7 @@ public class StudentManagementController implements Initializable {
             name = nameFilter.getText();
             department = departmentFilter.getText();
         }
-        List<Student> students = systemDatabase.getStudentList(manager, username, name, department);
+        List<Student> students = SystemDatabase.getStudentList(username, name, department);
         studentList.clear();
         studentList.addAll(students);
     }
@@ -137,7 +134,7 @@ public class StudentManagementController implements Initializable {
     @FXML
     public void add() {
         Student newStudent = newStudent(false);
-        String msg = systemDatabase.registerStudent(newStudent);
+        String msg = SystemDatabase.registerStudent(newStudent);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
             alert.setTitle("Register error");
@@ -154,7 +151,7 @@ public class StudentManagementController implements Initializable {
             String old_username = updating.getUsername();
             System.out.println("Updating student " + old_username);
             Student newStudent = newStudent(true);
-            systemDatabase.updateStudent(newStudent, old_username, manager);
+            SystemDatabase.updateStudent(newStudent, old_username, manager);
             refresh();
         }
     }
@@ -165,7 +162,7 @@ public class StudentManagementController implements Initializable {
             // no student is selected
         } else {
             String username = updating.getUsername();
-            systemDatabase.removeStudent(username, manager);
+            SystemDatabase.removeStudent(username, manager);
             refresh();
         }
     }

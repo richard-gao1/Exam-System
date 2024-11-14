@@ -54,8 +54,6 @@ public class TeacherManagementController implements Initializable {
     private Manager manager;
     private Teacher updating;
 
-    SystemDatabase systemDatabase;
-
     @FXML
     private TableView accountTable;
     @FXML
@@ -71,7 +69,6 @@ public class TeacherManagementController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        systemDatabase = new SystemDatabase();
         // get all teachers
         getTeacherList();
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -103,7 +100,7 @@ public class TeacherManagementController implements Initializable {
             name = nameFilter.getText();
             department = departmentFilter.getText();
         }
-        List<Teacher> teachers = systemDatabase.getTeacherList(manager, username, name, department);
+        List<Teacher> teachers = SystemDatabase.getTeacherList(username, name, department);
         teacherList.clear();
         teacherList.addAll(teachers);
     }
@@ -149,7 +146,7 @@ public class TeacherManagementController implements Initializable {
     @FXML
     public void add() {
         Teacher newTeacher = newTeacher(false);
-        String msg = systemDatabase.registerTeacher(newTeacher);
+        String msg = SystemDatabase.registerTeacher(newTeacher);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
             alert.setTitle("Register error");
@@ -166,7 +163,7 @@ public class TeacherManagementController implements Initializable {
             String old_username = updating.getUsername();
             System.out.println("Updating teacher " + old_username);
             Teacher newTeacher = newTeacher(true);
-            systemDatabase.updateTeacher(newTeacher, old_username, manager);
+            SystemDatabase.updateTeacher(newTeacher, old_username, manager);
             refresh();
         }
     }
@@ -177,7 +174,7 @@ public class TeacherManagementController implements Initializable {
             // no teacher is selected
         } else {
             String username = updating.getUsername();
-            systemDatabase.removeTeacher(username, manager);
+            SystemDatabase.removeTeacher(username, manager);
             refresh();
         }
     }

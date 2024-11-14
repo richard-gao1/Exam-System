@@ -40,9 +40,7 @@ public class CourseManagementController implements Initializable {
     private Course updating;
     private Manager manager;
     private boolean filtering = false;
-    
-    private SystemDatabase systemDatabase;
-    
+
     private ObservableList<Course> courseList = FXCollections.observableArrayList();
 
     public void getManager(Manager manager) {
@@ -51,7 +49,6 @@ public class CourseManagementController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        this.systemDatabase = new SystemDatabase();
         getCourseList();
         accountTable.setItems(courseList);
         courseIDColumn.setCellValueFactory(new PropertyValueFactory<>("courseID"));
@@ -68,7 +65,7 @@ public class CourseManagementController implements Initializable {
             name = courseNameFilter.getText();
             department = departmentFilter.getText();
         }
-        List<Course> courses = systemDatabase.getCourseList(courseID, name, department);
+        List<Course> courses = SystemDatabase.getCourseList(courseID, name, department);
         courseList.clear();
         courseList.addAll(courses);
     }
@@ -100,7 +97,7 @@ public class CourseManagementController implements Initializable {
     @FXML
     public void add() {
         Course newCourse = newCourse();
-        String msg = systemDatabase.createCourse(newCourse);
+        String msg = SystemDatabase.createCourse(newCourse);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
             alert.setTitle("Creation error");
@@ -117,7 +114,7 @@ public class CourseManagementController implements Initializable {
             String old_courseID = updating.getCourseID();
             System.out.println("Updating course " + old_courseID);
             Course newCourse = newCourse();
-            systemDatabase.modifyCourse(newCourse, old_courseID, manager);
+            SystemDatabase.modifyCourse(newCourse, old_courseID, manager);
             refresh();
         }
     }
@@ -128,7 +125,7 @@ public class CourseManagementController implements Initializable {
             // no student is selected
         } else {
             String courseID = updating.getCourseID();
-            systemDatabase.removeCourse(courseID, manager);
+            SystemDatabase.removeCourse(courseID, manager);
             refresh();
         }
     }
