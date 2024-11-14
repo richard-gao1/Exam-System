@@ -114,7 +114,7 @@ public class CourseManagementController implements Initializable {
             String old_courseID = updating.getCourseID();
             System.out.println("Updating course " + old_courseID);
             Course newCourse = newCourse();
-            SystemDatabase.modifyCourse(newCourse, old_courseID, manager);
+            SystemDatabase.modifyCourse(newCourse, old_courseID);
             refresh();
         }
     }
@@ -125,7 +125,7 @@ public class CourseManagementController implements Initializable {
             // no student is selected
         } else {
             String courseID = updating.getCourseID();
-            SystemDatabase.removeCourse(courseID, manager);
+            SystemDatabase.removeCourse(courseID);
             refresh();
         }
     }

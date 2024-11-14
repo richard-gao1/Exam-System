@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SystemDatabase {
     /*
@@ -13,17 +14,7 @@ public class SystemDatabase {
     // keep different account types separate
 
     // maps Username -> Instance of Account
-    /*static HashMap<String, Student> students = new HashMap<>();
-    static HashMap<String, Teacher> teachers = new HashMap<>();
-    static HashMap<String, Manager> managers = new HashMap<>();
-
-    static HashMap<String, Course> courses = new HashMap<>();
-    */
     static final String data_filetype = ".json";
-
-    private void errorMessage(String msg) {
-        System.out.println(msg);
-    }
 
     private boolean createFolder(String directory) {
         File folder = new File(directory);
@@ -69,11 +60,6 @@ public class SystemDatabase {
         // create Manager
         Manager manager = new Manager("admin", "comp3111");
         registerManager(manager);
-        /*
-        readAccounts(AccountType.STUDENT);
-        readAccounts(AccountType.TEACHER);
-        readCourses();
-        */
     }
 
     private static String getNameListFilePath(AccountType type) {
@@ -191,7 +177,7 @@ public class SystemDatabase {
         }
     }
 
-    private static String[] getCourseIDArray() {
+    private static ArrayList<String> getCourseIDArray() {
         String filename = "data/courses" + data_filetype;
         try {
             FileInputStream fis = new FileInputStream(filename);
@@ -201,7 +187,7 @@ public class SystemDatabase {
             }
             String list_str = new String(bytes, StandardCharsets.UTF_8);
             fis.close();
-            return new Gson().fromJson(list_str, String[].class);
+            return new Gson().fromJson(list_str, ArrayList.class);
         } catch (IOException e) {
             return null;
         }
@@ -211,9 +197,9 @@ public class SystemDatabase {
     * Functions that filter students.
     * Leave empty for no filter
     * */
-    public static List<Student> getStudentList(String usernameFilter, String nameFilter, String departmentFilter) {
-        List<Student> studentList = new ArrayList<>();
-        String[] username_array = getUsernameArray(AccountType.STUDENT);
+    public static ArrayList<Student> getStudentList(String usernameFilter, String nameFilter, String departmentFilter) {
+        ArrayList<Student> studentList = new ArrayList<>();
+        ArrayList<String> username_array = getUsernameArray(AccountType.STUDENT);
         Student student;
         if (username_array == null) return studentList;
         for (String username : username_array) {
@@ -225,16 +211,17 @@ public class SystemDatabase {
                 s.getUsername().contains(usernameFilter) &&
                         s.getName().contains(nameFilter) &&
                         s.getDepartment().contains(departmentFilter)
-        ).toList();
+        ).collect(Collectors.toCollection(ArrayList::new));
+
     }
 
     /*
      * Functions that filter teachers.
      * Leave empty for no filter
      * */
-    public static List<Teacher> getTeacherList(String usernameFilter, String nameFilter, String departmentFilter) {
-        List<Teacher> teacherList = new ArrayList<>();
-        String[] username_array = getUsernameArray(AccountType.TEACHER);
+    public static ArrayList<Teacher> getTeacherList(String usernameFilter, String nameFilter, String departmentFilter) {
+        ArrayList<Teacher> teacherList = new ArrayList<>();
+        ArrayList<String> username_array = getUsernameArray(AccountType.TEACHER);
         Teacher teacher;
         if (username_array == null) return teacherList;
         for (String username : username_array) {
@@ -246,12 +233,12 @@ public class SystemDatabase {
                 t.getUsername().contains(usernameFilter) &&
                         t.getName().contains(nameFilter) &&
                         t.getDepartment().contains(departmentFilter)
-        ).toList();
+        ).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public static List<Course> getCourseList(String courseIDFilter, String courseNameFilter, String departmentFilter) {
-        List<Course> courseList = new ArrayList<>();
-        String[] courseID_array = getCourseIDArray();
+    public static ArrayList<Course> getCourseList(String courseIDFilter, String courseNameFilter, String departmentFilter) {
+        ArrayList<Course> courseList = new ArrayList<>();
+        ArrayList<String> courseID_array = getCourseIDArray();
         Course course;
         if (courseID_array == null) return courseList;
         for (String courseID : courseID_array) {
@@ -263,7 +250,7 @@ public class SystemDatabase {
                 c.getCourseID().contains(courseIDFilter) &&
                         c.getCourseName().contains(courseNameFilter) &&
                         c.getDepartment().contains(departmentFilter)
-        ).toList();
+        ).collect(Collectors.toCollection(ArrayList::new));
     }
 
     /*
@@ -271,24 +258,24 @@ public class SystemDatabase {
     * The username list of students, teachers, and managers are stored in different .tmp
     * each username is separated by ';'
     * */
-    private static String[] getUsernameArray(AccountType type) {
+    private static ArrayList<String> getUsernameArray(AccountType type) {
         try {
             String filename = getNameListFilePath(type);
             FileInputStream fis = new FileInputStream(filename);
             byte[] bytes = fis.readAllBytes();
             if (bytes.length == 0) {
-                return new String[0];
+                return new ArrayList<>();
             }
             String list_str = new String(bytes, StandardCharsets.UTF_8);
             fis.close();
-            return new Gson().fromJson(list_str, String[].class);
+            return new Gson().fromJson(list_str, ArrayList.class);
         } catch (IOException e) {
 
         }
-        return new String[0];
+        return new ArrayList<>();
     }
 
-    private static void writeUsernameFile(String[] username_array, AccountType type) {
+    private static void writeUsernameFile(ArrayList<String> username_array, AccountType type) {
         String filename = getNameListFilePath(type);
         try {
             FileOutputStream fos = new FileOutputStream(filename);
@@ -302,7 +289,7 @@ public class SystemDatabase {
 
     }
 
-    private static void writeCourseIDFile(String[] course_array) {
+    private static void writeCourseIDFile(ArrayList<String> course_array) {
         String filename = "data/courses" + data_filetype;
         try {
             FileOutputStream fos = new FileOutputStream(filename);
@@ -332,7 +319,7 @@ public class SystemDatabase {
         createFile(filepath);
         String text = new Gson().toJson(student);
         writeJson(filepath, text);
-        String[] username_array = getUsernameArray(AccountType.STUDENT);
+        ArrayList<String> username_array = getUsernameArray(AccountType.STUDENT);
         username_array = addToList(username, username_array);
         writeUsernameFile(username_array, AccountType.STUDENT);
     }
@@ -343,7 +330,7 @@ public class SystemDatabase {
         createFile(filepath);
         String text = new Gson().toJson(teacher);
         writeJson(filepath, text);
-        String[] username_array = getUsernameArray(AccountType.TEACHER);
+        ArrayList<String> username_array = getUsernameArray(AccountType.TEACHER);
         username_array = addToList(username, username_array);
         writeUsernameFile(username_array, AccountType.TEACHER);
     }
@@ -354,7 +341,7 @@ public class SystemDatabase {
         createFile(filepath);
         String text = new Gson().toJson(manager);
         writeJson(filepath, text);
-        String[] username_array = getUsernameArray(AccountType.MANAGER);
+        ArrayList<String> username_array = getUsernameArray(AccountType.MANAGER);
         username_array = addToList(username, username_array);
         writeUsernameFile(username_array, AccountType.MANAGER);
     }
@@ -364,7 +351,7 @@ public class SystemDatabase {
         String filepath = "data/course/" + courseID + data_filetype;
         String text = new Gson().toJson(course);
         writeJson(filepath, text);
-        String[] courseID_array = getCourseIDArray();
+        ArrayList<String> courseID_array = getCourseIDArray();
         courseID_array = addToList(courseID, courseID_array);
         writeCourseIDFile(courseID_array);
     }
@@ -372,33 +359,29 @@ public class SystemDatabase {
     /*
     * Function for updating student information
     * */
-    public static void updateStudent(Student newStudent, String old_username, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager account");
-            return;
-        }
-        if (!Objects.equals(old_username, newStudent.getUsername())) removeStudent(old_username, manager);
+    public static void updateStudent(Student newStudent, String old_username) {
+        if (!Objects.equals(old_username, newStudent.getUsername())) removeStudent(old_username);
         writeStudentFile(newStudent);
+    }
+
+    public static void updateStudent(Student newStudent) {
+        updateStudent(newStudent, newStudent.getUsername());
     }
 
     /*
      * Function for updating teacher information
      * */
-    public static void updateTeacher(Teacher newTeacher, String old_username, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager account");
-            return;
-        }
-        if (!Objects.equals(old_username, newTeacher.getUsername())) removeTeacher(old_username, manager);
+    public static void updateTeacher(Teacher newTeacher, String old_username) {
+        if (!Objects.equals(old_username, newTeacher.getUsername())) removeTeacher(old_username);
         writeTeacherFile(newTeacher);
     }
 
-    public static void modifyCourse(Course newCourse, String old_courseID, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager account");
-            return;
-        }
-        if (!Objects.equals(old_courseID, newCourse.getCourseID())) removeCourse(old_courseID, manager);
+    public static void updateTeacher(Teacher newTeacher) {
+        updateTeacher(newTeacher, newTeacher.getUsername());
+    }
+
+    public static void modifyCourse(Course newCourse, String old_courseID) {
+        if (!Objects.equals(old_courseID, newCourse.getCourseID())) removeCourse(old_courseID);
         writeCourseFile(newCourse);
     }
 
@@ -406,35 +389,23 @@ public class SystemDatabase {
     * Function for removing student from database
     * */
 
-    private static String[] removeFromList(String item, String[] array) {
-        if (array == null || array.length == 0) return new String[0];
-        List<String> list = new ArrayList<>();
-        Collections.addAll(list, array);
-        if (!list.contains(item)) return array;
+    private static ArrayList<String> removeFromList(String item, ArrayList<String> list) {
+        if (list == null) return new ArrayList<>();
         list.remove(item);
-        if (list.isEmpty()) return new String[0];
-        return list.toArray(new String[0]);
+        return list;
     }
 
-    private static String[] addToList(String item, String[] array) {
-        List<String> list = new ArrayList<>();
-        if (array != null && array.length > 0) {
-            Collections.addAll(list, array);
-        }
-        if (list.contains(item)) return array;
+    private static ArrayList<String> addToList(String item, ArrayList<String> list) {
+        if (list == null) list = new ArrayList<>();
         list.add(item);
-        return list.toArray(new String[0]);
+        return list;
     }
 
-    public static void removeStudent(String username, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager Account");
-            return;
-        }
+    public static void removeStudent(String username) {
         if (getStudent(username) != null) {
             removeFile(getAccountFilePath(username, AccountType.STUDENT));
-            String[] username_array = getUsernameArray(AccountType.STUDENT);
-            removeFromList(username, username_array);
+            ArrayList<String> username_array = getUsernameArray(AccountType.STUDENT);
+            username_array = removeFromList(username, username_array);
             writeUsernameFile(username_array, AccountType.STUDENT);
         }
     }
@@ -442,29 +413,21 @@ public class SystemDatabase {
     /*
      * Function for removing teacher from database
      * */
-    public static void removeTeacher(String username, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager Account");
-            return;
-        }
+    public static void removeTeacher(String username) {
         if (getTeacher(username) != null) {
             removeFile(getAccountFilePath(username, AccountType.TEACHER));
-            String[] username_array = getUsernameArray(AccountType.TEACHER);
-            removeFromList(username, username_array);
+            ArrayList<String> username_array = getUsernameArray(AccountType.TEACHER);
+            username_array = removeFromList(username, username_array);
             writeUsernameFile(username_array, AccountType.TEACHER);
         }
     }
 
-    public static void removeCourse(String courseID, Manager manager) {
-        if (manager == null) {
-            System.out.println("Require Manager Account");
-            return;
-        }
+    public static void removeCourse(String courseID) {
         if (getCourse(courseID) != null) {
             removeFile("data/course/" + courseID + data_filetype);
-            String[] course_array = getCourseIDArray();
-            removeFromList(courseID, course_array);
-            writeCourseIDFile(course_array);
+            ArrayList<String> courseID_array = getCourseIDArray();
+            courseID_array = removeFromList(courseID, courseID_array);
+            writeCourseIDFile(courseID_array);
         }
     }
 

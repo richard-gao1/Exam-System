@@ -151,7 +151,7 @@ public class StudentManagementController implements Initializable {
             String old_username = updating.getUsername();
             System.out.println("Updating student " + old_username);
             Student newStudent = newStudent(true);
-            SystemDatabase.updateStudent(newStudent, old_username, manager);
+            SystemDatabase.updateStudent(newStudent, old_username);
             refresh();
         }
     }
@@ -162,7 +162,7 @@ public class StudentManagementController implements Initializable {
             // no student is selected
         } else {
             String username = updating.getUsername();
-            SystemDatabase.removeStudent(username, manager);
+            SystemDatabase.removeStudent(username);
             refresh();
         }
     }
