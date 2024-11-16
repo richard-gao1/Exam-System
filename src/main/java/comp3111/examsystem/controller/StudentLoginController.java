@@ -37,22 +37,21 @@ public class StudentLoginController implements Initializable {
         Stage stage = new Stage();
 
         // stuff used to manually test
-        SystemDatabase db = new SystemDatabase();
-        Student student = new Student("username", "password", "studentName", "male", 21, "department");
-        Student account = null;
-        Exam testExam = new Exam("examName", null, false, 0, null);
-        ArrayList<Exam> exams = new ArrayList<>();
-        exams.add(testExam);
-        student.addCourse(new Course("course", new ArrayList<>(), exams));
-        try {
-            db.registerStudent(student);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+//        SystemDatabase db = new SystemDatabase();
+//        Student student = new Student("username", "password", "studentName", "male", 21, "department");
+//        Student account = null;
+//        Exam testExam = new Exam("examName", null, false, 0, null);
+//        ArrayList<Exam> exams = new ArrayList<>();
+//        exams.add(testExam);
+//        ArrayList<Student> students = new ArrayList<>();
+//        students.add(student);
+//        new Course("courseId", "name", "department", students, exams);
+//        db.registerStudent(student);
 
+        Student account = null;
         // try to login
         try{
-            account = (Student)db.login(usernameTxt.getText(), passwordTxt.getText(), AccountType.STUDENT);
+            account = (Student)SystemDatabase.login(usernameTxt.getText(), passwordTxt.getText(), AccountType.STUDENT);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -73,6 +72,7 @@ public class StudentLoginController implements Initializable {
             ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
         } else {
             // TODO: add login failed pop up
+            System.out.println("Wrong Username or Password");
         }
     }
 

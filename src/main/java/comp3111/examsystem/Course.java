@@ -18,6 +18,11 @@ public class Course {
         this.name = name;
         this.department = department;
         this.students = students;
+        if (students != null) {
+            for (Student student: students) {
+                student.addCourse(this);
+            }
+        }
         this.exams = exams;
     }
 
