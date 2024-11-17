@@ -16,14 +16,33 @@ public class TeacherMainController implements Initializable {
     private VBox mainbox;
 
     public void initialize(URL location, ResourceBundle resources) {
+
     }
 
     @FXML
     public void openQuestionManageUI() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("QuestionBankUI.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Question Bank Management");
+            stage.setScene(new Scene(fxmlLoader.load()));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void openExamManageUI() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("ExamManagementUI.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Exam Management");
+            stage.setScene(new Scene(fxmlLoader.load()));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

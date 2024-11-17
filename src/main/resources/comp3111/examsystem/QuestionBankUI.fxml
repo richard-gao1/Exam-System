@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.examsystem.controller.QuestionBankController">
+   <top>
+      <HBox alignment="CENTER" prefHeight="80.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Question:" textAlignment="CENTER" />
+            <TextField fx:id="questionFilter" />
+            <Label text="Type:" textAlignment="CENTER">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <ChoiceBox fx:id="typeFilter" prefWidth="150.0">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </ChoiceBox>
+            <Label text="Score:" textAlignment="CENTER">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="scoreFilter" />
+            <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#onReset" text="Reset">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="filterBtn" mnemonicParsing="false" onAction="#onFilter" text="Filter">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </top>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="49.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#onDelete" text="Delete" textAlignment="CENTER">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" textAlignment="CENTER">
+               <HBox.margin>
+                  <Insets right="60.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="addBtn" mnemonicParsing="false" onAction="#onAdd" text="Add" textAlignment="CENTER">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="updateBtn" mnemonicParsing="false" onAction="#onUpdate" text="Update" textAlignment="CENTER">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </bottom>
+   <right>
+      <VBox prefHeight="571.0" prefWidth="190.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Question:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="questionInput">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label text="Option A:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="aInput">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label text="Option B:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="bInput">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label text="Option C:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="cInput">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label text="Option D:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="dInput">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label text="Answer:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="answerInput">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+            <Label text="Type:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <ChoiceBox fx:id="typeInput" prefWidth="150.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </ChoiceBox>
+            <Label text="Score:" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="scoreInput">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </TextField>
+         </children>
+      </VBox>
+   </right>
+   <center>
+      <TableView fx:id="questionTable" prefHeight="571.0" prefWidth="810.0" BorderPane.alignment="CENTER_RIGHT">
+        <columns>
+          <TableColumn fx:id="questionColumn" minWidth="150.0" prefWidth="250.0" text="Question" />
+          <TableColumn fx:id="optionAColumn" maxWidth="100.0" minWidth="50.0" text="Option A" />
+            <TableColumn fx:id="optionBColumn" maxWidth="100.0" minWidth="50.0" text="Option B" />
+            <TableColumn fx:id="optionCColumn" maxWidth="100.0" minWidth="50.0" text="Option C" />
+            <TableColumn fx:id="optionDColumn" maxWidth="100.0" minWidth="50.0" text="Option D" />
+            <TableColumn fx:id="answerColumn" maxWidth="100.0" minWidth="50.0" text="Answer" />
+            <TableColumn fx:id="typeColumn" maxWidth="100.0" minWidth="50.0" text="Type" />
+            <TableColumn fx:id="scoreColumn" maxWidth="100.0" minWidth="50.0" text="Score" />
+        </columns>
+      </TableView>
+   </center>
+</BorderPane>
