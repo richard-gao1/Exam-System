@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+	static SystemDatabase database = new SystemDatabase();
 	public void start(Stage primaryStage) {
 		// load systemDatabase
 		SystemDatabase database = new SystemDatabase();
