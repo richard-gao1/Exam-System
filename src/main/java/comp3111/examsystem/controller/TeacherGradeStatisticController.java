@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TeacherGradeStatisticController implements Initializable {
 
@@ -72,6 +73,10 @@ public class TeacherGradeStatisticController implements Initializable {
     NumberAxis numberAxisLine;
     @FXML
     PieChart pieChart;
+    private String courseFilter = "";
+    private String examFilter = "";
+    private String studentFilter = "";
+
     private final ObservableList<String> courseList = FXCollections.observableArrayList();
     private final ObservableList<String> examList = FXCollections.observableArrayList();
     private final ObservableList<String> studentList = FXCollections.observableArrayList();
@@ -83,7 +88,10 @@ public class TeacherGradeStatisticController implements Initializable {
     private final XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();;
     private final XYChart.Series<String, Number> seriesLine = new XYChart.Series<>();;
 
-    private final ObservableList<Grade> gradeList = FXCollections.observableArrayList();
+    private ArrayList<Grade> gradeList = new ArrayList<>();
+    private final ObservableList<Grade> displayGradeList = FXCollections.observableArrayList();
+
+    private String removeNull(String input) { return (input == null) ? "" : input; }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -96,7 +104,7 @@ public class TeacherGradeStatisticController implements Initializable {
         categoryAxisLine.setLabel("Exam");
         numberAxisLine.setLabel("Avg. Score");
 
-        gradeTable.setItems(gradeList);
+        gradeTable.setItems(displayGradeList);
         studentColumn.setCellValueFactory(new PropertyValueFactory<>("studentName"));
         courseColumn.setCellValueFactory(new PropertyValueFactory<>("courseNum"));
         examColumn.setCellValueFactory(new PropertyValueFactory<>("examName"));
@@ -122,32 +130,49 @@ public class TeacherGradeStatisticController implements Initializable {
                 100,
                 60
         ));
+        gradeList.add(new Grade(
+                "student2",
+                "comp3211",
+                "midterm",
+                70,
+                100,
+                60
+        ));
         ArrayList<Exam> exams = new ArrayList<>();
         if (teacher != null) exams = teacher.getExams();
         exams.forEach((e) -> {
             HashMap<Student, Grade> studentGrade = e.getStudentGrades();
             gradeList.addAll(studentGrade.values());
         });
-        seriesBar.getData().clear();
-        seriesLine.getData().clear();
-        pieChart.getData().clear();
-
-        by_course.clear();
-        by_student.clear();
-        by_exam.clear();
-
-        gradeList.forEach((grade) -> {
-            by_course.computeIfAbsent(grade.getCourseNum(), k -> new AvgScore()).add(grade.getScore());
-            by_exam.computeIfAbsent(grade.getExamName(), k -> new AvgScore()).add(grade.getScore());
-            by_student.computeIfAbsent(grade.getStudentName(), k -> new AvgScore()).add(grade.getScore());
-        });
+        updateHashMaps(false);
     }
 
     @FXML
     public void refresh() {
         loadData();
         loadChoices();
-        loadChart();
+        updateFilter();
+        updateChart();
+    }
+
+    private void updateHashMaps(boolean filtered) {
+        by_course.clear();
+        by_student.clear();
+        by_exam.clear();
+
+        if (filtered) {
+            displayGradeList.forEach((grade) -> {
+                by_course.computeIfAbsent(grade.getCourseNum(), k -> new AvgScore()).add(grade.getScore());
+                by_exam.computeIfAbsent(grade.getExamName(), k -> new AvgScore()).add(grade.getScore());
+                by_student.computeIfAbsent(grade.getStudentName(), k -> new AvgScore()).add(grade.getScore());
+            });
+        } else {
+            gradeList.forEach((grade) -> {
+                by_course.computeIfAbsent(grade.getCourseNum(), k -> new AvgScore()).add(grade.getScore());
+                by_exam.computeIfAbsent(grade.getExamName(), k -> new AvgScore()).add(grade.getScore());
+                by_student.computeIfAbsent(grade.getStudentName(), k -> new AvgScore()).add(grade.getScore());
+            });
+        }
     }
 
     private void loadChoices() {
@@ -164,44 +189,29 @@ public class TeacherGradeStatisticController implements Initializable {
         studentList.addAll(by_student.keySet());
     }
 
-    private void loadChart() {
+    private void updateChart() {
         seriesBar.getData().clear();
-        barChart.getData().clear();
         pieChart.getData().clear();
         seriesLine.getData().clear();
-        lineChart.getData().clear();
-
-        String courseFilter;
-        String examFilter;
-        String studentFilter;
-
-        if (hasFilter) {
-            courseFilter = courseCombox.getValue();
-            examFilter = examCombox.getValue();
-            studentFilter = studentCombox.getValue();
-        } else {
-            studentFilter = "";
-            courseFilter = "";
-            examFilter = "";
-        }
 
         by_course.forEach((course, score) -> {
-            if (courseFilter.isEmpty() || Objects.equals(courseFilter, course)) {
-                seriesBar.getData().add(new XYChart.Data<>(course, score.getValue()));
-            }
+            seriesBar.getData().add(new XYChart.Data<>(course, score.getValue()));
         });
         by_exam.forEach((exam, score) -> {
-            if (examFilter.isEmpty() || Objects.equals(examFilter, exam)) {
-                seriesLine.getData().add(new XYChart.Data<>(exam, score.getValue()));
-            }
+            seriesLine.getData().add(new XYChart.Data<>(exam, score.getValue()));
         });
         by_student.forEach((student, score) -> {
-            if (studentFilter.isEmpty() || Objects.equals(studentFilter, student)) {
-                pieChart.getData().add(new PieChart.Data(student, score.getValue()));
-            }
+            pieChart.getData().add(new PieChart.Data(student, score.getValue()));
         });
+    }
+
+    private void loadChart() {
+        barChart.getData().clear();
+        lineChart.getData().clear();
 
         /*
+        seriesBar.getData().clear();
+        barChart.getData().clear();
         for (int i = 0;  i < 5; i++) {
             seriesBar.getData().add(new XYChart.Data<>("COMP" + i, 50));
         }
@@ -213,9 +223,7 @@ public class TeacherGradeStatisticController implements Initializable {
         for (int i = 0;  i < 4; i++) {
             pieChart.getData().add(new PieChart.Data("student" + i, 80));
         }
-        */
 
-        /*
         seriesLine.getData().clear();
         lineChart.getData().clear();
         for (int i = 0;  i < 6; i++) {
@@ -225,15 +233,38 @@ public class TeacherGradeStatisticController implements Initializable {
         lineChart.getData().add(seriesLine);
     }
 
+    private void updateFilter() {
+        displayGradeList.clear();
+        if (!hasFilter) {
+            displayGradeList.addAll(gradeList);
+            return;
+        }
+        courseFilter = removeNull(courseCombox.getSelectionModel().getSelectedItem());
+        examFilter = removeNull(examCombox.getSelectionModel().getSelectedItem());
+        studentFilter = removeNull(studentCombox.getSelectionModel().getSelectedItem());
+
+        ArrayList<Grade> filteredGradeList = gradeList.stream().filter(
+                g -> ((courseFilter.isEmpty() || Objects.equals(courseFilter, g.getCourseNum())) &&
+                        (examFilter.isEmpty() || Objects.equals(examFilter, g.getExamName())) &&
+                        (studentFilter.isEmpty() || Objects.equals(studentFilter, g.getStudentName()))
+                )
+        ).collect(Collectors.toCollection(ArrayList::new));
+
+        displayGradeList.addAll(filteredGradeList);
+        updateHashMaps(true);
+    }
+
     @FXML
     public void reset() {
         hasFilter = false;
-        refresh();
+        updateFilter();
+        updateChart();
     }
 
     @FXML
     public void query() {
         hasFilter = true;
-        refresh();
+        updateFilter();
+        updateChart();
     }
 }
