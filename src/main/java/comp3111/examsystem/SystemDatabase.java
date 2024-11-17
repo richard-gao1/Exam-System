@@ -18,6 +18,9 @@ public class SystemDatabase {
     static final String data_filetype = ".json";
     public static User currentUser;
 
+    static public User currentUser = null;
+
+
     private boolean createFolder(String directory) {
         File folder = new File(directory);
         if (!folder.exists()) return folder.mkdir();
@@ -479,4 +482,6 @@ public class SystemDatabase {
         writeCourseFile(course);
         return "";
     }
+
+
 }
