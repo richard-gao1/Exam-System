@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class Course {
     private String courseID;
@@ -44,7 +43,6 @@ public class Course {
         } else {
             this.teacherUsername = null;
         }
-        SystemDatabase.createCourse(this);
     }
 
     public Course(String courseID, String name, String department, ArrayList<Student> students, ArrayList<Exam> exams) {

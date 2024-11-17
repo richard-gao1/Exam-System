@@ -1,6 +1,5 @@
 package comp3111.examsystem;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,15 +12,16 @@ public class Teacher extends User {
     private ArrayList<String> courseIDs = new ArrayList<>(); // Store course IDs instead of Course objects
 
     private ArrayList<Question> questionBank = new ArrayList<>();
+    private ArrayList<Course> courses = new ArrayList<>();
     private HashMap<String, Double> course_scores;
     private HashMap<String, Double> student_scores;
     private HashMap<String, Double> exam_scores;
+    // private List<Grade> grades;
 
     public Teacher(String username, String password, String name, String gender, int age, String department, String position) {
         super(username, password, name, gender, age, department);
         this.position = position;
     }
-    private ArrayList<Course> courses = new ArrayList<>();
 
     public Teacher update(String username, String password, String name, String gender, int age, String department, String position) {
         super.update(username, password, name, gender, age, department);
