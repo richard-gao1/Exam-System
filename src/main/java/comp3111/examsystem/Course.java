@@ -1,9 +1,7 @@
 package comp3111.examsystem;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Course {
     private String courseID;
@@ -13,18 +11,20 @@ public class Course {
     private ArrayList<Student> students;
     private HashMap<Student, HashMap<String, Integer>> studentToGrade = new HashMap<>();
     private ArrayList<Exam> exams;
-    public Course(String name, String department,ArrayList<Student> students, ArrayList<Exam> exams) {
+    public Course(String name, String department, ArrayList<Student> students, ArrayList<Exam> exams) {
         this(name, null,department, students, exams);
     }
 
 
-    public Course(String courseID, String name, String department, ArrayList<Student> students, ArrayList<Exam> exams) {
+    public Course(String courseID, String name, String department, Teacher teacher,ArrayList<Student> students, ArrayList<Exam> exams) {
         this.courseID = courseID;
         this.name = name;
         this.department = department;
         this.students = students;
-        for (Student student: students){
-            student.addCourse(this);
+        if (students != null) {
+            for (Student student: students){
+                student.addCourse(this);
+            }
         }
         this.exams = exams;
         if (teacher != null){
@@ -39,8 +39,41 @@ public class Course {
         }
     }
 
-    public String getName(){
+    public Course(String name, String courseID, String department ,ArrayList<Student> students, ArrayList<Exam> exams) {
+        this(name, courseID, department, null, students, exams);
+    }
+
+    public Course(String name, String courseID, String department, Teacher teacher, ArrayList<Student> students) {
+        this(name, courseID, department , teacher, students,null);
+    }
+
+
+    public Course(String name, String courseID, String department, ArrayList<Student> students) {
+        this(name, courseID, department, null, students, null);
+    }
+
+    public Course(String name, String courseID, String department, Teacher teacher) {
+        this(name, courseID, department, teacher, null);
+    }
+
+    public Course(String name, String courseID, String department) {
+        this(name, courseID, department,null, null, null);
+    }
+
+    public String getCourseName(){
         return name;
+    }
+
+    public String getCourseID() {
+        return courseID;
+    }
+
+    public String getDepartment(){
+        return department;
+    }
+
+    public void setDepartment(String department){
+        this.department= department;
     }
 
     public void setName(String name){
@@ -89,7 +122,7 @@ public class Course {
     }
 
     public void addExam(Exam exam){
-        if (exam.getCourse() != this){
+        if (!exam.getCourse().getCourseID().equals(this.courseID)){
             throw new IllegalArgumentException("Exam is not in this course");
         }
         for (Exam e : exams){

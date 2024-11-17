@@ -19,12 +19,12 @@ public class Teacher extends User {
     // private List<Grade> grades;
 
     public void createExam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
-        createExam(examName, course.getName(), isPublished, duration, questions);
+        createExam(examName, course.getCourseName(), isPublished, duration, questions);
     }
 
     public void createExam(String examName, String courseName, boolean isPublished, int duration, ArrayList<Question> questions) {
         for (Course course: courses){
-            if (course.getName().equals(courseName)){
+            if (course.getCourseName().equals(courseName)){
                 Exam exam = new Exam(examName, course, isPublished, duration, questions);
                 return;
             }
@@ -39,24 +39,40 @@ public class Teacher extends User {
     }
 
     public void addCourse(Course course){
-        if (!courses.contains(course)){
-            courses.add(course);
-            // only call this method via Course class
+        if (!courses.contains(course)) courses.add(course);
+    }
+
+    public void addCourse(String courseID){
+        Course c = SystemDatabase.getCourse(courseID);
+        if (c == null) return;
+        if (!courses.contains(c)){
+            courses.add(c);// only call this method via Course class
         }
     }
 
     public void dropCourse(Course course){
-            courses.remove(course);
+        dropCourse(course.getCourseID());
             // only call this method via Course class
     }
 
-    public void viewExam() {
-        // TODO
+    public void dropCourse(String courseID){
+        courses.remove(courseID);
+        // only call this method via Course class
+    }
+
+    public void addExam(Exam exam, String courseName){
+        for (Course course: courses){
+            if (course.getCourseName().equals(courseName)){
+                course.addExam(exam);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No such course");
     }
 
     public void deleteExam(String examName, String courseName) {
         for (Course course: courses){
-            if (course.getName().equals(courseName)){
+            if (course.getCourseName().equals(courseName)){
                 course.dropExam(examName);
                 return;
             }
@@ -66,7 +82,7 @@ public class Teacher extends User {
 
     public void updateExam(String examName, Exam exam, String courseName) {
         for (Course course: courses){
-            if (course.getName().equals(courseName)){
+            if (course.getCourseName().equals(courseName)){
                 course.updateExam(examName, exam);
                 return;
             }
@@ -97,7 +113,7 @@ public class Teacher extends User {
 
     public void viewQuestion() {
         for (Question question : questionBank) {
-            System.out.println(question.getQuestion());
+            System.out.println(question.getContent());
         }
     }
 
@@ -106,16 +122,26 @@ public class Teacher extends User {
         questionBank.add(question);
     }
 
-    public void deleteQuestion() {
-        // TODO: implement
+    public void createQuestion(Question question){
+        questionBank.add(question);
+    }
+
+    public void deleteQuestion(Question question) {
+        questionBank.remove(question);
     }
 
     public void updateQuestion() {
         // TODO: implement
     }
 
+    public ArrayList<Question> getQuestionBank() {
+        return questionBank;
+    }
+
     public void viewQuestionBank() {
-        // TODO: implement
+        for (Question question : questionBank){
+            System.out.println(question.getContent());
+        }
     }
 
     public List<Exam> getExams() {
@@ -137,5 +163,13 @@ public class Teacher extends User {
 
     public List<Course> getCourses() {
         return courses;
+    }
+
+    public List<String> getCourseID(){
+        ArrayList<String> a = new ArrayList<>();
+        for (Course c: courses) {
+            a.add(c.getCourseID());
+        }
+        return a;
     }
 }
