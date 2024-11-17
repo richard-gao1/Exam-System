@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Exam {
@@ -72,6 +73,21 @@ public class Exam {
         this.examName.set(examName);
     }
 
+    public Course getCourse() {
+        return this.course;
+    }
+
+    public void setCourse(Course course) {
+        if (course != null){
+            if (this.course != null){
+                // remove exam from the original course if needed
+                this.course.dropExam(this);
+            }
+            this.course = course;
+            course.addExam(this);
+        }
+    }
+
     public boolean getIsPublished() {
         return isPublished.get();
     }
@@ -88,20 +104,12 @@ public class Exam {
         this.duration.set(duration);
     }
 
-    public Course getCourse() {
-        return course;
-    }
-
     public StringProperty courseIDProperty(){
         return new SimpleStringProperty(course.getCourseID());
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public HashMap<Student, Integer> getStudentGrades() {
-        return studentToGrades;
+    public void setQuestions(ArrayList<Question> questions) {
+        this.questions.addAll(questions);
     }
 
     public void setStudentGrades(HashMap<Student, Integer> studentToGrades) {
@@ -121,10 +129,48 @@ public class Exam {
     }
 
     public void removeQuestion(Question question) {
-        if (questions.contains(question)) {
-            questions.remove(question);
-        } else {
+        if (!this.questions.contains(question)) {
             throw new IllegalArgumentException("Question does not exist in the exam");
         }
+        this.questions.remove(question);
+    }
+
+    public HashMap<Student, Integer> getStudentGrades() {
+        return studentToGrades;
+    }
+
+
+
+    public String parseAnswer(String answer){
+        char[] chars = answer.toCharArray();
+        Arrays.sort(chars);
+        return new String(chars);
+    }
+
+    public Integer grade(ArrayList<String> answers){
+        int score = 0;
+        for (int i = 0; i < this.questions.size(); i++){
+            Question question = this.questions.get(i);
+            if (question.getTypeChoice() == 0){
+                if (question.getAnswer().equals(parseAnswer(answers.get(i)))){
+                    score += question.getScore();
+                }
+            } else {
+                // for each wrong answer, score -= question.getScore() / number of correct answers
+                // if yes, score += question.getScore()
+                int correct = 0;
+                for (int j = 0; j < question.getAnswer().length(); j++){
+                    if (answers.get(i).indexOf(question.getAnswer().charAt(j)) != -1){
+                        correct++;
+                    }
+                }
+                score += Math.max(0, question.getScore()*(correct/question.getAnswer().trim().length() - (answers.get(i).trim().length() - correct)/question.getAnswer().trim().length()));
+            }
+        }
+        return score;
+    }
+
+    public void gradeStudent(){
+        // TODO: Implement
     }
 }
