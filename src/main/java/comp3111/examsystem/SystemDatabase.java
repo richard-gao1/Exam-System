@@ -12,6 +12,7 @@ public class SystemDatabase {
     Used to store all important, shared information the system requires
      */
     // keep different account types separate
+
     // maps Username -> Instance of Account
     static final String data_filetype = ".json";
 
