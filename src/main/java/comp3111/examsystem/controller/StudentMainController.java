@@ -57,6 +57,7 @@ public class StudentMainController implements Initializable {
 
     @FXML
     public void openExamUI(ActionEvent e) {
+
         FXMLLoader quizLoader = new FXMLLoader();
         quizLoader.setLocation(Main.class.getResource("QuizTakingUI.fxml"));
         Stage stage = new Stage();
@@ -64,11 +65,11 @@ public class StudentMainController implements Initializable {
         try {
             System.out.println("This is before loading");
             Parent root = quizLoader.load();
-            QuizController quizController = quizLoader.getController();
-            System.out.println("init exam with controller: " + quizController);
+            // QuizController quizController = quizLoader.getController();
+            // System.out.println("init exam with controller: " + quizController);
             String examName = examCombox.getValue();
             if (!examName.isEmpty()) {
-                quizController.setExam(examPairs.get(examName));
+                // quizController.setExam(examPairs.get(examName));
             } else {
                 // TODO: select an exam pop up
                 System.out.println("Select an Exam");

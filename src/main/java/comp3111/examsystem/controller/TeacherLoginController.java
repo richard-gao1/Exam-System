@@ -42,5 +42,6 @@ public class TeacherLoginController implements Initializable {
 
     @FXML
     public void register() {
+
     }
 }

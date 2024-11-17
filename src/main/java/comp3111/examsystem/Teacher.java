@@ -80,8 +80,8 @@ public class Teacher extends User {
         // TODO: implement
     }
 
-    public List<Exam> getExams() {
-        List<Exam> exams = new ArrayList<>();
+    public ArrayList<Exam> getExams() {
+        ArrayList<Exam> exams = new ArrayList<>();
         for (String courseID : this.courseIDs) {
             Course course = SystemDatabase.getCourse(courseID);
             if (course != null){
@@ -100,7 +100,7 @@ public class Teacher extends User {
         return super.equals(other) && (Objects.equals(this.position, ((Teacher) other).position));
     }
 
-    public List<Course> getCourses() {
+    public ArrayList<Course> getCourses() {
         ArrayList<Course> courses = new ArrayList<>();
         for (String courseID : this.courseIDs) {
             Course course = SystemDatabase.getCourse(courseID);
