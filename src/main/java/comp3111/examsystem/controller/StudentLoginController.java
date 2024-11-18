@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class StudentLoginController implements Initializable {
@@ -83,10 +84,16 @@ public class StudentLoginController implements Initializable {
         stage.setTitle("Register into the HKUST Examination System");
         try {
             stage.setScene(new Scene(registerLoader.load()));
+
+            // Get the controller and pass the stage
+            RegisterController controller = registerLoader.getController();
+
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+
         stage.show();
         ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+
     }
 }

@@ -62,8 +62,10 @@ public class StudentMainController implements Initializable {
         Stage stage = new Stage();
         stage.setTitle("Taking Exam");
         try {
+
             System.out.println("This is before loading");
             Parent root = quizLoader.load();
+            /*
             QuizController quizController = quizLoader.getController();
             System.out.println("init exam with controller: " + quizController);
             String examName = examCombox.getValue();
@@ -73,7 +75,9 @@ public class StudentMainController implements Initializable {
                 // TODO: select an exam pop up
                 System.out.println("Select an Exam");
             }
+             */
             stage.setScene(new Scene(root));
+
         } catch (IOException e1) {
             e1.printStackTrace();
         }
