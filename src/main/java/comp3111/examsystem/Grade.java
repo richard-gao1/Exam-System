@@ -17,15 +17,9 @@ public class Grade {
     public String getExamName() {
         return examName;
     }
-    public String getScore() {
-        return String.valueOf(score);
-    }
-    public String getFullScore() {
-        return String.valueOf(fullScore);
-    }
-    public String getTimeSpend() {
-        return String.valueOf(timeSpend);
-    }
+    public int getScore() { return score; }
+    public int getFullScore() { return fullScore; }
+    public int getTimeSpend() { return timeSpend; }
 
     public Grade(
             String studentName,

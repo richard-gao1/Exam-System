@@ -16,7 +16,6 @@ public class Teacher extends User {
     private HashMap<String, Double> course_scores;
     private HashMap<String, Double> student_scores;
     private HashMap<String, Double> exam_scores;
-    // private List<Grade> grades;
 
     public void createExam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         createExam(examName, course.getCourseName(), isPublished, duration, questions);
