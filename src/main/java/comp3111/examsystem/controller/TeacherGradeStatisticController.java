@@ -207,7 +207,9 @@ public class TeacherGradeStatisticController implements Initializable {
 
     private void loadChart() {
         barChart.getData().clear();
+        barChart.setAnimated(false);
         lineChart.getData().clear();
+        lineChart.setAnimated(false);
 
         /*
         seriesBar.getData().clear();
