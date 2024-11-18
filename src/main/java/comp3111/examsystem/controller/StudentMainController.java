@@ -38,9 +38,13 @@ public class StudentMainController implements Initializable {
         ArrayList<Question> questions = new ArrayList<>();
         String[] options = {"option1", "option2", "option3", "option4"};
         Question q1 = new Question("Question 1", options, "", 0, 0);
-        Question q2 = new Question("Question 2", options, "", 0, 0);
+        Question q2 = new Question("Question 2", options, "", 0, 1);
+        Question q3 = new Question("Question 3", options, "", 0, 1);
+        Question q4 = new Question("Question 4", options, "", 0, 0);
         questions.add(q1);
         questions.add(q2);
+        questions.add(q3);
+        questions.add(q4);
         Exam testExam = new Exam("exam", "testCourse", false, 30, questions);
         initExams.add(testExam);
         Course testCourse = new Course("testCourse", "CourseName", "dept", students, initExams);

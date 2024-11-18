@@ -64,7 +64,7 @@ public class Question {
     }
 
     public int getTypeChoice() {
-        return (this.typeChoice == TypeChoice.MULTIPLE) ? 0 : 1;
+        return (this.typeChoice == TypeChoice.MULTIPLE) ? 1 : 0;
     }
 
     public void setTypeChoice(int typeChoice) {
