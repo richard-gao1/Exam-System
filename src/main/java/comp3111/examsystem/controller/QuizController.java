@@ -9,6 +9,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class QuizController implements Initializable {
@@ -33,8 +36,11 @@ public class QuizController implements Initializable {
 
     Exam exam;
     RadioButton[] answerChoiceButtons;
-    int[] answerChoices;
+    ArrayList<Integer> answerChoices;
     ToggleGroup answerGroup = new ToggleGroup();
+    Question currentQuestion;
+    HashMap<RadioButton, Integer> buttonMap = new HashMap<>();
+    HashMap<Question, Integer> questionMap = new HashMap<>();
 
     public void initialize(URL location, ResourceBundle resources) {
         answerChoiceButtons = new RadioButton[]{this.answerOne, this.answerTwo, this.answerThree, this.answerFour};
@@ -42,12 +48,21 @@ public class QuizController implements Initializable {
         this.answerTwo.setToggleGroup(answerGroup);
         this.answerThree.setToggleGroup(answerGroup);
         this.answerFour.setToggleGroup(answerGroup);
+        this.buttonMap.put(answerOne, 1);
+        this.buttonMap.put(answerTwo, 2);
+        this.buttonMap.put(answerThree, 3);
+        this.buttonMap.put(answerFour, 4);
     }
 
     public void setExam(Exam exam) {
         this.exam = exam;
-        this.answerChoices = new int[exam.getQuestions().size()];
-        ObservableList<Question> questions = FXCollections.observableArrayList(exam.getQuestions());
+        ArrayList<Question> questions = exam.getQuestions();
+        this.answerChoices = new ArrayList<>();
+        for(int i = 0; i < questions.size(); i++) {
+            this.questionMap.put(questions.get(i), i);
+            this.answerChoices.add(0);
+        }
+        ObservableList<Question> questionsList = FXCollections.observableArrayList(questions);
         this.questionList.setCellFactory(param -> new ListCell<Question>() {
             @Override
             protected void updateItem(Question item, boolean empty) {
@@ -60,7 +75,7 @@ public class QuizController implements Initializable {
                 }
             }
         });
-        this.questionList.setItems(questions);
+        this.questionList.setItems(questionsList);
 //        for (Question question : exam.getQuestions()) {
 //
 //        }
@@ -70,12 +85,17 @@ public class QuizController implements Initializable {
         this.questionList.setOnMouseClicked(new ListViewHandler(){
             @Override
             public void handle(javafx.scene.input.MouseEvent event) {
+                if (currentQuestion != null && answerGroup.getSelectedToggle() != null){
+                    answerChoices.set(questionMap.get(currentQuestion), buttonMap.get(answerGroup.getSelectedToggle()));
+                    System.out.println(answerChoices.toString());
+                }
                 setQuestion(questionList.getSelectionModel().getSelectedItem());
             }
         });
     }
 
     public void setQuestion(Question question) {
+        this.currentQuestion = question;
         this.answerGroup.selectToggle(null);
         String[] choices = question.getOptions();
         questionTxt.setText(question.getQuestion());
@@ -85,6 +105,13 @@ public class QuizController implements Initializable {
     }
 
     public void submit() {  // ActionEvent e
+        // in case last question's answer choice hasn't been saved
+        if (currentQuestion != null && answerGroup.getSelectedToggle() != null){
+            answerChoices.set(questionMap.get(currentQuestion), buttonMap.get(answerGroup.getSelectedToggle()));
+            System.out.println(answerChoices.toString());
+        }
         System.out.println("Submit pressed");
+        // TODO: add grade popup and put grade into database
+        this.exam.grade(this.answerChoices);
     }
 }
