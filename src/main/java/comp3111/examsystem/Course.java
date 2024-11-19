@@ -1,5 +1,6 @@
 package comp3111.examsystem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,10 +57,6 @@ public class Course {
 
     public Course(String courseID, String name, String department, Teacher teacher) {
         this(courseID, name, department, teacher, null);
-    }
-
-    public Course(String courseID, String name, String department) {
-        this(courseID, name, department, null, null, null);
     }
 
     public String getCourseName() {
@@ -178,23 +175,29 @@ public class Course {
         throw new IllegalArgumentException("No such exam");
     }
 
+    public Course(String courseID, String name, String department) {
+        this.courseID = courseID;
+        this.name = name;
+        this.department = department;
+        this.studentUsernames = new ArrayList<>();
+        this.exams = new ArrayList<>();
+    }
+
     public ArrayList<Exam> getExams() {
         return exams;
     }
 
+    public Course update(String courseID, String name, String department) {
+        this.courseID = courseID;
+        this.name = name;
+        this.department = department;
+        return this;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Course course = (Course) o;
-        return Objects.equals(getCourseID(), course.getCourseID())
-                && Objects.equals(name, course.name)
-                && Objects.equals(getDepartment(), course.getDepartment())
-                && Objects.equals(getTeacher(), course.getTeacher())
-                && Objects.equals(getStudents(), course.getStudents())
-                && Objects.equals(studentToGrade, course.studentToGrade)
-                && getExams().containsAll(course.getExams())
-                && course.getExams().containsAll(getExams())
-                ;
+    public boolean equals(Object obj) {
+        return Objects.equals(this.courseID, ((Course) obj).getCourseID()) &&
+                Objects.equals(this.name, ((Course) obj).getCourseName()) &&
+                Objects.equals(this.department, ((Course) obj).getDepartment());
     }
 }

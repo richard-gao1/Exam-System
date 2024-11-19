@@ -51,7 +51,6 @@ public class TeacherManagementController implements Initializable {
     @FXML
     private TableColumn passwordColumn;
 
-    private Manager manager;
     private Teacher updating;
 
     @FXML
@@ -85,10 +84,6 @@ public class TeacherManagementController implements Initializable {
 
         positionList.addAll(Position.list);
         positionSet.setItems(positionList);
-    }
-
-    public void getManager(Manager manager) {
-        this.manager = manager;
     }
 
     private void getTeacherList() {

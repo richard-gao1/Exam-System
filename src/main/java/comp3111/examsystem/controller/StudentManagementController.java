@@ -45,7 +45,6 @@ public class StudentManagementController implements Initializable {
     @FXML
     private TableColumn passwordColumn;
 
-    private Manager manager;
     private Student updating;
 
     @FXML
@@ -74,10 +73,6 @@ public class StudentManagementController implements Initializable {
 
         genderList.addAll(Gender.list);
         genderSet.setItems(genderList);
-    }
-
-    public void getManager(Manager manager) {
-        this.manager = manager;
     }
 
     private void getStudentList() {
