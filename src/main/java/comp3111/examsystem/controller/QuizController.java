@@ -56,7 +56,7 @@ public class QuizController implements Initializable {
     Exam exam;
     RadioButton[] answerChoiceButtons;
     CheckBox[] sataChoiceButtons;
-    ArrayList<ArrayList<Integer>> answerChoices;
+    ArrayList<Integer> answerChoices;
     ToggleGroup answerGroup = new ToggleGroup();
     Question currentQuestion;
     HashMap<RadioButton, Integer> buttonMap = new HashMap<>();
@@ -95,9 +95,7 @@ public class QuizController implements Initializable {
         this.answerChoices = new ArrayList<>();
         for(int i = 0; i < questions.size(); i++) {
             this.questionMap.put(questions.get(i), i);
-            ArrayList<Integer> answer = new ArrayList<>();
-            answer.add(0);
-            this.answerChoices.add(answer);
+            this.answerChoices.add(0);
         }
         ObservableList<Question> questionsList = FXCollections.observableArrayList(questions);
         this.questionList.setCellFactory(param -> new ListCell<Question>() {
@@ -124,13 +122,13 @@ public class QuizController implements Initializable {
             public void handle(javafx.scene.input.MouseEvent event) {
                 if (currentQuestion != null){
                     if (currentQuestion.getTypeChoice() == 0 && answerGroup.getSelectedToggle() != null) {
-                        answerChoices.get(questionMap.get(currentQuestion)).set(0, buttonMap.get(answerGroup.getSelectedToggle()));
+                        answerChoices.set(questionMap.get(currentQuestion), 1 << (buttonMap.get(answerGroup.getSelectedToggle()) - 1));
                         System.out.println(answerChoices.toString());
                     } else if (currentQuestion.getTypeChoice() == 1) {
-                        ArrayList<Integer> answer = new ArrayList<>();
+                        int answer = 0;
                         for (CheckBox sata: sataChoiceButtons) {
                             if (sata.isSelected()) {
-                                answer.add(sataMap.get(sata));
+                                answer += 1 << (sataMap.get(sata) - 1);
                             }
                         }
                         answerChoices.set(questionMap.get(currentQuestion), answer);
@@ -151,7 +149,7 @@ public class QuizController implements Initializable {
             this.sataBox.setManaged(false);
             this.sataBox.setVisible(false);
             // set the selected to the previously saved answer
-            this.answerGroup.selectToggle(this.revButtonMap.get(this.answerChoices.get(this.questionMap.get(this.currentQuestion)).get(0)));
+            this.answerGroup.selectToggle(this.revButtonMap.get(this.answerChoices.get(this.questionMap.get(this.currentQuestion))));
             String[] choices = question.getOptions();
             questionTxt.setText(question.getQuestion());
             for (int i = 0; i < 4; i++) {
@@ -167,9 +165,11 @@ public class QuizController implements Initializable {
             for (CheckBox sata: sataChoiceButtons) {
                 sata.setSelected(false);
             }
-            for (int i : this.answerChoices.get(this.questionMap.get(this.currentQuestion))) {
-                if (i != 0) {
-                    this.sataChoiceButtons[i - 1].setSelected(true);
+            int answer = this.answerChoices.get(this.questionMap.get(this.currentQuestion));
+            for (int i = 3; i >= 0; i--) {
+                if (answer - 1 << i >= 0) {
+                    this.sataChoiceButtons[i].setSelected(true);
+                    answer -= 1 << i;
                 }
             }
             String[] choices = question.getOptions();
@@ -184,13 +184,13 @@ public class QuizController implements Initializable {
         // in case last question's answer choice hasn't been saved
         if (currentQuestion != null){
             if (currentQuestion.getTypeChoice() == 0 && answerGroup.getSelectedToggle() != null) {
-                answerChoices.get(questionMap.get(currentQuestion)).set(0, buttonMap.get(answerGroup.getSelectedToggle()));
+                answerChoices.set(questionMap.get(currentQuestion), 1 << (buttonMap.get(answerGroup.getSelectedToggle()) - 1));
                 System.out.println(answerChoices.toString());
             } else if (currentQuestion.getTypeChoice() == 1) {
-                ArrayList<Integer> answer = new ArrayList<>();
+                int answer = 0;
                 for (CheckBox sata: sataChoiceButtons) {
                     if (sata.isSelected()) {
-                        answer.add(sataMap.get(sata));
+                        answer += 1 << (sataMap.get(sata) - 1);
                     }
                 }
                 answerChoices.set(questionMap.get(currentQuestion), answer);
