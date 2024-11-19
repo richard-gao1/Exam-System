@@ -1,13 +1,18 @@
 package comp3111.examsystem.controller;
 
-import comp3111.examsystem.Exam;
-import comp3111.examsystem.Question;
+import comp3111.examsystem.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.*;
@@ -50,6 +55,12 @@ public class QuizController implements Initializable {
     @FXML
     private CheckBox sataTwo;
 
+    @FXML
+    private Text timer;
+
+    @FXML
+    private Button submitButton;
+
     Exam exam;
     RadioButton[] answerChoiceButtons;
     CheckBox[] sataChoiceButtons;
@@ -60,30 +71,36 @@ public class QuizController implements Initializable {
     HashMap<Integer, RadioButton> revButtonMap = new HashMap<>();
     HashMap<CheckBox, Integer> sataMap = new HashMap<>();
     HashMap<Question, Integer> questionMap = new HashMap<>();
+    Timeline timeline;
+
+    Time time = new Time(0, 0, 0);
 
     public void initialize(URL location, ResourceBundle resources) {
         answerChoiceButtons = new RadioButton[]{this.answerOne, this.answerTwo, this.answerThree, this.answerFour};
         sataChoiceButtons = new CheckBox[]{this.sataOne, this.sataTwo, this.sataThree, this.sataFour};
-//        this.answerOne.setToggleGroup(answerGroup);
-//        this.answerTwo.setToggleGroup(answerGroup);
-//        this.answerThree.setToggleGroup(answerGroup);
-//        this.answerFour.setToggleGroup(answerGroup);
         for(RadioButton button : answerChoiceButtons){
             button.setToggleGroup(answerGroup);
         }
-//        this.buttonMap.put(answerOne, 1);
-//        this.buttonMap.put(answerTwo, 2);
-//        this.buttonMap.put(answerThree, 3);
-//        this.buttonMap.put(answerFour, 4);
-//        this.sataMap.put(this.sataOne, 1);
-//        this.sataMap.put(this.sataTwo, 2);
-//        this.sataMap.put(this.sataThree, 3);
-//        this.sataMap.put(this.sataFour, 4);
         for (int i = 0; i < 4; i++) {
             this.buttonMap.put(answerChoiceButtons[i], i + 1);
             this.revButtonMap.put(i + 1, answerChoiceButtons[i]);
             this.sataMap.put(sataChoiceButtons[i], i + 1);
         }
+
+        // timer set up
+        timeline = new Timeline(
+            new KeyFrame(Duration.seconds(1),
+                e -> {
+                    time.oneSecondPassed();
+                    timer.setText(time.getCurrentTime());
+                    if (time.getTotalTime() >= exam.getDuration()) {
+                        submitButton.fire();
+//                        submit(e);
+                    }
+                }));
+        timer.setText(time.getCurrentTime());
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
     public void setExam(Exam exam) {
@@ -183,7 +200,7 @@ public class QuizController implements Initializable {
         }
     }
 
-    public void submit() {  // ActionEvent e
+    public void submit(ActionEvent e) {  // ActionEvent e
         // in case last question's answer choice hasn't been saved
         if (currentQuestion != null){
             if (currentQuestion.getTypeChoice() == 0 && answerGroup.getSelectedToggle() != null) {
@@ -200,8 +217,15 @@ public class QuizController implements Initializable {
                 System.out.println(answerChoices.toString());
             }
         }
-        System.out.println("Submit pressed");
-        // TODO: add grade popup and put grade into database
-        System.out.println(this.exam.grade(this.answerChoices));
+
+        int score = this.exam.grade(this.answerChoices);
+        this.exam.gradeStudent((Student) SystemDatabase.currentUser, score, time.getTotalTime());
+
+        this.timeline.stop();
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "You scored: " + score + "/" + this.exam.getFullScore(), ButtonType.OK);
+        alert.setTitle("Grade");
+        alert.show();
+        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
     }
 }

@@ -45,6 +45,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.examsystem.controller.QuizController">
   <children>
@@ -114,7 +115,7 @@
                               <RadioButton fx:id="answerFour" mnemonicParsing="false" text="RadioButton" />
                            </children>
                         </VBox>
-                        <Button layoutX="367.0" layoutY="334.0" mnemonicParsing="false" onAction="#submit" text="submit" />
+                        <Button fx:id="submitButton" layoutX="367.0" layoutY="334.0" mnemonicParsing="false" onAction="#submit" text="submit" />
                         <VBox fx:id="sataBox" layoutX="12.0" layoutY="97.0" prefHeight="200.0" prefWidth="100.0">
                            <children>
                               <CheckBox fx:id="sataOne" mnemonicParsing="false" text="CheckBox" />
@@ -123,11 +124,13 @@
                               <CheckBox fx:id="sataFour" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" text="CheckBox" />
                            </children>
                         </VBox>
+                        <Text fx:id="timer" layoutX="356.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </AnchorPane>
               </items>
             </SplitPane>
       </children>
     </AnchorPane>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
   </children>
 </VBox>
