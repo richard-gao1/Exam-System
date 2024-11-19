@@ -1,50 +1,85 @@
 package comp3111.examsystem;
 
+import javafx.beans.property.*;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Exam {
-    private String examName;
-    private String courseID;
-    private boolean isPublished;
-    private int duration;
-    private ArrayList<Question> questions;
-    private HashMap<Student, Grade> studentGrades;
+    private String examName; // Primitive for JSON serialization
+    private boolean isPublished; // Primitive for JSON serialization
+    private int duration; // Primitive for JSON serialization
+    private ArrayList<Question> questions = new ArrayList<>(); // For JSON serialization
 
-    public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
-        this.examName = examName;
-        this.courseID = courseID;
+    private Course course; // Reference to the course
+    private HashMap<Student, Grade> studentToGrades = new HashMap<>();
+
+    // Constructors
+    public Exam(String examName, Course course, boolean isPublished, int duration) {
+        setExamName(examName);
+        this.course = course;
         this.isPublished = isPublished;
         this.duration = duration;
-        this.questions = questions;
+        if (course != null) {
+            course.addExam(this);
+        }
     }
 
+    public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
+        this(examName, course, isPublished, duration);
+        if (questions != null) {
+            this.questions.addAll(questions);
+        }
+    }
+
+    public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
+        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
+        if (questions != null) {
+            this.questions.addAll(questions);
+        }
+    }
+
+    public Exam(String examName, String courseID, boolean isPublished, int duration) {
+        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
+    }
+
+    // Property Getters
+    public StringProperty examNameProperty() {
+        return new SimpleStringProperty(this.examName);
+    }
+
+    public BooleanProperty isPublishedProperty() {
+        return new SimpleBooleanProperty(this.isPublished);
+    }
+
+    public IntegerProperty durationProperty() {
+        return new SimpleIntegerProperty(this.duration);
+    }
+
+    public StringProperty courseIDProperty(){
+        return new SimpleStringProperty(this.course.getCourseID());
+    }
+
+    // Getters and Setters for primitive fields
     public String getExamName() {
-        return this.examName;
+        return examName;
     }
 
     public void setExamName(String examName) {
         this.examName = examName;
     }
 
-    public Course getCourse() {
-        return SystemDatabase.getCourse(this.courseID);
-    }
-
-    public void setCourse(String courseID) {
-        this.courseID = courseID;
-    }
-
     public boolean getIsPublished() {
-        return this.isPublished;
+        return isPublished;
     }
 
-    public void setIsPublished(boolean isPublished) {
+    public void setPublished(boolean isPublished) {
         this.isPublished = isPublished;
     }
 
     public int getDuration() {
-        return this.duration;
+        return duration;
     }
 
     public void setDuration(int duration) {
@@ -52,36 +87,85 @@ public class Exam {
     }
 
     public ArrayList<Question> getQuestions() {
-        return this.questions;
+        return questions;
     }
 
     public void setQuestions(ArrayList<Question> questions) {
         this.questions = questions;
     }
 
-    public void addQuestion(Question question) {
-        if (this.questions == null) {
-            this.questions = new ArrayList<>();
-        }
-        if (this.questions.contains(question)) {
-            throw new IllegalArgumentException("Question already exists in the exam");
-        }
-        this.questions.add(question);
+    public Course getCourse() {
+        return course;
     }
 
-    public void removeQuestion(Question question) {
-        if (!this.questions.contains(question)) {
-            throw new IllegalArgumentException("Question does not exist in the exam");
+    public void setCourse(Course course) {
+        if (course != null) {
+            if (this.course != null) {
+                this.course.dropExam(this);
+            }
+            this.course = course;
+            course.addExam(this);
         }
-        this.questions.remove(question);
-    }
-
-    public Integer grade(ArrayList<Integer> answers){
-        // TODO: implement
-        return 0;
     }
 
     public HashMap<Student, Grade> getStudentGrades() {
-        return studentGrades;
+        return studentToGrades;
+    }
+
+    public void setStudentGrades(HashMap<Student, Grade> studentToGrades) {
+        this.studentToGrades = studentToGrades;
+    }
+
+    // Other Methods
+    public void addQuestion(Question question) {
+        if (!questions.contains(question)) {
+            questions.add(question);
+        } else {
+            throw new IllegalArgumentException("Question already exists in the exam");
+        }
+    }
+
+    public void removeQuestion(Question question) {
+        if (questions.contains(question)) {
+            questions.remove(question);
+        } else {
+            throw new IllegalArgumentException("Question does not exist in the exam");
+        }
+    }
+
+    public int getFullScore(){
+        int score = 0;
+        for (Question q: questions) score += q.getScore();
+        return score;
+    }
+
+    public String parseAnswer(String answer) {
+        char[] chars = answer.toCharArray();
+        Arrays.sort(chars);
+        return new String(chars);
+    }
+
+    public Integer grade(ArrayList<Integer> answers) {
+        int score = 0;
+        for (int i = 0; i < questions.size(); i++) {
+            Question question = questions.get(i);
+            int a = answers.get(i);
+            if (question.getTypeChoice() == 0) {
+                if (question.getAnswer() == a) {
+                    score += question.getScore();
+                }
+            } else {
+                score += Math.max(0,
+                        question.getScore()
+                                * (Integer.bitCount(a & question.getAnswer())
+                                -Integer.bitCount(a & ~question.getAnswer() &15))
+                                / Integer.bitCount(question.getAnswer()));
+            }
+        }
+        return score;
+    }
+
+    public void gradeStudent(Student student, Integer examScore, int timeSpend) {
+        studentToGrades.put(student,new Grade(student.getName(),getCourse().getCourseID(),getExamName(),examScore,getFullScore(),Math.min(timeSpend,duration)));
     }
 }
