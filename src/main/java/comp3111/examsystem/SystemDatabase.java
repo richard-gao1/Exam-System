@@ -41,8 +41,8 @@ public class SystemDatabase {
         return file.delete();
     }
 
-    public void removeAll() {
-        new File("data").delete();
+    public static void removeAll() {
+        removeFile("data");
     }
 
     public SystemDatabase() {

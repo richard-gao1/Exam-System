@@ -16,7 +16,7 @@ public class Exam {
 
     // Keep course and studentToGrades as standard fields
     private Course course;
-    private HashMap<Student, Integer> studentToGrades = new HashMap<>();
+    private HashMap<Student, Grade> studentToGrades = new HashMap<>();
 
     // Constructors
     public Exam(String examName, Course course, boolean isPublished, int duration) {
@@ -112,7 +112,7 @@ public class Exam {
         this.questions.addAll(questions);
     }
 
-    public void setStudentGrades(HashMap<Student, Integer> studentToGrades) {
+    public void setStudentGrades(HashMap<Student, Grade> studentToGrades) {
         this.studentToGrades = studentToGrades;
     }
 
@@ -135,7 +135,7 @@ public class Exam {
         this.questions.remove(question);
     }
 
-    public HashMap<Student, Integer> getStudentGrades() {
+    public HashMap<Student, Grade> getStudentGrades() {
         return studentToGrades;
     }
 

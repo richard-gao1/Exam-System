@@ -50,12 +50,12 @@ public class Teacher extends User {
     }
 
     public void dropCourse(Course course){
-        dropCourse(course.getCourseID());
+        courses.remove(course);
             // only call this method via Course class
     }
 
     public void dropCourse(String courseID){
-        courses.remove(courseID);
+        courses.remove(SystemDatabase.getCourse(courseID));
         // only call this method via Course class
     }
 
@@ -143,8 +143,8 @@ public class Teacher extends User {
         }
     }
 
-    public List<Exam> getExams() {
-        List<Exam> exams = new ArrayList<>();
+    public ArrayList<Exam> getExams() {
+        ArrayList<Exam> exams = new ArrayList<>();
         for (Course course : courses) {
             exams.addAll(course.getExams());
         }
