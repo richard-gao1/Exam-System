@@ -1,32 +1,29 @@
 package comp3111.examsystem;
 
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 public class Exam {
-    private StringProperty examName = new SimpleStringProperty();
-    private BooleanProperty isPublished = new SimpleBooleanProperty();
-    private IntegerProperty duration = new SimpleIntegerProperty();
-    private ObservableList<Question> questions = FXCollections.observableArrayList();
+    private String examName; // Primitive for JSON serialization
+    private boolean isPublished; // Primitive for JSON serialization
+    private int duration; // Primitive for JSON serialization
+    private ArrayList<Question> questions = new ArrayList<>(); // For JSON serialization
 
-    // Keep course and studentToGrades as standard fields
-    private Course course;
+    private Course course; // Reference to the course
     private HashMap<Student, Grade> studentToGrades = new HashMap<>();
 
     // Constructors
     public Exam(String examName, Course course, boolean isPublished, int duration) {
-        this.examName.set(examName);
+        setExamName(examName);
+        this.course = course;
+        this.isPublished = isPublished;
+        this.duration = duration;
         if (course != null) {
-            this.course = course;
             course.addExam(this);
         }
-        this.isPublished.set(isPublished);
-        this.duration.set(duration);
     }
 
     public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
@@ -49,38 +46,61 @@ public class Exam {
 
     // Property Getters
     public StringProperty examNameProperty() {
-        return examName;
+        return new SimpleStringProperty(this.examName);
     }
 
     public BooleanProperty isPublishedProperty() {
-        return isPublished;
+        return new SimpleBooleanProperty(this.isPublished);
     }
 
     public IntegerProperty durationProperty() {
-        return duration;
+        return new SimpleIntegerProperty(this.duration);
     }
 
-    public ObservableList<Question> getQuestions() {
-        return questions;
+    public StringProperty courseIDProperty(){
+        return new SimpleStringProperty(this.course.getCourseID());
     }
 
-    // Standard Getters and Setters for non-property fields
+    // Getters and Setters for primitive fields
     public String getExamName() {
-        return examName.get();
+        return examName;
     }
 
     public void setExamName(String examName) {
-        this.examName.set(examName);
+        this.examName = examName;
+    }
+
+    public boolean getIsPublished() {
+        return isPublished;
+    }
+
+    public void setPublished(boolean isPublished) {
+        this.isPublished = isPublished;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public ArrayList<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(ArrayList<Question> questions) {
+        this.questions = questions;
     }
 
     public Course getCourse() {
-        return this.course;
+        return course;
     }
 
     public void setCourse(Course course) {
-        if (course != null){
-            if (this.course != null){
-                // remove exam from the original course if needed
+        if (course != null) {
+            if (this.course != null) {
                 this.course.dropExam(this);
             }
             this.course = course;
@@ -88,39 +108,16 @@ public class Exam {
         }
     }
 
-    public boolean getIsPublished() {
-        return isPublished.get();
-    }
-
-    public void setIsPublished(boolean isPublished) {
-        this.isPublished.set(isPublished);
-    }
-
-    public int getDuration() {
-        return duration.get();
-    }
-
-    public void setDuration(int duration) {
-        this.duration.set(duration);
-    }
-
-    public StringProperty courseIDProperty(){
-        return new SimpleStringProperty(course.getCourseID());
-    }
-
-    public void setQuestions(ArrayList<Question> questions) {
-        this.questions.addAll(questions);
+    public HashMap<Student, Grade> getStudentGrades() {
+        return studentToGrades;
     }
 
     public void setStudentGrades(HashMap<Student, Grade> studentToGrades) {
         this.studentToGrades = studentToGrades;
     }
 
-    // Add Questions
+    // Other Methods
     public void addQuestion(Question question) {
-        if (this.questions == null) {
-            this.questions = FXCollections.observableArrayList();
-        }
         if (!questions.contains(question)) {
             questions.add(question);
         } else {
@@ -129,48 +126,46 @@ public class Exam {
     }
 
     public void removeQuestion(Question question) {
-        if (!this.questions.contains(question)) {
+        if (questions.contains(question)) {
+            questions.remove(question);
+        } else {
             throw new IllegalArgumentException("Question does not exist in the exam");
         }
-        this.questions.remove(question);
     }
 
-    public HashMap<Student, Grade> getStudentGrades() {
-        return studentToGrades;
+    public int getFullScore(){
+        int score = 0;
+        for (Question q: questions) score += q.getScore();
+        return score;
     }
 
-
-
-    public String parseAnswer(String answer){
+    public String parseAnswer(String answer) {
         char[] chars = answer.toCharArray();
         Arrays.sort(chars);
         return new String(chars);
     }
 
-    public Integer grade(ArrayList<String> answers){
+    public Integer grade(ArrayList<Integer> answers) {
         int score = 0;
-        for (int i = 0; i < this.questions.size(); i++){
-            Question question = this.questions.get(i);
-            if (question.getTypeChoice() == 0){
-                if (question.getAnswer().equals(parseAnswer(answers.get(i)))){
+        for (int i = 0; i < questions.size(); i++) {
+            Question question = questions.get(i);
+            int a = answers.get(i);
+            if (question.getTypeChoice() == 0) {
+                if (question.getAnswer() == a) {
                     score += question.getScore();
                 }
             } else {
-                // for each wrong answer, score -= question.getScore() / number of correct answers
-                // if yes, score += question.getScore()
-                int correct = 0;
-                for (int j = 0; j < question.getAnswer().length(); j++){
-                    if (answers.get(i).indexOf(question.getAnswer().charAt(j)) != -1){
-                        correct++;
-                    }
-                }
-                score += Math.max(0, question.getScore()*(correct/question.getAnswer().trim().length() - (answers.get(i).trim().length() - correct)/question.getAnswer().trim().length()));
+                score += Math.max(0,
+                        question.getScore()
+                                * (Integer.bitCount(a & question.getAnswer())
+                                -Integer.bitCount(a & ~question.getAnswer() &15))
+                                / Integer.bitCount(question.getAnswer()));
             }
         }
         return score;
     }
 
-    public void gradeStudent(){
-        // TODO: Implement
+    public void gradeStudent(Student student, Integer examScore, int timeSpend) {
+        studentToGrades.put(student,new Grade(student.getName(),getCourse().getCourseID(),getExamName(),examScore,getFullScore(),Math.min(timeSpend,duration)));
     }
 }

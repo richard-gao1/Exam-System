@@ -1,143 +1,160 @@
 package comp3111.examsystem;
 
 import javafx.beans.property.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Question {
-    public enum TypeChoice {
-        SINGLE, MULTIPLE
-    }
-
-    private final StringProperty content;
-    private final ObjectProperty<List<String>> options;
-    private final StringProperty answer;
-    private final IntegerProperty score;
-    private final IntegerProperty typeChoice;
+    // Primitive fields for JSON serialization
+    private String content;
+    private ArrayList<String> options;
+    private int score;
+    private int typeChoice;
+    private int answer; //bitmask A-> 0001, ACD 1101
 
     // Constructor
-    public Question(String content, List<String> options, String answer, int score, int typeChoice) {
+    public Question(String content, ArrayList<String> options, String answer, int score, int typeChoice) {
         if (typeChoice == 0 && answer.length() > 1) {
             throw new IllegalArgumentException("Single choice question must have exactly one answer");
         }
-        this.content = new SimpleStringProperty(content);
-        this.options = new SimpleObjectProperty<>(options != null ? options : new ArrayList<>());
-        this.answer = new SimpleStringProperty(answer);
-        this.score = new SimpleIntegerProperty(score);
-        this.typeChoice = new SimpleIntegerProperty(typeChoice);
-
-        // Validation for single choice questions
-
-    }
-
-    // Default Constructor
-    public Question() {
-        this("", new ArrayList<>(), "", 0, 0);
-        // Don't use!!!
+        this.content = content;
+        this.options = options != null ? options : new ArrayList<>();
+        this.answer = 0;
+        for (char c : answer.toCharArray()) {
+            if (c < 'A' || c > 'D') {
+                throw new IllegalArgumentException("Answer must be between A and D");
+            }
+            this.answer |= (1 << (c - 'A')); // Set the bit corresponding to the letter
+        }
+        this.score = score;
+        this.typeChoice = typeChoice;
     }
 
     public Question(String content, String[] options, String answer, int score, int typeChoice) {
-        // Validation for single choice questions
         if (typeChoice == 0 && answer.length() > 1) {
             throw new IllegalArgumentException("Single choice question must have exactly one answer");
         }
-        this.content = new SimpleStringProperty(content);
-        this.options = new SimpleObjectProperty<>(new ArrayList<>(List.of("", "", "", ""))); // Default 4 options
+        this.content = content;
+        this.options = new ArrayList<>(List.of("", "", "", "")); // Default 4 options
         if (options != null) {
             for (int i = 0; i < options.length && i < 4; i++) {
-                this.options.get().set(i, options[i]);
+                this.options.set(i, options[i]);
             }
         }
-        this.answer = new SimpleStringProperty(answer);
-        this.score = new SimpleIntegerProperty(score);
-        this.typeChoice = new SimpleIntegerProperty(typeChoice);
+        this.answer = 0;
+        for (char c : answer.toCharArray()) {
+            if (c < 'A' || c > 'D') {
+                throw new IllegalArgumentException("Answer must be between A and D");
+            }
+            this.answer |= (1 << (c - 'A')); // Set the bit corresponding to the letter
+        }
+        this.score = score;
+        this.typeChoice = typeChoice;
     }
 
+    public Question(String content, ArrayList<String> options, String answer, int score, String typeChoice) {
+        this(content,options,answer,score, typeChoice.equals("Single")?0:1);
+    }
 
-    // Getters and Setters for 'content'
+    public Question(String content, String[] options, String answer, int score, String typeChoice) {
+        this(content,options,answer,score, typeChoice.equals("Single")?0:1);
+    }
+
+    // Getters and Setters for primitive fields
     public String getContent() {
-        return content.get();
-    }
-
-    public void setContent(String content) {
-        this.content.set(content);
-    }
-
-    public StringProperty contentProperty() {
         return content;
     }
 
-    // Getters and Setters for 'options'
-    public List<String> getOptions() {
-        return options.get();
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public void setOptions(List<String> options) {
-        this.options.set(options != null ? options : new ArrayList<>());
+    public ArrayList<String> getOptions() {
+        return options;
     }
 
-    public void setOptions(String[] options){
+    public void setOptions(ArrayList<String> options) {
+        this.options = options != null ? options : new ArrayList<>();
+    }
+
+    public void setOptions(String[] options) {
         if (options != null) {
             for (int i = 0; i < options.length && i < 4; i++) {
-                this.options.get().set(i, options[i]);
+                this.options.set(i, options[i]);
             }
         }
     }
 
-    public ObjectProperty<List<String>> optionsProperty() {
-        return options;
-    }
-
-    // Getters and Setters for 'answer'
-    public String getAnswer() {
-        return answer.get();
+    public int getAnswer() {
+        return this.answer;
     }
 
     public void setAnswer(String answer) {
-        if (this.typeChoice.get() == 0 && answer.length() > 1) {
+        if (this.typeChoice == 0 && answer.length() > 1) {
             throw new IllegalArgumentException("Single choice question must have exactly one answer");
         }
-        this.answer.set(answer);
+        answer = answer.toUpperCase();
+        this.answer = 0;
+        for (char c : answer.toCharArray()) {
+            if (c < 'A' || c > 'D') {
+                throw new IllegalArgumentException("Answer must be between A and D");
+            }
+            this.answer |= (1 << (c - 'A')); // Set the bit corresponding to the letter
+        }
+    }
+    public void setAnswer(int answer) {
+        if (this.typeChoice == 0 && answer > 1) {
+            throw new IllegalArgumentException("Single choice question must have exactly one answer");
+        }
+        this.answer = answer;
     }
 
-    public StringProperty answerProperty() {
-        return answer;
-    }
 
-    // Getters and Setters for 'score'
     public int getScore() {
-        return score.get();
-    }
-
-    public void setScore(int score) {
-        this.score.set(score);
-    }
-
-    public IntegerProperty scoreProperty() {
         return score;
     }
 
-    // Getters and Setters for 'typeChoice'
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     public int getTypeChoice() {
-        return typeChoice.get();
+        return typeChoice;
     }
 
     public void setTypeChoice(int typeChoice) {
-        this.typeChoice.set(typeChoice);
+        this.typeChoice = typeChoice;
     }
 
     public void setTypeChoice(String typeChoice) {
-        if (typeChoice.equals("Single")){
-            this.typeChoice.set(0);
+        if ("Single".equalsIgnoreCase(typeChoice)) {
+            setTypeChoice(0);
+        } else {
+            setTypeChoice(1);
         }
-        else{
-            this.typeChoice.set(1);
-        };
+    }
+
+    // JavaFX Property Accessors
+    public StringProperty contentProperty() {
+        return new SimpleStringProperty(this.content);
+    }
+
+    public StringProperty answerProperty() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < 4; i++) { // Assuming options A-D (4 bits)
+            if ((answer & (1 << i)) != 0) { // Check if bit `i` is set
+                result.append((char) ('A' + i)); // Convert bit index to letter
+            }
+        }
+        return new SimpleStringProperty(result.toString());
+    }
+
+    public IntegerProperty scoreProperty() {
+        return new SimpleIntegerProperty(this.score);
     }
 
     public IntegerProperty typeChoiceProperty() {
-        return typeChoice;
+        return new SimpleIntegerProperty(this.typeChoice);
     }
 
     @Override
