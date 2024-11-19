@@ -4,6 +4,7 @@ module comp3111.examsystem {
     requires java.desktop;
     requires com.google.gson;
     requires jdk.compiler;
+    requires org.apache.commons.io;
 
 
     opens comp3111.examsystem to javafx.fxml, com.google.gson;
