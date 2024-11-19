@@ -403,6 +403,7 @@ public class SystemDatabase {
 
     private static ArrayList<String> addToList(String item, ArrayList<String> list) {
         if (list == null) list = new ArrayList<>();
+        if (list.contains(item)) return list;
         list.add(item);
         return list;
     }
