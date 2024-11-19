@@ -7,7 +7,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -39,9 +41,9 @@ public class StudentMainController implements Initializable {
         questions.add(q2);
         questions.add(q3);
         questions.add(q4);
-        Exam testExam = new Exam("exam", "testCourse", false, 30, questions);
+        Course testCourse = new Course("CourseID","testCourse", "dept", null, students, initExams);
+        Exam testExam = new Exam("exam", testCourse, false, 30, questions);
         initExams.add(testExam);
-        Course testCourse = new Course("testCourse", "CourseName", "dept", students, initExams);
 
         ArrayList<Course> courses = student.getCourses();
         ArrayList<Exam> exams = new ArrayList<Exam>();
@@ -67,18 +69,19 @@ public class StudentMainController implements Initializable {
             QuizController quizController = quizLoader.getController();
             System.out.println("init exam with controller: " + quizController);
             String examName = examCombox.getValue();
-            if (!examName.isEmpty()) {
+            if (examName != null && !examName.isEmpty()) {
                 quizController.setExam(examPairs.get(examName));
+                stage.setScene(new Scene(root));
+                stage.show();
+                ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
             } else {
-                // TODO: select an exam pop up
-                System.out.println("Select an Exam");
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Select Exam", ButtonType.OK);
+                alert.setTitle("Exam selection error");
+                alert.show();
             }
-            stage.setScene(new Scene(root));
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        stage.show();
-        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
     }
 
     @FXML
