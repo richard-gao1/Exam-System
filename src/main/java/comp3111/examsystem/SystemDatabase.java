@@ -16,6 +16,7 @@ public class SystemDatabase {
 
     // maps Username -> Instance of Account
     static final String data_filetype = ".json";
+    public static User currentUser;
 
     private boolean createFolder(String directory) {
         File folder = new File(directory);
@@ -459,10 +460,10 @@ public class SystemDatabase {
         return "";
     }
 
-    private static String registerManager(Manager manager) {
+    public static String registerManager(Manager manager) {
         String username = manager.getUsername();
         if (getManager(username) != null) {
-            // teacher with this username already exists
+            // manager with this username already exists
             return "Manager username " + manager.getUsername() + " already exist";
         }
         writeManagerFile(manager);
