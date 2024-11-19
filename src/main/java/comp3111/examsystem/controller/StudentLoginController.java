@@ -59,11 +59,11 @@ public class StudentLoginController implements Initializable {
         if (account != null) {
             stage.setTitle("Hi " + account.getName() +", Welcome to HKUST Examination System");
             try {
+                System.out.println("init student");
+                SystemDatabase.currentUser = account;
                 System.out.println("This is before loading");
                 Parent root = studentMainLoader.load();
                 StudentMainController mainController = studentMainLoader.getController();
-                System.out.println("init student");
-                mainController.initStudent(account);
                 stage.setScene(new Scene(root));
             } catch (IOException e1) {
                 e1.printStackTrace();

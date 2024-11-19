@@ -24,13 +24,7 @@ public class StudentMainController implements Initializable {
     Map<String, Exam> examPairs = new HashMap<>();
 
     public void initialize(URL location, ResourceBundle resources) {
-//        System.out.println("in initialize");
-
-//        examCombox.getSelectionModel().select("Option B");
-    }
-
-    public void initStudent(Student student) {
-        this.student = student;
+        this.student = (Student)SystemDatabase.currentUser;
         // manually make a new course and add the student to it
         ArrayList<Student> students = new ArrayList<>();
         students.add(this.student);
@@ -88,7 +82,21 @@ public class StudentMainController implements Initializable {
     }
 
     @FXML
-    public void openGradeStatistic() {
+    public void openGradeStatistic(ActionEvent e) {
+        FXMLLoader gradeLoader = new FXMLLoader();
+        gradeLoader.setLocation(Main.class.getResource("StudentGradeStatistic.fxml"));
+        Stage stage = new Stage();
+        stage.setTitle("Grade Statistics");
+        try {
+            Parent root = gradeLoader.load();
+            StudentGradeStatisticController gradeController = gradeLoader.getController();
+            stage.setScene(new Scene(root));
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        stage.show();
+        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
     }
 
     @FXML
