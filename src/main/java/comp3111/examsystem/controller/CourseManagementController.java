@@ -135,9 +135,7 @@ public class CourseManagementController implements Initializable {
 
     @FXML
     public void modify() {
-        if (updating == null) {
-            // no student is selected
-        } else {
+        if (updating != null) {
             String old_courseID = updating.getCourseID();
             System.out.println("Updating course " + old_courseID);
             Course newCourse = updateCourse();
@@ -148,9 +146,7 @@ public class CourseManagementController implements Initializable {
 
     @FXML
     public void delete() {
-        if (updating == null) {
-            // no student is selected
-        } else {
+        if (updating != null) {
             String courseID = updating.getCourseID();
             SystemDatabase.removeCourse(courseID);
             refresh();
