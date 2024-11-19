@@ -1,6 +1,7 @@
 package comp3111.examsystem;
 
 import com.google.gson.Gson;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +43,11 @@ public class SystemDatabase {
     }
 
     public static void removeAll() {
-        removeFile("data");
+        try {
+            FileUtils.deleteDirectory(new File("data"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public SystemDatabase() {
@@ -475,6 +480,4 @@ public class SystemDatabase {
         writeCourseFile(course);
         return "";
     }
-
-
 }
