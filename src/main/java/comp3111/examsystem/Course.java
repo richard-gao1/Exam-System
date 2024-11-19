@@ -162,4 +162,10 @@ public class Course {
     }
 
 
+    public Course update(String courseID, String name, String department) {
+        this.courseID = courseID;
+        this.name = name;
+        this.department = department;
+        return this;
+    }
 }
