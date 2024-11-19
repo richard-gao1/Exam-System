@@ -16,13 +16,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class TeacherGradeStatisticController implements Initializable {
-
-    private Teacher teacher;
+    private Teacher currentTeacher;
     private boolean hasFilter = false;
-
-    public void getTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
 
     private class AvgScore {
         private int count = 0;
@@ -116,12 +111,15 @@ public class TeacherGradeStatisticController implements Initializable {
         examCombox.setItems(examList);
         studentCombox.setItems(studentList);
 
+        currentTeacher = (Teacher) SystemDatabase.currentUser;
+
         refresh();
         loadChart();
     }
 
     private void loadData() {
         gradeList.clear();
+        /*
         gradeList.add(new Grade(
                 "student",
                 "comp3111",
@@ -138,12 +136,13 @@ public class TeacherGradeStatisticController implements Initializable {
                 100,
                 60
         ));
+         */
         ArrayList<Exam> exams = new ArrayList<>();
-        if (teacher != null) exams = teacher.getExams();
-        exams.forEach((e) -> {
-            HashMap<Student, Grade> studentGrade = e.getStudentGrades();
-            gradeList.addAll(studentGrade.values());
-        });
+        if (currentTeacher != null) exams = currentTeacher.getExams();
+        /*
+         add grades from teachers
+         */
+
         updateHashMaps(false);
     }
 
@@ -178,7 +177,12 @@ public class TeacherGradeStatisticController implements Initializable {
     private void loadChoices() {
         courseList.clear();
         courseList.add("");
-        courseList.addAll(by_course.keySet());
+        Set<String> courseIDs = by_course.keySet();
+        for (String courseID : courseIDs) {
+            Course course = SystemDatabase.getCourse(courseID);
+            if (course == null) courseList.add(courseID);
+            else courseList.add(course.getCourseID() + " " + course.getCourseName());
+        }
 
         examList.clear();
         examList.add("");

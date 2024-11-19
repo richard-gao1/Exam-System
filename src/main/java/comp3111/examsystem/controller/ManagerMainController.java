@@ -18,8 +18,6 @@ public class ManagerMainController implements Initializable {
     @FXML
     private VBox mainbox;
 
-    private Manager manager;
-
     public void initialize(URL location, ResourceBundle resources) {
 
     }
@@ -32,7 +30,6 @@ public class ManagerMainController implements Initializable {
             stage.setTitle("Student Management");
             stage.setScene(new Scene(fxmlLoader.load()));
             StudentManagementController smc = fxmlLoader.getController();
-            smc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,7 +44,6 @@ public class ManagerMainController implements Initializable {
             stage.setTitle("Teacher Management");
             stage.setScene(new Scene(fxmlLoader.load()));
             TeacherManagementController tmc = fxmlLoader.getController();
-            tmc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,7 +58,6 @@ public class ManagerMainController implements Initializable {
             stage.setTitle("Course Management");
             stage.setScene(new Scene(fxmlLoader.load()));
             CourseManagementController cmc = fxmlLoader.getController();
-            cmc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,9 +67,5 @@ public class ManagerMainController implements Initializable {
     @FXML
     public void exit() {
         System.exit(0);
-    }
-
-    public void setManager(Manager manager) {
-        this.manager = manager;
     }
 }

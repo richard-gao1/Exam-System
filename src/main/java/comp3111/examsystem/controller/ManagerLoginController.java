@@ -33,7 +33,7 @@ public class ManagerLoginController implements Initializable {
 
     @FXML
     public void login(ActionEvent e) {
-        manager = (Manager) new SystemDatabase().login(usernameTxt.getText(), passwordTxt.getText(), AccountType.MANAGER);
+        manager = (Manager) SystemDatabase.login(usernameTxt.getText(), passwordTxt.getText(), AccountType.MANAGER);
         if (manager == null) {
             Alert alert = new Alert(Alert.AlertType.NONE, "Invalid username or password", ButtonType.OK);
             alert.setTitle("Login error");
@@ -53,7 +53,6 @@ public class ManagerLoginController implements Initializable {
                     e1.printStackTrace();
                 }
                 ManagerMainController mmc = fxmlLoader.getController();
-                mmc.setManager(manager);
                 stage.show();
                 ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
             }

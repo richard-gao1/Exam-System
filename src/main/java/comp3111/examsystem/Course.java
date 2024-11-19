@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class Course {
     private String courseID;
@@ -26,6 +27,14 @@ public class Course {
         this.exams = exams;
     }
 
+    public Course(String courseID, String name, String department) {
+        this.courseID = courseID;
+        this.name = name;
+        this.department = department;
+        this.students = new ArrayList<>();
+        this.exams = new ArrayList<>();
+    }
+
     public ArrayList<Exam> getExams() {
         return exams;
     }
@@ -35,4 +44,18 @@ public class Course {
     public String getCourseName() { return this.name; }
 
     public String getDepartment() { return this.department; }
+
+    public Course update(String courseID, String name, String department) {
+        this.courseID = courseID;
+        this.name = name;
+        this.department = department;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return Objects.equals(this.courseID, ((Course) obj).getCourseID()) &&
+                Objects.equals(this.name, ((Course) obj).getCourseName()) &&
+                Objects.equals(this.department, ((Course) obj).getDepartment());
+    }
 }

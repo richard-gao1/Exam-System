@@ -38,14 +38,9 @@ public class CourseManagementController implements Initializable {
     @FXML
     private TextField departmentFilter;
     private Course updating;
-    private Manager manager;
     private boolean filtering = false;
 
     private ObservableList<Course> courseList = FXCollections.observableArrayList();
-
-    public void getManager(Manager manager) {
-        this.manager = manager;
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
