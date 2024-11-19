@@ -1,7 +1,6 @@
 package comp3111.examsystem;
 
 import com.google.gson.Gson;
-import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +15,6 @@ public class SystemDatabase {
 
     // maps Username -> Instance of Account
     static final String data_filetype = ".json";
-    public static User currentUser;
 
     static public User currentUser = null;
 
@@ -44,11 +42,7 @@ public class SystemDatabase {
     }
 
     public static void removeAll() {
-        try {
-            FileUtils.deleteDirectory(new File("data"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        removeFile("data");
     }
 
     public SystemDatabase() {
@@ -463,10 +457,10 @@ public class SystemDatabase {
         return "";
     }
 
-    public static String registerManager(Manager manager) {
+    private static String registerManager(Manager manager) {
         String username = manager.getUsername();
         if (getManager(username) != null) {
-            // manager with this username already exists
+            // teacher with this username already exists
             return "Manager username " + manager.getUsername() + " already exist";
         }
         writeManagerFile(manager);
