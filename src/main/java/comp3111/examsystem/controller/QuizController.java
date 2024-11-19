@@ -10,10 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class QuizController implements Initializable {
 
@@ -97,20 +94,19 @@ public class QuizController implements Initializable {
             this.questionMap.put(questions.get(i), i);
             this.answerChoices.add(0);
         }
-        ObservableList<Question> questionsList = FXCollections.observableArrayList(questions);
         this.questionList.setCellFactory(param -> new ListCell<Question>() {
             @Override
             protected void updateItem(Question item, boolean empty) {
                 super.updateItem(item, empty);
 
-                if (empty || item == null || item.getQuestion() == null) {
+                if (empty || item == null || item.getContent() == null) {
                     setText(null);
                 } else {
-                    setText(item.getQuestion());
+                    setText(item.getContent());
                 }
             }
         });
-        this.questionList.setItems(questionsList);
+        this.questionList.setItems(FXCollections.observableArrayList(questions));
 //        for (Question question : exam.getQuestions()) {
 //
 //        }
@@ -149,11 +145,17 @@ public class QuizController implements Initializable {
             this.sataBox.setManaged(false);
             this.sataBox.setVisible(false);
             // set the selected to the previously saved answer
-            this.answerGroup.selectToggle(this.revButtonMap.get(this.answerChoices.get(this.questionMap.get(this.currentQuestion))));
-            String[] choices = question.getOptions();
-            questionTxt.setText(question.getQuestion());
+            int answer = this.answerChoices.get(this.questionMap.get(this.currentQuestion));
+            if (answer == 8) {
+                answer = 4;
+            } else if (answer == 4) {
+                answer = 3;
+            }
+            this.answerGroup.selectToggle(this.revButtonMap.get(answer));
+            List<String> choices = question.getOptions();
+            questionTxt.setText(question.getContent());
             for (int i = 0; i < 4; i++) {
-                answerChoiceButtons[i].setText(choices[i]);
+                answerChoiceButtons[i].setText(choices.get(i));
             }
         } else {
             System.out.println("1 question type");
@@ -167,15 +169,16 @@ public class QuizController implements Initializable {
             }
             int answer = this.answerChoices.get(this.questionMap.get(this.currentQuestion));
             for (int i = 3; i >= 0; i--) {
-                if (answer - 1 << i >= 0) {
+                if (answer - (1 << i) >= 0) {
+//                    System.out.println(answer + " - " + (1 << i));
                     this.sataChoiceButtons[i].setSelected(true);
-                    answer -= 1 << i;
+                    answer -= (1 << i);
                 }
             }
-            String[] choices = question.getOptions();
-            questionTxt.setText(question.getQuestion());
+            List<String> choices = question.getOptions();
+            questionTxt.setText(question.getContent());
             for (int i = 0; i < 4; i++) {
-                sataChoiceButtons[i].setText(choices[i]);
+                sataChoiceButtons[i].setText(choices.get(i));
             }
         }
     }
@@ -199,6 +202,6 @@ public class QuizController implements Initializable {
         }
         System.out.println("Submit pressed");
         // TODO: add grade popup and put grade into database
-//        this.exam.grade(this.answerChoices);
+        System.out.println(this.exam.grade(this.answerChoices));
     }
 }
