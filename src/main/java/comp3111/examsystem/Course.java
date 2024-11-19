@@ -11,22 +11,19 @@ public class Course {
     private ArrayList<Student> students;
     private HashMap<Student, HashMap<String, Integer>> studentToGrade = new HashMap<>();
     private ArrayList<Exam> exams;
-    public Course(String name, String department, ArrayList<Student> students, ArrayList<Exam> exams) {
-        this(name, null,department, students, exams);
-    }
-
 
     public Course(String courseID, String name, String department, Teacher teacher,ArrayList<Student> students, ArrayList<Exam> exams) {
-        this.courseID = courseID;
+        this.courseID = courseID.replace(" ","").trim().toUpperCase();
         this.name = name;
         this.department = department;
-        this.students = students;
-        if (students != null) {
+        this.students = students == null? new ArrayList<>():students;
+        if (!this.students.isEmpty()) {
             for (Student student: students){
                 student.addCourse(this);
+                studentToGrade.put(student,new HashMap<>());
             }
         }
-        this.exams = exams;
+        this.exams = exams==null? new ArrayList<>():exams;
         if (teacher != null){
             this.teacher = teacher;
             teacher.addCourse(this);
@@ -34,9 +31,7 @@ public class Course {
         else{
             this.teacher = null;
         }
-        for (Student student: students){
-            studentToGrade.put(student,new HashMap<>());
-        }
+
     }
 
     public Course(String name, String courseID, String department ,ArrayList<Student> students, ArrayList<Exam> exams) {
