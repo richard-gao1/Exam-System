@@ -23,6 +23,14 @@ public class Student extends User {
         }
     }
 
+    public ArrayList<Exam> getExams(){
+        ArrayList<Exam> exams = new ArrayList<>();
+        for (Course course : courses){
+            exams.addAll(course.getExams());
+        }
+        return exams;
+    }
+
     public void dropCourse(Course course){
         // only call this method via Course class
         if (courses.contains(course)){

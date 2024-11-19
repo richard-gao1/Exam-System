@@ -167,5 +167,6 @@ public class Exam {
 
     public void gradeStudent(Student student, Integer examScore, int timeSpend) {
         studentToGrades.put(student,new Grade(student.getName(),getCourse().getCourseID(),getExamName(),examScore,getFullScore(),Math.min(timeSpend,duration)));
+        SystemDatabase.createCourse(this.course);
     }
 }
