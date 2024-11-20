@@ -3,8 +3,10 @@ package comp3111.examsystem.controller;
 import comp3111.examsystem.Course;
 import comp3111.examsystem.Manager;
 import comp3111.examsystem.SystemDatabase;
+import comp3111.examsystem.Teacher;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -17,6 +19,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class CourseManagementController implements Initializable {
+    @FXML
+    private TableColumn usernameColumn;
+    @FXML
+    private TableColumn nameColumn;
+    @FXML
+    private TableView teacherTable;
     @FXML
     private TextField courseIDSet;
     @FXML
@@ -41,6 +49,7 @@ public class CourseManagementController implements Initializable {
     private boolean filtering = false;
 
     private ObservableList<Course> courseList = FXCollections.observableArrayList();
+    private ObservableList<Teacher> teacherList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -49,6 +58,10 @@ public class CourseManagementController implements Initializable {
         courseIDColumn.setCellValueFactory(new PropertyValueFactory<>("courseID"));
         courseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
+
+        teacherTable.setItems(teacherList);
+        usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
     }
 
     private void getCourseList() {
@@ -65,9 +78,15 @@ public class CourseManagementController implements Initializable {
         courseList.addAll(courses);
     }
 
+    private void getTeacherList() {
+        teacherList.clear();
+        teacherList.addAll(SystemDatabase.getTeacherList("", "", ""));
+    }
+
     @FXML
     public void refresh() {
         getCourseList();
+        getTeacherList();
     }
 
     @FXML
@@ -82,11 +101,28 @@ public class CourseManagementController implements Initializable {
         getCourseList();
     }
 
+    private Course updateCourse() {
+        String courseID = courseIDSet.getText();
+        String name = courseNameSet.getText();
+        String department = departmentSet.getText();
+        Course course = updating.update(courseID, name, department);
+        Teacher teacher = (Teacher) teacherTable.getSelectionModel().getSelectedItem();
+        if (teacher != null) {
+            course.setTeacher(teacher);
+        }
+        return course;
+    }
+
     private Course newCourse() {
         String courseID = courseIDSet.getText();
         String name = courseNameSet.getText();
         String department = departmentSet.getText();
-        return new Course(courseID, name, department, new ArrayList<>(), new ArrayList<>());
+        Course course = new Course(courseID, name, department, new ArrayList<>(), new ArrayList<>());
+        Teacher teacher = (Teacher) teacherTable.getSelectionModel().getSelectedItem();
+        if (teacher != null) {
+            course.setTeacher(teacher);
+        }
+        return course;
     }
 
     @FXML
@@ -108,7 +144,7 @@ public class CourseManagementController implements Initializable {
         } else {
             String old_courseID = updating.getCourseID();
             System.out.println("Updating course " + old_courseID);
-            Course newCourse = newCourse();
+            Course newCourse = updateCourse();
             SystemDatabase.modifyCourse(newCourse, old_courseID);
             refresh();
         }
@@ -137,5 +173,9 @@ public class CourseManagementController implements Initializable {
 
     public void teacherSelected(MouseEvent mouseEvent) {
 
+    }
+
+    public void clearTeacher() {
+        teacherTable.getSelectionModel().clearSelection();
     }
 }
