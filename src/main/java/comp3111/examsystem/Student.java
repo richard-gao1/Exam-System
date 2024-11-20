@@ -5,6 +5,10 @@ import java.util.ArrayList;
 public class Student extends User {
     private ArrayList<Course> courses = new ArrayList<>();
 
+    public Student() {
+        super("whwma", "comp3111", "Ma Wai Him Wesley", "male", 21, "econ");
+    }
+
     public Student(String username, String password, String name, String gender, int age, String department){
         super(username, password, name, gender, age, department);
     }

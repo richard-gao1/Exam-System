@@ -3,7 +3,7 @@ package comp3111.examsystem;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class User extends Account {
+public abstract class User extends Account {
     private String name;
     private String gender;
     private int age;

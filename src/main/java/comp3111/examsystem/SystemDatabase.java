@@ -62,7 +62,7 @@ public class SystemDatabase {
         createFile("data/courses" + data_filetype);
 
         // create Manager
-        Manager manager = new Manager("admin", "comp3111");
+        Manager manager = new Manager();
         registerManager(manager);
     }
 

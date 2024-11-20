@@ -16,6 +16,13 @@ public class Course {
     }
 
 
+    public Course() {
+        this.courseID = "COMP3111";
+        this.name = "Software Engineering";
+        this.department = "cse";
+        this.students = new ArrayList<>();
+    }
+
     public Course(String courseID, String name, String department, Teacher teacher,ArrayList<Student> students, ArrayList<Exam> exams) {
         this.courseID = courseID;
         this.name = name;
@@ -106,7 +113,7 @@ public class Course {
 
     public void setTeacher(Teacher teacher){
         if (this.teacher != null){
-            this.teacher.dropCourse(this);
+            this.teacher.dropCourse(this.getCourseID());
         }
         if (teacher != null){
             this.teacher = teacher;
