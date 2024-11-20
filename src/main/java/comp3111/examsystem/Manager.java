@@ -3,6 +3,10 @@ package comp3111.examsystem;
 import java.util.HashMap;
 
 public class Manager extends Account {
+    public Manager() {
+        super("admin", "comp3111");
+    }
+
     public Manager(String username, String password) {
         super(username, password);
     }
