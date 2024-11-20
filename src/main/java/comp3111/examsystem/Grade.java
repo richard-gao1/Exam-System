@@ -1,5 +1,10 @@
 package comp3111.examsystem;
 
+/**
+ * Grade item for every exam that every student took.
+ * @author whwmaust2125
+ * @since 2024-11-21
+ */
 public class Grade {
     private final String studentName;
     private final String courseNum;
@@ -20,6 +25,10 @@ public class Grade {
     public int getScore() { return score; }
     public int getFullScore() { return fullScore; }
     public int getTimeSpend() { return timeSpend; }
+
+    public Grade() {
+        this("student", "COMP3111", "final", 100, 100, 60);
+    }
 
     public Grade(
             String studentName,

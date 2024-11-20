@@ -1,7 +1,11 @@
 package comp3111.examsystem;
 
-import java.util.List;
-
+/**
+ * A class containing a list of genders.
+ */
 public class Gender {
-    public static final String[] list = {"male", "female"};
+    /**
+     * An array of strings representing different genders.
+     */
+    public static final String[] list = {"Male", "Female"};
 }

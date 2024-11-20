@@ -15,19 +15,38 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for Teacher Grade Statistics UI
+ * @author whwmaust2125
+ * @since 2024-11-21
+ */
 public class TeacherGradeStatisticController implements Initializable {
     private Teacher currentTeacher;
     private boolean hasFilter = false;
 
+    /**
+     * A class to calculate and store the average score
+     */
     private class AvgScore {
-        private int count = 0;
-        private int score = 0;
+        private int count = 0; // Number of score added
+        private int score = 0; // Total score
         AvgScore() {}
 
+        /**
+         * Adds a new score to the average calculation.
+         *
+         * @param score The score to be added.
+         */
         public void add(int score) {
             count++;
             this.score += score;
         }
+
+        /**
+         * Calculates and returns the average score.
+         *
+         * @return The average score as a double. Returns 0.0 if no scores have been added.
+         */
         public double getValue() {
             if (count == 0) return 0.0;
             return ((double) score) / ((double) count);
@@ -86,6 +105,12 @@ public class TeacherGradeStatisticController implements Initializable {
     private ArrayList<Grade> gradeList = new ArrayList<>();
     private final ObservableList<Grade> displayGradeList = FXCollections.observableArrayList();
 
+    /**
+     * Removes a null value from a string, replacing it with an empty string if necessary.
+     *
+     * @param input The input string that may be null.
+     * @return An empty string if the input is null, otherwise returns the original string.
+     */
     private String removeNull(String input) { return (input == null) ? "" : input; }
 
     @Override
@@ -117,26 +142,11 @@ public class TeacherGradeStatisticController implements Initializable {
         loadChart();
     }
 
+    /**
+     * Loads data into the grade list based on the current teacher's exams.
+     */
     private void loadData() {
         gradeList.clear();
-        /*
-        gradeList.add(new Grade(
-                "student",
-                "comp3111",
-                "final",
-                100,
-                100,
-                60
-        ));
-        gradeList.add(new Grade(
-                "student2",
-                "comp3211",
-                "midterm",
-                70,
-                100,
-                60
-        ));
-         */
         ArrayList<Exam> exams = new ArrayList<>();
         if (currentTeacher != null) exams = currentTeacher.getExams();
         /*
@@ -149,6 +159,10 @@ public class TeacherGradeStatisticController implements Initializable {
         updateHashMaps(false);
     }
 
+    /**
+     * Refreshes the UI components by loading data, updating choices, filtering grades, and
+     updating charts.
+     */
     @FXML
     public void refresh() {
         loadData();
@@ -157,6 +171,11 @@ public class TeacherGradeStatisticController implements Initializable {
         updateChart();
     }
 
+    /**
+     * Updates hash maps that group grades by course, exam, and student.
+     *
+     * @param filtered A flag indicating whether to update with filtered or full grade list.
+     */
     private void updateHashMaps(boolean filtered) {
         by_course.clear();
         by_student.clear();
@@ -177,6 +196,9 @@ public class TeacherGradeStatisticController implements Initializable {
         }
     }
 
+    /**
+     * Loads available choices for courses, exams, and students into respective UI components.
+     */
     private void loadChoices() {
         courseList.clear();
         courseList.add("");
@@ -196,6 +218,9 @@ public class TeacherGradeStatisticController implements Initializable {
         studentList.addAll(by_student.keySet());
     }
 
+    /**
+     * Updates the bar, line, and pie charts with current data from hash maps.
+     */
     private void updateChart() {
         seriesBar.getData().clear();
         pieChart.getData().clear();
@@ -212,36 +237,23 @@ public class TeacherGradeStatisticController implements Initializable {
         });
     }
 
+    /**
+     * Initializes or clears the chart components in preparation for data updates.
+     */
     private void loadChart() {
         barChart.getData().clear();
         barChart.setAnimated(false);
         lineChart.getData().clear();
         lineChart.setAnimated(false);
 
-        /*
-        seriesBar.getData().clear();
-        barChart.getData().clear();
-        for (int i = 0;  i < 5; i++) {
-            seriesBar.getData().add(new XYChart.Data<>("COMP" + i, 50));
-        }
-        */
         barChart.getData().add(seriesBar);
 
-        /*
-        pieChart.getData().clear();
-        for (int i = 0;  i < 4; i++) {
-            pieChart.getData().add(new PieChart.Data("student" + i, 80));
-        }
-
-        seriesLine.getData().clear();
-        lineChart.getData().clear();
-        for (int i = 0;  i < 6; i++) {
-            seriesLine.getData().add(new XYChart.Data<>("COMP3111" + "-" + "quiz" + i, 70));
-        }
-         */
         lineChart.getData().add(seriesLine);
     }
 
+    /**
+     * Applies filters to the grade list based on selected course, exam, and student choices.
+     */
     private void updateFilter() {
         displayGradeList.clear();
         if (!hasFilter) {
@@ -263,6 +275,9 @@ public class TeacherGradeStatisticController implements Initializable {
         updateHashMaps(true);
     }
 
+    /**
+     * Resets the filter settings and refreshes the displayed grades and charts.
+     */
     @FXML
     public void reset() {
         hasFilter = false;
@@ -270,6 +285,10 @@ public class TeacherGradeStatisticController implements Initializable {
         updateChart();
     }
 
+    /**
+     * Sets the filter settings based on current selections and updates the displayed grades and
+     charts.
+     */
     @FXML
     public void query() {
         hasFilter = true;

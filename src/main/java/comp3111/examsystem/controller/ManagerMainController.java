@@ -22,6 +22,9 @@ public class ManagerMainController implements Initializable {
 
     }
 
+    /**
+     * Opens the Student Management UI.
+     */
     @FXML
     public void openStudentManageUI() {
         try {
@@ -36,6 +39,9 @@ public class ManagerMainController implements Initializable {
         }
     }
 
+    /**
+     * Opens the Teacher Management UI.
+     */
     @FXML
     public void openTeacherManageUI() {
         try {
@@ -50,6 +56,9 @@ public class ManagerMainController implements Initializable {
         }
     }
 
+    /**
+     * Opens the Course Management UI.
+     */
     @FXML
     public void openCourseManageUI() {
         try {
@@ -64,6 +73,9 @@ public class ManagerMainController implements Initializable {
         }
     }
 
+    /**
+     * Exits the application.
+     */
     @FXML
     public void exit() {
         System.exit(0);

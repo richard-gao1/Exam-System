@@ -25,15 +25,18 @@ public class ManagerLoginController implements Initializable {
     @FXML
     private PasswordField passwordTxt;
 
-    private Manager manager;
-
     public void initialize(URL location, ResourceBundle resources) {
 
     }
 
+    /**
+     * Handles the manager login request from an actor.
+     *
+     * @param e The ActionEvent associated with the login button click.
+     */
     @FXML
     public void login(ActionEvent e) {
-        manager = (Manager) SystemDatabase.login(usernameTxt.getText(), passwordTxt.getText(), AccountType.MANAGER);
+        Manager manager = (Manager) SystemDatabase.login(usernameTxt.getText(), passwordTxt.getText(), AccountType.MANAGER);
         if (manager == null) {
             Alert alert = new Alert(Alert.AlertType.NONE, "Invalid username or password", ButtonType.OK);
             alert.setTitle("Login error");

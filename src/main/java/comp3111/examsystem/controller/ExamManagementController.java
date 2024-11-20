@@ -203,7 +203,6 @@ public class ExamManagementController implements Initializable {
             currentTeacher.addExam(newExam, courseID);
             examList.add(newExam);
             // Update the table
-            examTable.setItems(examList);
 
             // Clear input fields
             clearInputFields();

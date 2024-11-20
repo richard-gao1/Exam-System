@@ -1,8 +1,10 @@
 package comp3111.examsystem;
 
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * A class representing a student, which extends the User class.
+ */
 public class Student extends User {
     // Store courseIDs instead of Course objects
     private ArrayList<String> courseIDs = new ArrayList<>();
@@ -48,7 +50,17 @@ public class Student extends User {
         return super.equals(other);
     }
 
-    // Update method for student attributes
+    /**
+     * Updates the details of a Student account.
+     *
+     * @param username   The new username to set.
+     * @param password   The new password to set.
+     * @param name       The new name to set.
+     * @param gender     The new gender to set.
+     * @param age        The new age to set.
+     * @param department The new department to set.
+     * @return This Student instance after updating the details.
+     */
     public Student update(String username, String password, String name, String gender, int age, String department) {
         super.update(username, password, name, gender, age, department);
         return this;

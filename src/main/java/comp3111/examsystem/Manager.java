@@ -3,18 +3,21 @@ package comp3111.examsystem;
 import java.util.HashMap;
 
 public class Manager extends Account {
+    /**
+     * Constructs a new Manager instance with default credentials.
+     */
     public Manager() {
         super("admin", "comp3111");
     }
 
+    /**
+     * Constructs a new Manager instance with the specified username and password.
+     *
+     * @param username The unique identifier for the manager.
+     * @param password The password for the manager.
+     */
     public Manager(String username, String password) {
         super(username, password);
-    }
-
-    public Course makeCourse() {
-        // TODO: to be implemented
-        return null;
-
     }
 
     @Override

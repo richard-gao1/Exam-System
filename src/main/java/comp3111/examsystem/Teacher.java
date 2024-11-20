@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A class representing a teacher, which extends the User class.
+ */
 public class Teacher extends User {
     private String position;
 
@@ -23,6 +26,18 @@ public class Teacher extends User {
         this.position = position;
     }
 
+    /**
+     * Updates the details of a Teacher account.
+     *
+     * @param username   The new username to set.
+     * @param password   The new password to set.
+     * @param name       The new name to set.
+     * @param gender     The new gender to set.
+     * @param age        The new age to set.
+     * @param department The new department to set.
+     * @param position   The new position to set.
+     * @return This Teacher instance after updating the details.
+     */
     public Teacher update(String username, String password, String name, String gender, int age, String department, String position) {
         super.update(username, password, name, gender, age, department);
         this.position = position;

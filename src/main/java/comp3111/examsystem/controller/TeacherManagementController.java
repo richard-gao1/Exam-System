@@ -15,6 +15,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for Teacher Management UI
+ * @author whwmaust2125
+ * @since 2024-11-21
+ */
 public class TeacherManagementController implements Initializable {
     @FXML
     private ChoiceBox genderSet;
@@ -69,7 +74,6 @@ public class TeacherManagementController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // get all teachers
-        getTeacherList();
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
@@ -84,8 +88,12 @@ public class TeacherManagementController implements Initializable {
 
         positionList.addAll(Position.list);
         positionSet.setItems(positionList);
+        refresh();
     }
 
+    /**
+     * Retrieves the list of teachers from the system database based on optional filters.
+     */
     private void getTeacherList() {
         String username = "";
         String name = "";
@@ -100,23 +108,62 @@ public class TeacherManagementController implements Initializable {
         teacherList.addAll(teachers);
     }
 
+    /**
+     * Refreshes the list of teachers by fetching it from the system database and updating the UI
+     table.
+     */
     @FXML
     public void refresh() {
         getTeacherList();
     }
 
+    /**
+     * Resets the filtering criteria and refreshes the teacher list.
+     */
     @FXML
     public void reset() {
         filtering = false;
+        resetFilterFields();
         getTeacherList();
     }
 
+    /**
+     * Applies the current filter criteria (username, name and department) to query the system database for teachers matching those
+     criteria.
+     */
     @FXML
     public void query() {
         filtering = true;
         getTeacherList();
     }
 
+    /**
+     * Clears all text fields used for filtering teachers.
+     */
+    private void resetFilterFields() {
+        usernameFilter.setText("");
+        nameFilter.setText("");
+        departmentFilter.setText("");
+    }
+
+    /**
+     * Clears all text fields used for setting new or updating teacher attributes.
+     */
+    private void resetSetFields() {
+        usernameSet.setText("");
+        nameSet.setText("");
+        departmentSet.setText("");
+        passwordSet.setText("");
+        ageSet.setText("");
+    }
+
+    /**
+     * Creates a new Teacher instance based on the input fields.
+     *
+     * @param existing A flag indicating whether an existing teacher is being updated or a new one
+    is created.
+     * @return The newly created or updated Teacher instance.
+     */
     private Teacher newTeacher(boolean existing) {
         String username = usernameSet.getText();
         String name = nameSet.getText();
@@ -138,9 +185,13 @@ public class TeacherManagementController implements Initializable {
         }
     }
 
+    /**
+     * Adds a new teacher to the system based on the input fields.
+     */
     @FXML
     public void add() {
         Teacher newTeacher = newTeacher(false);
+        resetSetFields();
         String msg = SystemDatabase.registerTeacher(newTeacher);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
@@ -150,6 +201,9 @@ public class TeacherManagementController implements Initializable {
         refresh();
     }
 
+    /**
+     * Updates an existing teacher's details in the system using the input fields.
+     */
     @FXML
     public void update() {
         if (updating == null) {
@@ -158,11 +212,15 @@ public class TeacherManagementController implements Initializable {
             String old_username = updating.getUsername();
             System.out.println("Updating teacher " + old_username);
             Teacher newTeacher = newTeacher(true);
+            resetSetFields();
             SystemDatabase.updateTeacher(newTeacher, old_username);
             refresh();
         }
     }
 
+    /**
+     * Deletes the selected teacher from the system.
+     */
     @FXML
     public void delete() {
         if (updating == null) {
@@ -174,6 +232,12 @@ public class TeacherManagementController implements Initializable {
         }
     }
 
+    /**
+     * Handles the selection of a teacher in the table view, updating related UI components and
+     setting the 'updating' teacher.
+     *
+     * @param mouseEvent The MouseEvent associated with the selection action.
+     */
     public void selected(MouseEvent mouseEvent) {
         Teacher selectedItem = (Teacher) accountTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null && selectedItem != updating) {

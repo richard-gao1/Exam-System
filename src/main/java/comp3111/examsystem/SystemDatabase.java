@@ -7,22 +7,39 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Communicates and writes between systemDatabase and actors
+ * @author whwmaust2125
+ * @since 2024-11-21
+ */
 public class SystemDatabase {
-    /*
-    Used to store all important, shared information the system requires
+    /**
+     * The file format of the data stored
      */
-    // keep different account types separate
-
-    // maps Username -> Instance of Account
     static final String data_filetype = ".json";
+    /**
+     * Store the current logged-in user (Teacher or Student)
+     */
     public static User currentUser;
 
+    /**
+     * Creates a directory if it does not already exist.
+     *
+     * @param directory The path of the directory to create.
+     * @return true if the directory was created or already exists, false otherwise.
+     */
     private boolean createFolder(String directory) {
         File folder = new File(directory);
         if (!folder.exists()) return folder.mkdir();
         return true;
     }
 
+    /**
+     * Creates a file at the specified path if it does not already exist.
+     *
+     * @param filepath The path where the file should be created.
+     * @return true if the file was created or already exists, false otherwise.
+     */
     private static boolean createFile(String filepath) {
         File file = new File(filepath);
         if (file.exists()) return true;
@@ -34,15 +51,28 @@ public class SystemDatabase {
         return false;
     }
 
+    /**
+     * Removes a file at the specified path.
+     *
+     * @param filepath The path of the file to remove.
+     * @return true if the file was successfully removed, false otherwise.
+     */
     private static boolean removeFile(String filepath) {
         File file = new File(filepath);
         return file.delete();
     }
 
+    /**
+     * Removes all files and directories of the database.
+     */
     public static void removeAll() {
         removeFile("data");
     }
 
+    /**
+     * Constructs a new SystemDatabase instance, initializing necessary folders and files.
+     * Also creates a default Manager account if none exists.
+     */
     public SystemDatabase() {
         // create folders if not exist
         createFolder("data/");
@@ -63,6 +93,12 @@ public class SystemDatabase {
         registerManager(manager);
     }
 
+    /**
+     * Retrieves the file path for the list of names based on the account type.
+     *
+     * @param type The type of account (STUDENT, TEACHER, or MANAGER).
+     * @return The file path as a string.
+     */
     private static String getNameListFilePath(AccountType type) {
         String folder = switch (type) {
             case STUDENT -> "students";
@@ -72,6 +108,13 @@ public class SystemDatabase {
         return "data/account/" + folder + data_filetype;
     }
 
+    /**
+     * Retrieves the file path for a specific user's account based on the username and account type.
+     *
+     * @param username The unique identifier for the user.
+     * @param type     The type of account (STUDENT, TEACHER, or MANAGER).
+     * @return The file path as a string.
+     */
     private static String getAccountFilePath(String username, AccountType type) {
         if (username.isEmpty()) return "";
         String folder = switch (type) {
@@ -82,7 +125,14 @@ public class SystemDatabase {
         return "data/account/" + folder + "/" + username + data_filetype;
     }
 
-    // perhaps login is done through the system.
+    /**
+     * Logs in an account with the provided username, password, and account type.
+     *
+     * @param username The unique identifier for the user.
+     * @param password The password for the user.
+     * @param type     The type of account (STUDENT, TEACHER, or MANAGER).
+     * @return An Account object if login is successful, otherwise null.
+     */
     public static Account login(String username, String password, AccountType type) {
         Account account = switch (type) {
             case STUDENT -> getStudent(username);
@@ -93,30 +143,56 @@ public class SystemDatabase {
         return account;
     }
 
-    public static String studentToJsonString(Student student) {
-        return new Gson().toJson(student);
-    }
-
+    /**
+     * Converts a JSON string to a Student object.
+     *
+     * @param input The JSON string to be converted.
+     * @return A Student object if conversion is successful, otherwise null.
+     */
     public static Student jsonStringToStudent(String input) {
         Gson gson = new Gson();
         return gson.fromJson(input, Student.class);
     }
 
+    /**
+     * Converts a JSON string to a Teacher object.
+     *
+     * @param input The JSON string to be converted.
+     * @return A Teacher object if conversion is successful, otherwise null.
+     */
     public static Teacher jsonStringToTeacher(String input) {
         Gson gson = new Gson();
         return gson.fromJson(input, Teacher.class);
     }
 
+    /**
+     * Converts a JSON string to a Manager object.
+     *
+     * @param input The JSON string to be converted.
+     * @return A Manager object if conversion is successful, otherwise null.
+     */
     public static Manager jsonStringToManager(String input) {
         Gson gson = new Gson();
         return gson.fromJson(input, Manager.class);
     }
 
+    /**
+     * Converts a JSON string to a Course object.
+     *
+     * @param input The JSON string to be converted.
+     * @return A Course object if conversion is successful, otherwise null.
+     */
     public static Course jsonStringToCourse(String input) {
         Gson gson = new Gson();
         return gson.fromJson(input, Course.class);
     }
 
+    /**
+     * Retrieves a Course object from the file system based on the provided course ID.
+     *
+     * @param courseID The unique identifier for the course.
+     * @return A Course object if found, otherwise null.
+     */
     public static Course getCourse(String courseID) {
         courseID = courseID.replace(" ", "");
         String filepath = "data/course/" + courseID + data_filetype;
@@ -133,6 +209,12 @@ public class SystemDatabase {
         return null;
     }
 
+    /**
+     * Retrieves a Student object from the file system based on the provided username.
+     *
+     * @param username The unique identifier for the student.
+     * @return A Student object if found, otherwise null.
+     */
     public static Student getStudent(String username) {
         String filepath = getAccountFilePath(username, AccountType.STUDENT);
         try {
@@ -148,6 +230,12 @@ public class SystemDatabase {
         }
     }
 
+    /**
+     * Retrieves a Teacher object from the file system based on the provided username.
+     *
+     * @param username The unique identifier for the teacher.
+     * @return A Teacher object if found, otherwise null.
+     */
     public static Teacher getTeacher(String username) {
         String filepath = getAccountFilePath(username, AccountType.TEACHER);
         try {
@@ -163,6 +251,12 @@ public class SystemDatabase {
         }
     }
 
+    /**
+     * Retrieves a Manager object from the file system based on the provided username.
+     *
+     * @param username The unique identifier for the manager.
+     * @return A Manager object if found, otherwise null.
+     */
     public static Manager getManager(String username) {
         String filepath = getAccountFilePath(username, AccountType.MANAGER);
         try {
@@ -178,6 +272,12 @@ public class SystemDatabase {
         }
     }
 
+    /**
+     * Reads and returns a list of course IDs from a file.
+     *
+     * @return An ArrayList containing the course IDs, or null if an error occurs or the file is
+    empty.
+     */
     private static ArrayList<String> getCourseIDArray() {
         String filename = "data/courses" + data_filetype;
         try {
@@ -194,10 +294,14 @@ public class SystemDatabase {
         }
     }
 
-    /*
-    * Functions that filter students.
-    * Leave empty for no filter
-    * */
+    /**
+     * Retrieves a list of students filtered by containing specific substring in username, name, and department.
+     *
+     * @param usernameFilter The filter for student usernames.
+     * @param nameFilter     The filter for student names.
+     * @param departmentFilter The filter for student departments.
+     * @return An ArrayList containing the filtered list of Student objects.
+     */
     public static ArrayList<Student> getStudentList(String usernameFilter, String nameFilter, String departmentFilter) {
         ArrayList<Student> studentList = new ArrayList<>();
         ArrayList<String> username_array = getUsernameArray(AccountType.STUDENT);
@@ -216,10 +320,14 @@ public class SystemDatabase {
 
     }
 
-    /*
-     * Functions that filter teachers.
-     * Leave empty for no filter
-     * */
+    /**
+     * Retrieves a list of teachers filtered by containing specific substring in username, name, and department.
+     *
+     * @param usernameFilter The filter for teacher usernames.
+     * @param nameFilter     The filter for teacher names.
+     * @param departmentFilter The filter for teacher departments.
+     * @return An ArrayList containing the filtered list of Teacher objects.
+     */
     public static ArrayList<Teacher> getTeacherList(String usernameFilter, String nameFilter, String departmentFilter) {
         ArrayList<Teacher> teacherList = new ArrayList<>();
         ArrayList<String> username_array = getUsernameArray(AccountType.TEACHER);
@@ -237,6 +345,14 @@ public class SystemDatabase {
         ).collect(Collectors.toCollection(ArrayList::new));
     }
 
+    /**
+     * Retrieves a list of courses filtered by containing specific substring in course ID, course name, and department.
+     *
+     * @param courseIDFilter The filter for course IDs.
+     * @param courseNameFilter The filter for course names.
+     * @param departmentFilter The filter for course departments.
+     * @return An ArrayList containing the filtered list of Course objects.
+     */
     public static ArrayList<Course> getCourseList(String courseIDFilter, String courseNameFilter, String departmentFilter) {
         ArrayList<Course> courseList = new ArrayList<>();
         ArrayList<String> courseID_array = getCourseIDArray();
@@ -254,11 +370,13 @@ public class SystemDatabase {
         ).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    /*
-    * Helper function for getting the username list of students, teachers and managers.
-    * The username list of students, teachers, and managers are stored in different .tmp
-    * each username is separated by ';'
-    * */
+    /**
+     * Reads and returns a list of usernames from a file.
+     *
+     * @param type The AccountType specifying which list to read.
+     * @return An ArrayList containing the usernames, or an empty ArrayList if an error occurs or
+    the file is empty.
+     */
     private static ArrayList<String> getUsernameArray(AccountType type) {
         try {
             String filename = getNameListFilePath(type);
@@ -276,6 +394,12 @@ public class SystemDatabase {
         return new ArrayList<>();
     }
 
+    /**
+     * Writes a list of usernames to a file.
+     *
+     * @param username_array The ArrayList containing the usernames to be written.
+     * @param type           The AccountType specifying which list to write to.
+     */
     private static void writeUsernameFile(ArrayList<String> username_array, AccountType type) {
         String filename = getNameListFilePath(type);
         try {
@@ -290,6 +414,11 @@ public class SystemDatabase {
 
     }
 
+    /**
+     * Writes a list of course IDs to a file.
+     *
+     * @param course_array The ArrayList containing the course IDs to be written.
+     */
     private static void writeCourseIDFile(ArrayList<String> course_array) {
         String filename = "data/courses" + data_filetype;
         try {
@@ -303,6 +432,12 @@ public class SystemDatabase {
         }
     }
 
+    /**
+     * Writes JSON content to a specified file.
+     *
+     * @param filepath The path of the file where the JSON will be written.
+     * @param text     The JSON string to be written to the file.
+     */
     private static void writeJson(String filepath, String text) {
         try {
             FileOutputStream fos = new FileOutputStream(filepath);
@@ -314,6 +449,11 @@ public class SystemDatabase {
         }
     }
 
+    /**
+     * Writes a student's information to a file.
+     *
+     * @param student The Student object containing the information to be written.
+     */
     private static void writeStudentFile(Student student) {
         if (student == null) return;
         String username = student.getUsername();
@@ -326,6 +466,11 @@ public class SystemDatabase {
         writeUsernameFile(username_array, AccountType.STUDENT);
     }
 
+    /**
+     * Writes a teacher's information to a file.
+     *
+     * @param teacher The Teacher object containing the information to be written.
+     */
     private static void writeTeacherFile(Teacher teacher) {
         if (teacher == null) return;
         String username = teacher.getUsername();
@@ -338,6 +483,11 @@ public class SystemDatabase {
         writeUsernameFile(username_array, AccountType.TEACHER);
     }
 
+    /**
+     * Writes a manager's information to a file.
+     *
+     * @param manager The Manager object containing the information to be written.
+     */
     private static void writeManagerFile(Manager manager) {
         if (manager == null) return;
         String username = manager.getUsername();
@@ -350,6 +500,11 @@ public class SystemDatabase {
         writeUsernameFile(username_array, AccountType.MANAGER);
     }
 
+    /**
+     * Writes a course's information to a file.
+     *
+     * @param course The Course object containing the information to be written.
+     */
     private static void writeCourseFile(Course course) {
         if (course == null) return;
         String courseID = course.getCourseID();
@@ -361,35 +516,64 @@ public class SystemDatabase {
         writeCourseIDFile(courseID_array);
     }
 
-    /*
-    * Function for updating student information
-    * */
+    /**
+     * Updates a student's information using a new Student object and the old username.
+     *
+     * @param newStudent The updated Student object with new information.
+     * @param old_username The original username of the student to be updated.
+     */
     public static void updateStudent(Student newStudent, String old_username) {
         changeStudentUsername(newStudent, old_username);
         writeStudentFile(newStudent);
     }
 
+    /**
+     * Updates a student's information using a new Student object.
+     *
+     * @param newStudent The updated Student object with new information.
+     */
     public static void updateStudent(Student newStudent) {
         updateStudent(newStudent, newStudent.getUsername());
     }
 
-    /*
-     * Function for updating teacher information
-     * */
+    /**
+     * Updates a teacher's information using a new Teacher object and the old username.
+     *
+     * @param newTeacher The updated Teacher object with new information.
+     * @param old_username The original username of the teacher to be updated.
+     */
     public static void updateTeacher(Teacher newTeacher, String old_username) {
         changeTeacherUsername(newTeacher, old_username);
         writeTeacherFile(newTeacher);
     }
 
+    /**
+     * Updates a teacher's information using a new Teacher object.
+     *
+     * @param newTeacher The updated Teacher object with new information.
+     */
     public static void updateTeacher(Teacher newTeacher) {
         updateTeacher(newTeacher, newTeacher.getUsername());
     }
 
+    /**
+     * Modifies a course by updating its information using a new Course object and the old course
+     ID.
+     *
+     * @param newCourse The updated Course object with new information.
+     * @param old_courseID The original course ID of the course to be modified.
+     */
     public static void modifyCourse(Course newCourse, String old_courseID) {
         changeCourseID(newCourse, old_courseID);
         writeCourseFile(newCourse);
     }
 
+    /**
+     * Changes the username of a given student.
+     *
+     * @param newStudent The student object with the new username information.
+     * @param old_username The original username that will be replaced.
+     */
     private static void changeStudentUsername(Student newStudent, String old_username) {
         String new_username = (newStudent == null) ? "" : newStudent.getUsername();
         if (Objects.equals(old_username, new_username)) return;
@@ -403,6 +587,12 @@ public class SystemDatabase {
         removeStudent(old_username);
     }
 
+    /**
+     * Changes the username of a given teacher.
+     *
+     * @param newTeacher The teacher object with the new username information.
+     * @param old_username The original username that will be replaced.
+     */
     private static void changeTeacherUsername(Teacher newTeacher, String old_username) {
         String new_username = (newTeacher == null) ? "" : newTeacher.getUsername();
         if (Objects.equals(old_username, new_username)) return;
@@ -415,6 +605,12 @@ public class SystemDatabase {
         removeTeacher(old_username);
     }
 
+    /**
+     * Changes the course ID of a given course.
+     *
+     * @param newCourse The course object with the new username information.
+     * @param old_courseID The original courseID that will be replaced.
+     */
     private static void changeCourseID(Course newCourse, String old_courseID) {
         String new_courseID = (newCourse == null) ? "" : newCourse.getCourseID();
         if (Objects.equals(old_courseID, new_courseID)) return;
@@ -433,16 +629,28 @@ public class SystemDatabase {
         removeCourse(old_courseID);
     }
 
-    /*
-    * Function for removing student from database
-    * */
-
+    /**
+     * Removes a specified item from an ArrayList of Strings.
+     *
+     * @param item The string item to be removed from the list.
+     * @param list The ArrayList of strings from which the item should be removed.
+     * @return A new ArrayList of Strings with the specified item removed. If the input list is
+    null, returns an empty ArrayList.
+     */
     private static ArrayList<String> removeFromList(String item, ArrayList<String> list) {
         if (list == null) return new ArrayList<>();
         list.remove(item);
         return list;
     }
 
+    /**
+     * Adds an item to a list if it does not already contain that item.
+     *
+     * @param item The item to be added to the list.
+     * @param list The list to which the item should be added. If the list is null, it will be
+    initialized as a new ArrayList.
+     * @return The updated list containing the item.
+     */
     private static ArrayList<String> addToList(String item, ArrayList<String> list) {
         if (list == null) list = new ArrayList<>();
         if (list.contains(item)) return list;
@@ -450,6 +658,11 @@ public class SystemDatabase {
         return list;
     }
 
+    /**
+     * Removes a teacher account by username.
+     *
+     * @param username The username of the teacher to be removed.
+     */
     public static void removeStudent(String username) {
         if (getStudent(username) != null) {
             removeFile(getAccountFilePath(username, AccountType.STUDENT));
@@ -459,9 +672,11 @@ public class SystemDatabase {
         }
     }
 
-    /*
-     * Function for removing teacher from database
-     * */
+    /**
+     * Removes a teacher account by username.
+     *
+     * @param username The username of the teacher to be removed.
+     */
     public static void removeTeacher(String username) {
         if (getTeacher(username) != null) {
             removeFile(getAccountFilePath(username, AccountType.TEACHER));
@@ -471,6 +686,11 @@ public class SystemDatabase {
         }
     }
 
+    /**
+     * Removes a course by course ID.
+     *
+     * @param courseID The ID of the course to be removed.
+     */
     public static void removeCourse(String courseID) {
         if (getCourse(courseID) != null) {
             removeFile("data/course/" + courseID + data_filetype);
@@ -480,9 +700,13 @@ public class SystemDatabase {
         }
     }
 
-    /*
-    * Called for register / add a student / teacher
-    * */
+    /**
+     * Registers a new student by writing their information to a file.
+     *
+     * @param student The Student object containing the information to be registered.
+     * @return An empty string if registration is successful, or an error message if the username
+    already exists.
+     */
     public static String registerStudent(Student student) {
         String username = student.getUsername();
         if (getStudent(username) != null) {
@@ -493,6 +717,13 @@ public class SystemDatabase {
         return "";
     }
 
+    /**
+     * Registers a new teacher by writing their information to a file.
+     *
+     * @param teacher The Teacher object containing the information to be registered.
+     * @return An empty string if registration is successful, or an error message if the username
+    already exists.
+     */
     public static String registerTeacher(Teacher teacher) {
         String username = teacher.getUsername();
         if (getTeacher(username) != null) {
@@ -503,6 +734,13 @@ public class SystemDatabase {
         return "";
     }
 
+    /**
+     * Registers a new manager by writing their information to a file.
+     *
+     * @param manager The Manager object containing the information to be registered.
+     * @return An empty string if registration is successful, or an error message if the username
+    already exists.
+     */
     public static String registerManager(Manager manager) {
         String username = manager.getUsername();
         if (getManager(username) != null) {
@@ -513,6 +751,13 @@ public class SystemDatabase {
         return "";
     }
 
+    /**
+     * Creates a new course by writing its information to a file.
+     *
+     * @param course The Course object containing the information to be created.
+     * @return An empty string if creation is successful, or an error message if the course ID
+    already exists.
+     */
     public static String createCourse(Course course) {
         String courseID = course.getCourseID();
         if (getCourse(courseID) != null) {
