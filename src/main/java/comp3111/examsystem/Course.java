@@ -15,7 +15,6 @@ public class Course {
         this(name, null,department, students, exams);
     }
 
-
     public Course() {
         this.courseID = "COMP3111";
         this.name = "Software Engineering";
