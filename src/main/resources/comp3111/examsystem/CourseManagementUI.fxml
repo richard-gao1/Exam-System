@@ -117,18 +117,18 @@
                         <TableView fx:id="teacherTable" prefHeight="125.0" prefWidth="130.0" onMouseClicked="#teacherSelected">
                             <columns>
                                 <TableColumn fx:id="usernameColumn" prefWidth="70.0" text="username" />
-                                <TableColumn fx:id="nameColumn" prefWidth="60.0" text="name" />
+                                <TableColumn fx:id="nameColumn" prefWidth="100.0" text="name" />
                             </columns>
                             <VBox.margin>
                                 <Insets top="10.0"
                                         left="10.0" right="10.0"/>
                             </VBox.margin>
                         </TableView>
-                        <Button mnemonicParsing="false" onAction="#clearTeacher" text="Clear">
-                            <HBox.margin>
+                        <Button mnemonicParsing="false" onAction="#removeTeacher" text="Remove Teacher">
+                            <VBox.margin>
                                 <Insets top="10.0"
                                         left="10.0" right="10.0"/>
-                            </HBox.margin>
+                            </VBox.margin>
                         </Button>
                     </children>
                 </VBox>

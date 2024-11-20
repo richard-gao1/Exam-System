@@ -142,7 +142,10 @@ public class TeacherGradeStatisticController implements Initializable {
         /*
          add grades from teachers
          */
-
+        for (Exam exam : exams) {
+            HashMap<String, Grade> studentGrade = exam.getStudentGrades();
+            gradeList.addAll(studentGrade.values());
+        }
         updateHashMaps(false);
     }
 

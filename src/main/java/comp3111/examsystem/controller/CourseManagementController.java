@@ -107,9 +107,7 @@ public class CourseManagementController implements Initializable {
         String department = departmentSet.getText();
         Course course = updating.update(courseID, name, department);
         Teacher teacher = (Teacher) teacherTable.getSelectionModel().getSelectedItem();
-        if (teacher != null) {
-            course.setTeacher(teacher);
-        }
+        course.setTeacher(teacher);
         return course;
     }
 
@@ -119,9 +117,7 @@ public class CourseManagementController implements Initializable {
         String department = departmentSet.getText();
         Course course = new Course(courseID, name, department, new ArrayList<>(), new ArrayList<>());
         Teacher teacher = (Teacher) teacherTable.getSelectionModel().getSelectedItem();
-        if (teacher != null) {
-            course.setTeacher(teacher);
-        }
+        course.setTeacher(teacher);
         return course;
     }
 
@@ -156,7 +152,7 @@ public class CourseManagementController implements Initializable {
             // no student is selected
         } else {
             String courseID = updating.getCourseID();
-            SystemDatabase.removeCourse(courseID);
+            SystemDatabase.modifyCourse(null, courseID);
             refresh();
         }
     }
@@ -168,6 +164,10 @@ public class CourseManagementController implements Initializable {
             courseIDSet.setText(updating.getCourseID());
             courseNameSet.setText(updating.getCourseName());
             departmentSet.setText(updating.getDepartment());
+            Teacher teacher = updating.getTeacher();
+            if (teacherList.contains(teacher)) {
+                teacherTable.getSelectionModel().select(teacher);
+            }
         }
     }
 
@@ -175,7 +175,7 @@ public class CourseManagementController implements Initializable {
 
     }
 
-    public void clearTeacher() {
+    public void removeTeacher() {
         teacherTable.getSelectionModel().clearSelection();
     }
 }

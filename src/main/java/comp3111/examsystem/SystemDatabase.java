@@ -315,6 +315,7 @@ public class SystemDatabase {
     }
 
     private static void writeStudentFile(Student student) {
+        if (student == null) return;
         String username = student.getUsername();
         String filepath = getAccountFilePath(username, AccountType.STUDENT);
         createFile(filepath);
@@ -326,6 +327,7 @@ public class SystemDatabase {
     }
 
     private static void writeTeacherFile(Teacher teacher) {
+        if (teacher == null) return;
         String username = teacher.getUsername();
         String filepath = getAccountFilePath(username, AccountType.TEACHER);
         createFile(filepath);
@@ -337,6 +339,7 @@ public class SystemDatabase {
     }
 
     private static void writeManagerFile(Manager manager) {
+        if (manager == null) return;
         String username = manager.getUsername();
         String filepath = getAccountFilePath(username, AccountType.MANAGER);
         createFile(filepath);
@@ -348,6 +351,7 @@ public class SystemDatabase {
     }
 
     private static void writeCourseFile(Course course) {
+        if (course == null) return;
         String courseID = course.getCourseID();
         String filepath = "data/course/" + courseID + data_filetype;
         String text = new Gson().toJson(course);
@@ -361,7 +365,7 @@ public class SystemDatabase {
     * Function for updating student information
     * */
     public static void updateStudent(Student newStudent, String old_username) {
-        if (!Objects.equals(old_username, newStudent.getUsername())) removeStudent(old_username);
+        changeStudentUsername(newStudent, old_username);
         writeStudentFile(newStudent);
     }
 
@@ -373,7 +377,7 @@ public class SystemDatabase {
      * Function for updating teacher information
      * */
     public static void updateTeacher(Teacher newTeacher, String old_username) {
-        if (!Objects.equals(old_username, newTeacher.getUsername())) removeTeacher(old_username);
+        changeTeacherUsername(newTeacher, old_username);
         writeTeacherFile(newTeacher);
     }
 
@@ -382,8 +386,51 @@ public class SystemDatabase {
     }
 
     public static void modifyCourse(Course newCourse, String old_courseID) {
-        if (!Objects.equals(old_courseID, newCourse.getCourseID())) removeCourse(old_courseID);
+        changeCourseID(newCourse, old_courseID);
         writeCourseFile(newCourse);
+    }
+
+    private static void changeStudentUsername(Student newStudent, String old_username) {
+        String new_username = (newStudent == null) ? "" : newStudent.getUsername();
+        if (Objects.equals(old_username, new_username)) return;
+        Student oldStudent = getStudent(old_username);
+        if (oldStudent == null) return;
+        List<Course> courses = oldStudent.getCourses();
+        for (Course course : courses) {
+            course.dropStudent(oldStudent);
+            if (newStudent != null) course.addStudent(newStudent);
+        }
+        removeStudent(old_username);
+    }
+
+    private static void changeTeacherUsername(Teacher newTeacher, String old_username) {
+        String new_username = (newTeacher == null) ? "" : newTeacher.getUsername();
+        if (Objects.equals(old_username, new_username)) return;
+        Teacher oldTeacher = getTeacher(old_username);
+        if (oldTeacher == null) return;
+        List<Course> courses = oldTeacher.getCourses();
+        for (Course course : courses) {
+            course.setTeacher(newTeacher);
+        }
+        removeTeacher(old_username);
+    }
+
+    private static void changeCourseID(Course newCourse, String old_courseID) {
+        String new_courseID = (newCourse == null) ? "" : newCourse.getCourseID();
+        if (Objects.equals(old_courseID, new_courseID)) return;
+        Course oldCourse = getCourse(old_courseID);
+        if (oldCourse == null) return;
+        Teacher teacher = oldCourse.getTeacher();
+        if (teacher != null) {
+            teacher.dropCourse(oldCourse);
+            if (newCourse != null) teacher.addCourse(newCourse);
+        }
+        List<Student> students = oldCourse.getStudents();
+        for (Student student : students) {
+            student.dropCourse(oldCourse);
+            if (newCourse != null) student.addCourse(newCourse);
+        }
+        removeCourse(old_courseID);
     }
 
     /*

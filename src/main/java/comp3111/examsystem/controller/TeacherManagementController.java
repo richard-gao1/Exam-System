@@ -169,7 +169,7 @@ public class TeacherManagementController implements Initializable {
             // no teacher is selected
         } else {
             String username = updating.getUsername();
-            SystemDatabase.removeTeacher(username);
+            SystemDatabase.updateTeacher(null, username);
             refresh();
         }
     }

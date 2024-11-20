@@ -14,7 +14,7 @@ public class Exam {
     private ArrayList<Question> questions = new ArrayList<>(); // For JSON serialization
 
     private String courseID; // Store course as courseID (Change)
-    private HashMap<Student, Grade> studentToGrades = new HashMap<>();
+    private HashMap<String, Grade> studentToGrades = new HashMap<>();
 
     // Constructors
     public Exam(String examName, Course course, boolean isPublished, int duration) {
@@ -113,11 +113,11 @@ public class Exam {
         }
     }
 
-    public HashMap<Student, Grade> getStudentGrades() {
+    public HashMap<String, Grade> getStudentGrades() {
         return studentToGrades;
     }
 
-    public void setStudentGrades(HashMap<Student, Grade> studentToGrades) {
+    public void setStudentGrades(HashMap<String, Grade> studentToGrades) {
         this.studentToGrades = studentToGrades;
     }
 
@@ -171,7 +171,7 @@ public class Exam {
     }
 
     public void gradeStudent(Student student, Integer examScore, int timeSpend) {
-        studentToGrades.put(student, new Grade(student.getName(), getCourse().getCourseID(), getExamName(), examScore, getFullScore(), Math.min(timeSpend, duration)));
+        studentToGrades.put(student.getUsername(), new Grade(student.getName(), getCourse().getCourseID(), getExamName(), examScore, getFullScore(), Math.min(timeSpend, duration)));
     }
 
     @Override
