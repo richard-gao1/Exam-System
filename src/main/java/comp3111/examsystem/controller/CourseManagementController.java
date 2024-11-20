@@ -44,7 +44,7 @@ public class CourseManagementController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        getCourseList();
+        refresh();
         accountTable.setItems(courseList);
         courseIDColumn.setCellValueFactory(new PropertyValueFactory<>("courseID"));
         courseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
@@ -133,5 +133,9 @@ public class CourseManagementController implements Initializable {
             courseNameSet.setText(updating.getCourseName());
             departmentSet.setText(updating.getDepartment());
         }
+    }
+
+    public void teacherSelected(MouseEvent mouseEvent) {
+
     }
 }

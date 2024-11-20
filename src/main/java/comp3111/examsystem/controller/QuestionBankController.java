@@ -232,7 +232,7 @@ public class QuestionBankController implements Initializable {
         bInput.setText(question.getOptions().size() > 1 ? question.getOptions().get(1) : "");
         cInput.setText(question.getOptions().size() > 2 ? question.getOptions().get(2) : "");
         dInput.setText(question.getOptions().size() > 3 ? question.getOptions().get(3) : "");
-        answerInput.setText(question.getAnswer());
+        answerInput.setText(String.valueOf(question.getAnswer()));
         scoreInput.setText(String.valueOf(question.getScore()));
         typeInput.setValue(question.getTypeChoice() == 0 ? "Single" : "Multiple");
     }
