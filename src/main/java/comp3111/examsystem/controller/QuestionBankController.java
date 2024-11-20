@@ -161,17 +161,18 @@ public class QuestionBankController implements Initializable {
         }
         try {
             // Update Question Properties
-            selected.setContent(questionInput.getText());
-            selected.setOptions(new String[]{
-                    aInput.getText(),
-                    bInput.getText(),
-                    cInput.getText(),
-                    dInput.getText()
-            });
-            selected.setAnswer(answerInput.getText());
-            selected.setTypeChoice(typeInput.getValue().equals("Multiple") ? 1 : 0);
-            selected.setScore(Integer.parseInt(scoreInput.getText()));
-
+            currentTeacher.updateQuestion(selected,
+                    questionInput.getText(),
+                    new String[]{
+                            aInput.getText(),
+                            bInput.getText(),
+                            cInput.getText(),
+                            dInput.getText()
+                    },
+                    answerInput.getText(),
+                    Integer.parseInt(scoreInput.getText()),
+                    typeInput.getValue()
+                    );
             // Clear Input Fields and Refresh Table
             clearInputFields();
             questionTable.refresh();
@@ -188,7 +189,7 @@ public class QuestionBankController implements Initializable {
         if (selected != null) {
             // Remove from both the list and the question bank
             questionList.remove(selected);
-            currentTeacher.getQuestionBank().remove(selected);
+            currentTeacher.deleteQuestion(selected);
         }
     }
 
@@ -246,6 +247,7 @@ public class QuestionBankController implements Initializable {
     private boolean validateInputs() {
         if (questionInput.getText().isEmpty()) {
             questionInput.requestFocus();
+            questionInput.getOnMouseClicked();
             showAlert(Alert.AlertType.WARNING, "Missing Input", "Question content is required.");
             return false;
         }

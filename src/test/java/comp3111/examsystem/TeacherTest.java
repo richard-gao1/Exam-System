@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TeacherTest {
-
     private Teacher teacher;
     private Course course;
     private Exam exam;
@@ -19,30 +18,29 @@ class TeacherTest {
 
     @BeforeEach
     void setUp() {
+        SystemDatabase.removeAll();
         SystemDatabase database = new SystemDatabase();
         teacher = new Teacher("kwleung","1234","kenneth","male",30,"CSE","Assistant Professor");
-        course = new Course("Software Engineering","COMP3111", "CSE",teacher);
+        course = new Course("COMP3111", "Software Engineering","CSE",teacher);
         SystemDatabase.createCourse(course);
 
-        question = new Question("What is 2+2?", new String[]{"1", "2", "3", "4"}, "4", 0, 5);
-        teacher.getQuestionBank().add(question);
+        question = new Question("What is 2+2?", new String[]{"1", "2", "3", "4"}, "D", 10, 0);
+        teacher.createQuestion(question);
 
         exam = new Exam("Midterm", course, false, 120);
         exam.addQuestion(question);
         //teacher.addExam(exam, "COMP3111");
     }
 
-    @AfterEach
-    void clear(){
-        SystemDatabase.removeAll();
-    }
+//    @AfterEach
+//    void tearDown(){
+//        SystemDatabase.removeAll();
+//    }
 
     @Test
     void testCreateExam() {
-        Exam newExam = new Exam("Final", course, true, 180);
-        teacher.addExam(newExam, "COMP3111");
-
-        assertTrue(teacher.getExams().contains(newExam), "The exam should be added to the teacher's exam list.");
+        teacher.createExam("Final", course.getCourseID(), true, 180,null);
+        assertEquals(2, teacher.getExams().size(), "The exam should be added to the teacher's exam list.");
     }
 
     @Test
@@ -78,7 +76,7 @@ class TeacherTest {
 
     @Test
     void testCreateQuestion() {
-        Question newQuestion = new Question("What is 3+3?", new String[]{"1", "2", "3", "6"}, "6", 0, 5);
+        Question newQuestion = new Question("What is the first positive even number?", new String[]{"1", "2", "3", "6"}, "b" , 0, 5);
         teacher.getQuestionBank().add(newQuestion);
 
         assertTrue(teacher.getQuestionBank().contains(newQuestion), "The question should be added to the teacher's question bank.");
@@ -93,7 +91,7 @@ class TeacherTest {
 
     @Test
     void testUpdateQuestion() {
-        Question updatedQuestion = new Question("What is 2+3?", new String[]{"1", "2", "3", "5"}, "5", 0, 5);
+        Question updatedQuestion = new Question("What is 2+3?", new String[]{"1", "2", "3", "5"}, "D", 0, 0);
         teacher.getQuestionBank().remove(question);
         teacher.getQuestionBank().add(updatedQuestion);
 
@@ -109,5 +107,95 @@ class TeacherTest {
         assertTrue(questionBank.contains(question), "The question bank should contain the added question.");
     }
 
+
+    @Test
+    void update() {
+    }
+
+    @Test
+    void addCourse() {
+    }
+
+    @Test
+    void dropCourse() {
+    }
+
+    @Test
+    void getCourses() {
+        boolean a = false;
+        for (Course c: teacher.getCourses()){
+            System.out.println(course.getExams().containsAll(c.getExams()));
+            System.out.println(course.getExams().getFirst().equals(c.getExams().getFirst()));
+            System.out.println(course.getExams().getFirst());
+            System.out.println(c.getExams().getFirst());
+            if (c.equals(course)) a = true;
+        }
+        assertTrue(a);
+    }
+
+    @Test
+    void getCourseID() {
+    }
+
+    @Test
+    void createExam() {
+    }
+
+    @Test
+    void addExam() {
+    }
+
+    @Test
+    void deleteExam() {
+    }
+
+    @Test
+    void updateExam() {
+    }
+
+    @Test
+    void getExams() {
+    }
+
+    @Test
+    void getPosition() {
+    }
+
+    @Test
+    void viewQuestion() {
+    }
+
+    @Test
+    void createQuestion() {
+    }
+
+
+    @Test
+    void deleteQuestion() {
+    }
+
+    @Test
+    void viewQuestionBank() {
+    }
+
+    @Test
+    void getQuestionBank() {
+    }
+
+    @Test
+    void viewStudent() {
+    }
+
+    @Test
+    void viewStudentAnswer() {
+    }
+
+    @Test
+    void gradeStudentAnswer() {
+    }
+
+    @Test
+    void updateQuestion() {
+    }
 
 }

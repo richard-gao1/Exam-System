@@ -5,6 +5,7 @@ import javafx.beans.property.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Exam {
     private String examName; // Primitive for JSON serialization
@@ -12,13 +13,13 @@ public class Exam {
     private int duration; // Primitive for JSON serialization
     private ArrayList<Question> questions = new ArrayList<>(); // For JSON serialization
 
-    private Course course; // Reference to the course
+    private String courseID; // Store course as courseID (Change)
     private HashMap<Student, Grade> studentToGrades = new HashMap<>();
 
     // Constructors
     public Exam(String examName, Course course, boolean isPublished, int duration) {
         setExamName(examName);
-        this.course = course;
+        this.courseID = course != null ? course.getCourseID() : null; // Change: Store courseID
         this.isPublished = isPublished;
         this.duration = duration;
         if (course != null) {
@@ -57,8 +58,8 @@ public class Exam {
         return new SimpleIntegerProperty(this.duration);
     }
 
-    public StringProperty courseIDProperty(){
-        return new SimpleStringProperty(this.course.getCourseID());
+    public StringProperty courseIDProperty() {
+        return new SimpleStringProperty(this.courseID);
     }
 
     // Getters and Setters for primitive fields
@@ -95,15 +96,19 @@ public class Exam {
     }
 
     public Course getCourse() {
-        return course;
+        // Change: Dynamically retrieve the Course object using courseID
+        return courseID != null ? SystemDatabase.getCourse(courseID) : null;
     }
 
     public void setCourse(Course course) {
         if (course != null) {
-            if (this.course != null) {
-                this.course.dropExam(this);
+            if (this.courseID != null) {
+                Course existingCourse = SystemDatabase.getCourse(this.courseID); // Fetch the current course
+                if (existingCourse != null) {
+                    existingCourse.dropExam(this);
+                }
             }
-            this.course = course;
+            this.courseID = course.getCourseID(); // Change: Store courseID
             course.addExam(this);
         }
     }
@@ -133,9 +138,9 @@ public class Exam {
         }
     }
 
-    public int getFullScore(){
+    public int getFullScore() {
         int score = 0;
-        for (Question q: questions) score += q.getScore();
+        for (Question q : questions) score += q.getScore();
         return score;
     }
 
@@ -158,7 +163,7 @@ public class Exam {
                 score += Math.max(0,
                         question.getScore()
                                 * (Integer.bitCount(a & question.getAnswer())
-                                -Integer.bitCount(a & ~question.getAnswer() &15))
+                                - Integer.bitCount(a & ~question.getAnswer() & 15))
                                 / Integer.bitCount(question.getAnswer()));
             }
         }
@@ -166,6 +171,19 @@ public class Exam {
     }
 
     public void gradeStudent(Student student, Integer examScore, int timeSpend) {
-        studentToGrades.put(student,new Grade(student.getName(),getCourse().getCourseID(),getExamName(),examScore,getFullScore(),Math.min(timeSpend,duration)));
+        studentToGrades.put(student, new Grade(student.getName(), getCourse().getCourseID(), getExamName(), examScore, getFullScore(), Math.min(timeSpend, duration)));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Exam exam = (Exam) o;
+        return isPublished == exam.isPublished && getDuration() == exam.getDuration() && Objects.equals(getExamName(), exam.getExamName()) && getQuestions().containsAll(exam.getQuestions())&& exam.getQuestions().containsAll(getQuestions()) && Objects.equals(getCourse().getCourseID(), exam.getCourse().getCourseID()) && Objects.equals(studentToGrades, exam.studentToGrades);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getExamName(), isPublished, getDuration(), getQuestions(), getCourse(), studentToGrades);
     }
 }

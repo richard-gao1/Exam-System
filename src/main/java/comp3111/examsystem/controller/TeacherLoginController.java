@@ -41,7 +41,6 @@ public class TeacherLoginController implements Initializable {
             return;
         }
         SystemDatabase.currentUser = teacher;
-
         Alert alert = new Alert(Alert.AlertType.INFORMATION, null, ButtonType.OK);
         alert.setTitle("Hint");
         alert.setHeaderText("Login successful");

@@ -7,95 +7,168 @@ import java.util.Objects;
 
 public class Teacher extends User {
     private String position;
-    public Teacher(String username, String password, String name, String gender, int age, String department, String position) {
-        super(username, password, name, gender, age, department);
-        this.position = position;
-    }
+
+    // Changes: Replace `courses` with `courseIDs`
+    private ArrayList<String> courseIDs = new ArrayList<>(); // Store course IDs instead of Course objects
+
     private ArrayList<Question> questionBank = new ArrayList<>();
-    private ArrayList<Course> courses = new ArrayList<>();
     private HashMap<String, Double> course_scores;
     private HashMap<String, Double> student_scores;
     private HashMap<String, Double> exam_scores;
 
-    public void createExam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
-        createExam(examName, course.getCourseName(), isPublished, duration, questions);
-    }
-
-    public void createExam(String examName, String courseName, boolean isPublished, int duration, ArrayList<Question> questions) {
-        for (Course course: courses){
-            if (course.getCourseName().equals(courseName)){
-                Exam exam = new Exam(examName, course, isPublished, duration, questions);
-                return;
-            }
-        }
-        throw new IllegalArgumentException("No such course");
+    public Teacher(String username, String password, String name, String gender, int age, String department, String position) {
+        super(username, password, name, gender, age, department);
+        this.position = position;
     }
 
     public Teacher update(String username, String password, String name, String gender, int age, String department, String position) {
+        String oldName = this.getName();
         super.update(username, password, name, gender, age, department);
         this.position = position;
+        SystemDatabase.updateTeacher(this,oldName);
         return this;
     }
 
-    public void addCourse(Course course){
-        if (!courses.contains(course)) courses.add(course);
-    }
-
-    public void addCourse(String courseID){
-        Course c = SystemDatabase.getCourse(courseID);
-        if (c == null) return;
-        if (!courses.contains(c)){
-            courses.add(c);// only call this method via Course class
+    public void addCourse(String courseID) {
+        if (!courseIDs.contains(courseID)) {
+            courseIDs.add(courseID);
+            SystemDatabase.updateTeacher(this);
         }
     }
 
-    public void dropCourse(Course course){
-        courses.remove(course);
-            // only call this method via Course class
+    public void dropCourse(String courseID) {
+        courseIDs.remove(courseID);
+        SystemDatabase.updateTeacher(this);
     }
 
-    public void dropCourse(String courseID){
-        courses.remove(SystemDatabase.getCourse(courseID));
-        // only call this method via Course class
-    }
-
-    public void addExam(Exam exam, String courseName){
-        for (Course course: courses){
-            if (course.getCourseName().equals(courseName)){
-                course.addExam(exam);
-                return;
+    public List<Course> getCourses() {
+        // Changes: Retrieve Course objects dynamically using SystemDatabase
+        ArrayList<Course> courses = new ArrayList<>();
+        for (String courseID : courseIDs) {
+            Course course = SystemDatabase.getCourse(courseID);
+            if (course != null) {
+                courses.add(course);
             }
         }
-        throw new IllegalArgumentException("No such course");
+        return courses;
     }
 
-    public void deleteExam(String examName, String courseName) {
-        for (Course course: courses){
-            if (course.getCourseName().equals(courseName)){
+    public List<String> getCourseID() {
+        return new ArrayList<>(courseIDs); // Return a copy to avoid external modifications
+    }
+
+    public void createExam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
+        if (courseIDs.contains(courseID)){
+            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
+            if (course != null) {
+                Exam exam = new Exam(examName, course, isPublished, duration, questions);
+                return;
+            }
+            throw new IllegalArgumentException("No such course");
+        }
+        throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
+    }
+
+    public void addExam(Exam exam, String courseID) {
+        // Exams are added to courses when they are constructed.
+        // This method is called when the exam is not initialized with a course.
+        if (courseIDs.contains(courseID)) {
+            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
+            if (course != null) {
+                exam.setCourse(course);
+                return;
+            }
+            throw new IllegalArgumentException("No such course");
+        }
+        throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
+    }
+
+    public void deleteExam(String examName, String courseID) {
+        if (courseIDs.contains(courseID)) {
+            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
+            if (course != null) {
                 course.dropExam(examName);
                 return;
             }
-        }
-        throw new IllegalArgumentException("No such course");
+            throw new IllegalArgumentException("No such course");
+            }
+        throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
     }
 
-    public void updateExam(String examName, Exam exam, String courseName) {
-        for (Course course: courses){
-            if (course.getCourseName().equals(courseName)){
+    public void updateExam(String examName, Exam exam, String courseID) {
+        Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
+        updateExam(examName,exam,course);
+    }
+
+    public void updateExam(String examName, Exam exam, Course course) {
+        if (course != null) {
+            if (course.getTeacher().equals(this)) {
                 course.updateExam(examName, exam);
-                return;
+            } else {
+                throw new IllegalArgumentException("Not allowed to access this course");
             }
         }
         throw new IllegalArgumentException("No such course");
     }
 
-    public void updateExam(String examName, Exam exam, Course course) {
-        if (course.getTeacher().equals(this)){
-            course.updateExam(examName, exam);
+    public ArrayList<Exam> getExams() {
+        ArrayList<Exam> exams = new ArrayList<>();
+        for (String courseID : courseIDs) {
+            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
+            if (course != null) {
+                exams.addAll(course.getExams());
+            }
         }
-        else{
-            throw new IllegalArgumentException("Not allowed to access this course");
+        return exams;
+    }
+
+    public void addCourse(Course course) {
+        addCourse(course.getCourseID()); // Changes: Store course ID instead of Course object
+    }
+
+    public void dropCourse(Course course) {
+        dropCourse(course.getCourseID()); // Changes: Use course ID to remove course
+    }
+
+    public String getPosition() {
+        return this.position;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other) && (Objects.equals(this.position, ((Teacher) other).position));
+    }
+
+    public void viewQuestion() {
+        for (Question question : questionBank) {
+            System.out.println(question.getContent());
         }
+    }
+
+    public void createQuestion(String content, String[] options, String answer, int score, int type) {
+        Question question = new Question(content, options, answer, score, type);
+        questionBank.add(question);
+        SystemDatabase.updateTeacher(this);
+    }
+
+    public void createQuestion(Question question) {
+        questionBank.add(question);
+        SystemDatabase.updateTeacher(this);
+    }
+
+    public void deleteQuestion(Question question) {
+        questionBank.remove(question);
+        SystemDatabase.updateTeacher(this);
+    }
+
+    public void viewQuestionBank() {
+        for (Question question : questionBank) {
+            System.out.println(question.getContent());
+        }
+    }
+
+    public ArrayList<Question> getQuestionBank() {
+        return questionBank;
     }
 
     public void viewStudent() {
@@ -110,65 +183,20 @@ public class Teacher extends User {
         // TODO: implement
     }
 
-    public void viewQuestion() {
-        for (Question question : questionBank) {
-            System.out.println(question.getContent());
-        }
+    public void updateQuestion(Question question, String content, String[] options, String answer, int score, int type) {
+        question.setContent(content);
+        question.setOptions(options);
+        question.setAnswer(answer);
+        question.setScore(score);
+        question.setTypeChoice(type);
+        SystemDatabase.updateTeacher(this);
     }
-
-    public void createQuestion(String content, String[] options, String answer, int score, int type) {
-        Question question = new Question(content, options, answer, score, type);
-        questionBank.add(question);
-    }
-
-    public void createQuestion(Question question){
-        questionBank.add(question);
-    }
-
-    public void deleteQuestion(Question question) {
-        questionBank.remove(question);
-    }
-
-    public void updateQuestion() {
-        // TODO: implement
-    }
-
-    public ArrayList<Question> getQuestionBank() {
-        return questionBank;
-    }
-
-    public void viewQuestionBank() {
-        for (Question question : questionBank){
-            System.out.println(question.getContent());
-        }
-    }
-
-    public ArrayList<Exam> getExams() {
-        ArrayList<Exam> exams = new ArrayList<>();
-        for (Course course : courses) {
-            exams.addAll(course.getExams());
-        }
-        return exams;
-    }
-
-    public String getPosition() {
-        return this.position;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return super.equals(other) && (Objects.equals(this.position, ((Teacher) other).position));
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public List<String> getCourseID(){
-        ArrayList<String> a = new ArrayList<>();
-        for (Course c: courses) {
-            a.add(c.getCourseID());
-        }
-        return a;
+    public void updateQuestion(Question question, String content, String[] options, String answer, int score, String type) {
+        question.setContent(content);
+        question.setOptions(options);
+        question.setAnswer(answer);
+        question.setScore(score);
+        question.setTypeChoice(type.equals("Multiple") ? 1 : 0);
+        SystemDatabase.updateTeacher(this);
     }
 }

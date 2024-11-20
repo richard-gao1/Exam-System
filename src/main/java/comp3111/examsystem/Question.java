@@ -3,6 +3,7 @@ package comp3111.examsystem;
 import javafx.beans.property.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Question {
     // Primitive fields for JSON serialization
@@ -17,6 +18,7 @@ public class Question {
         if (typeChoice == 0 && answer.length() > 1) {
             throw new IllegalArgumentException("Single choice question must have exactly one answer");
         }
+        answer = answer.toUpperCase();
         this.content = content;
         this.options = options != null ? options : new ArrayList<>();
         this.answer = 0;
@@ -155,6 +157,19 @@ public class Question {
 
     public IntegerProperty typeChoiceProperty() {
         return new SimpleIntegerProperty(this.typeChoice);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Question question = (Question) o;
+        return getScore() == question.getScore() && getTypeChoice() == question.getTypeChoice() && getAnswer() == question.getAnswer() && Objects.equals(getContent(), question.getContent()) && getOptions().containsAll(question.getOptions()) && question.getOptions().containsAll(getOptions());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getContent(), getOptions(), getScore(), getTypeChoice(), getAnswer());
     }
 
     @Override
