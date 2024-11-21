@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a Question, storing the question content, options, answer, and score
+ */
 public class Question {
     // Primitive fields for JSON serialization
     private String content; // the content of the question

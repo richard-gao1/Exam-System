@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * Communicates and writes between systemDatabase and actors
  * @author whwmaust2125
- * @since 2024-11-21
+ * @since 2024-11-14
  */
 public class SystemDatabase {
     /**
@@ -318,9 +318,9 @@ public class SystemDatabase {
             }
         }
         return studentList.stream().filter(s ->
-                s.getUsername().contains(usernameFilter) &&
-                        s.getName().contains(nameFilter) &&
-                        s.getDepartment().contains(departmentFilter)
+                s.getUsername().toLowerCase().contains(usernameFilter) &&
+                        s.getName().toLowerCase().contains(nameFilter) &&
+                        s.getDepartment().toLowerCase().contains(departmentFilter)
         ).collect(Collectors.toCollection(ArrayList::new));
 
     }
@@ -344,9 +344,9 @@ public class SystemDatabase {
             }
         }
         return teacherList.stream().filter(t ->
-                t.getUsername().contains(usernameFilter) &&
-                        t.getName().contains(nameFilter) &&
-                        t.getDepartment().contains(departmentFilter)
+                t.getUsername().toLowerCase().contains(usernameFilter) &&
+                        t.getName().toLowerCase().contains(nameFilter) &&
+                        t.getDepartment().toLowerCase().contains(departmentFilter)
         ).collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -369,9 +369,9 @@ public class SystemDatabase {
             }
         }
         return courseList.stream().filter(c ->
-                c.getCourseID().contains(courseIDFilter) &&
-                        c.getCourseName().contains(courseNameFilter) &&
-                        c.getDepartment().contains(departmentFilter)
+                c.getCourseID().toLowerCase().contains(courseIDFilter) &&
+                        c.getCourseName().toLowerCase().contains(courseNameFilter) &&
+                        c.getDepartment().toLowerCase().contains(departmentFilter)
         ).collect(Collectors.toCollection(ArrayList::new));
     }
 

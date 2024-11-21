@@ -18,7 +18,6 @@ import java.util.ResourceBundle;
 /**
  * Controller for Teacher Management UI
  * @author whwmaust2125
- * @since 2024-11-21
  */
 public class TeacherManagementController implements Initializable {
     @FXML
@@ -99,9 +98,9 @@ public class TeacherManagementController implements Initializable {
         String name = "";
         String department = "";
         if (filtering) {
-            username = usernameFilter.getText();
-            name = nameFilter.getText();
-            department = departmentFilter.getText();
+            username = usernameFilter.getText().toLowerCase().trim();
+            name = nameFilter.getText().toLowerCase().trim();
+            department = departmentFilter.getText().toLowerCase().trim();
         }
         List<Teacher> teachers = SystemDatabase.getTeacherList(username, name, department);
         teacherList.clear();

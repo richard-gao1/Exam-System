@@ -7,6 +7,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
+/**
+ * Represents an Exam, storing the name of the exam, list of questions and student grades
+ */
 public class Exam {
     private String examName;        // The name of the exam
     private boolean isPublished;    // Stores whether the exam has been published

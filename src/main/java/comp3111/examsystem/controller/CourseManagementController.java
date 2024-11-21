@@ -21,7 +21,6 @@ import java.util.ResourceBundle;
 /**
  * Controller for Course Management UI
  * @author whwmaust2125
- * @since 2024-11-21
  */
 public class CourseManagementController implements Initializable {
     @FXML
@@ -77,9 +76,9 @@ public class CourseManagementController implements Initializable {
         String name = "";
         String department = "";
         if (filtering) {
-            courseID = courseIDFilter.getText();
-            name = courseNameFilter.getText();
-            department = departmentFilter.getText();
+            courseID = courseIDFilter.getText().toLowerCase().trim();
+            name = courseNameFilter.getText().toLowerCase().trim();
+            department = departmentFilter.getText().toLowerCase().trim();
         }
         List<Course> courses = SystemDatabase.getCourseList(courseID, name, department);
         courseList.clear();
@@ -110,6 +109,7 @@ public class CourseManagementController implements Initializable {
     @FXML
     public void reset() {
         filtering = false;
+        resetFilterFields();
         getCourseList();
     }
 
@@ -148,6 +148,7 @@ public class CourseManagementController implements Initializable {
     @FXML
     public void add() {
         Course newCourse = newCourse(false);
+        resetSetFields();
         String msg = SystemDatabase.createCourse(newCourse);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
@@ -166,6 +167,7 @@ public class CourseManagementController implements Initializable {
             // no student is selected
         } else {
             String old_courseID = updating.getCourseID();
+            resetSetFields();
             System.out.println("Updating course " + old_courseID);
             Course newCourse = newCourse(true);
             SystemDatabase.modifyCourse(newCourse, old_courseID);
@@ -204,7 +206,28 @@ public class CourseManagementController implements Initializable {
             if (teacherList.contains(teacher)) {
                 teacherTable.getSelectionModel().select(teacher);
             }
+        } 
+        if (selectedItem == null) {
+            resetSetFields();
         }
+    }
+
+    /**
+     * Clears all text fields used for setting new or updating course attributes.
+     */
+    private void resetSetFields() {
+        courseIDSet.setText("");
+        courseNameSet.setText("");
+        departmentSet.setText("");
+    }
+
+    /**
+     * Clears all text fields used for filtering teachers.
+     */
+    private void resetFilterFields() {
+        courseIDFilter.setText("");
+        courseNameFilter.setText("");
+        departmentSet.setText("");
     }
 
     /**

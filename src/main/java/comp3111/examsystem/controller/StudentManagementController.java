@@ -16,7 +16,6 @@ import java.util.ResourceBundle;
 /**
  * Controller for Student Management UI
  * @author whwmaust2125
- * @since 2024-11-21
  */
 public class StudentManagementController implements Initializable {
     @FXML
@@ -88,9 +87,9 @@ public class StudentManagementController implements Initializable {
         String name = "";
         String department = "";
         if (filtering) {
-            username = usernameFilter.getText();
-            name = nameFilter.getText();
-            department = departmentFilter.getText();
+            username = usernameFilter.getText().toLowerCase().trim();
+            name = nameFilter.getText().toLowerCase().trim();
+            department = departmentFilter.getText().toLowerCase().trim();
         }
         List<Student> students = SystemDatabase.getStudentList(username, name, department);
         studentList.clear();

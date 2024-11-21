@@ -3,7 +3,6 @@ package comp3111.examsystem;
 /**
  * Represents a grade record for a student after taking an exam.
  * @author whwmaust2125
- * @since 2024-11-21
  */
 public class Grade {
     private final String studentName; // The name of the student who took the exam.
