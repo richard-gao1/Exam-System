@@ -1,7 +1,8 @@
 package comp3111.examsystem;
 
-import java.util.HashMap;
-
+/**
+ * A class representing a student, which extends the User class.
+ */
 public class Manager extends Account {
     /**
      * Constructs a new Manager instance with default credentials.
