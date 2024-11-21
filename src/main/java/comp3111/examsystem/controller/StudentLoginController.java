@@ -7,9 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -37,18 +35,6 @@ public class StudentLoginController implements Initializable {
         studentMainLoader.setLocation(Main.class.getResource("StudentMainUI.fxml"));
         Stage stage = new Stage();
 
-        // stuff used to manually test
-//        SystemDatabase db = new SystemDatabase();
-//        Student student = new Student("username", "password", "studentName", "male", 21, "department");
-//        Student account = null;
-//        Exam testExam = new Exam("examName", null, false, 0, null);
-//        ArrayList<Exam> exams = new ArrayList<>();
-//        exams.add(testExam);
-//        ArrayList<Student> students = new ArrayList<>();
-//        students.add(student);
-//        new Course("courseId", "name", "department", students, exams);
-//        db.registerStudent(student);
-
         Student account = null;
         // try to login
         try{
@@ -60,11 +46,11 @@ public class StudentLoginController implements Initializable {
         if (account != null) {
             stage.setTitle("Hi " + account.getName() +", Welcome to HKUST Examination System");
             try {
+                System.out.println("init student");
+                SystemDatabase.currentUser = account;
                 System.out.println("This is before loading");
                 Parent root = studentMainLoader.load();
                 StudentMainController mainController = studentMainLoader.getController();
-                System.out.println("init student");
-                mainController.initStudent(account);
                 stage.setScene(new Scene(root));
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -72,8 +58,9 @@ public class StudentLoginController implements Initializable {
             stage.show();
             ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
         } else {
-            // TODO: add login failed pop up
-            System.out.println("Wrong Username or Password");
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Invalid username or password", ButtonType.OK);
+            alert.setTitle("Login error");
+            alert.show();
         }
     }
 

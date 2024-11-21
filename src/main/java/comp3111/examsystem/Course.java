@@ -1,6 +1,5 @@
 package comp3111.examsystem;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -211,12 +210,12 @@ public class Course {
         if (this.teacherUsername != null) {
             Teacher existingTeacher = SystemDatabase.getTeacher(this.teacherUsername);
             if (existingTeacher != null) {
-                existingTeacher.dropCourse(this);
+                existingTeacher.dropCourse(courseID);
             }
         }
         if (teacher != null) {
             this.teacherUsername = teacher.getUsername();
-            teacher.addCourse(this);
+            teacher.addCourse(courseID);
         } else {
             this.teacherUsername = null;
         }

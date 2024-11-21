@@ -252,11 +252,13 @@ public class Exam {
      * @throws IllegalArgumentException If the question already exists in the exam.
      */
     public void addQuestion(Question question) {
-        if (!questions.contains(question)) {
-            questions.add(question);
-        } else {
+        if (this.questions == null) {
+            this.questions = new ArrayList<>();
+        }
+        if (this.questions.contains(question)) {
             throw new IllegalArgumentException("Question already exists in the exam");
         }
+        this.questions.add(question);
     }
 
     /**
@@ -267,9 +269,7 @@ public class Exam {
      * @throws IllegalArgumentException If the question does not exist in the exam.
      */
     public void removeQuestion(Question question) {
-        if (questions.contains(question)) {
-            questions.remove(question);
-        } else {
+        if (!this.questions.contains(question)) {
             throw new IllegalArgumentException("Question does not exist in the exam");
         }
     }
@@ -347,5 +347,4 @@ public class Exam {
     @Override
     public int hashCode() {
         return Objects.hash(getExamName(), isPublished, getDuration(), getQuestions(), getCourse(), studentToGrades);
-    }
 }
