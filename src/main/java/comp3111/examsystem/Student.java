@@ -6,14 +6,27 @@ import java.util.ArrayList;
  * A class representing a student, which extends the User class.
  */
 public class Student extends User {
-    // Store courseIDs instead of Course objects
-    private ArrayList<String> courseIDs = new ArrayList<>();
+    private ArrayList<String> courseIDs = new ArrayList<>(); // Stores the IDs of the courses the student is enrolled in
 
+    /**
+     * Constructs a new Student object with the provided details.
+     *
+     * @param username The username for the student's account.
+     * @param password The password for the student's account.
+     * @param name The name of the student.
+     * @param gender The gender of the student.
+     * @param age The age of the student.
+     * @param department The department associated with the student.
+     */
     public Student(String username, String password, String name, String gender, int age, String department) {
         super(username, password, name, gender, age, department);
     }
 
-    // Getter: Retrieve Course objects dynamically
+    /**
+     * Retrieves a list of Course objects that the student is currently enrolled in.
+     *
+     * @return An ArrayList containing all the courses the student is enrolled in.
+     */
     public ArrayList<Course> getCourses() {
         ArrayList<Course> courses = new ArrayList<>();
         for (String courseID : courseIDs) {
@@ -25,7 +38,11 @@ public class Student extends User {
         return courses;
     }
 
-    // Add course by course object
+    /**
+     * Adds a course to the student's list of enrolled courses.
+     *
+     * @param course The Course object to be added.
+     */
     public void addCourse(Course course) {
         // Only call this method via Course class
         if (!courseIDs.contains(course.getCourseID())) {
@@ -35,7 +52,11 @@ public class Student extends User {
         }
     }
 
-    // Drop course by course object
+    /**
+     * Removes a course from the student's list of enrolled courses.
+     *
+     * @param course The Course object to be removed.
+     */
     public void dropCourse(Course course) {
         // Only call this method via Course class
         if (courseIDs.contains(course.getCourseID())) {

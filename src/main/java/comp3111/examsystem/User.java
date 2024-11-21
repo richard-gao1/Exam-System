@@ -11,6 +11,16 @@ public abstract class User extends Account {
     private int age;
     private String department;
 
+    /**
+     * Constructs a new User object with the provided details.
+     *
+     * @param username The username for the user's account.
+     * @param password The password for the user's account.
+     * @param name The name of the user.
+     * @param gender The gender of the user.
+     * @param age The age of the user.
+     * @param department The department associated with the user.
+     */
     public User(String username, String password, String name, String gender, int age, String department ) {
         super(username, password);
         this.name = name;

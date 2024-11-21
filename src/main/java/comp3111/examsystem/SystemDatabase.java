@@ -1,6 +1,7 @@
 package comp3111.examsystem;
 
 import com.google.gson.Gson;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -66,7 +67,11 @@ public class SystemDatabase {
      * Removes all files and directories of the database.
      */
     public static void removeAll() {
-        removeFile("data");
+        try {
+            FileUtils.deleteDirectory(new File("data"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

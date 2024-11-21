@@ -8,15 +8,24 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Exam {
-    private String examName; // Primitive for JSON serialization
-    private boolean isPublished; // Primitive for JSON serialization
-    private int duration; // Primitive for JSON serialization
-    private ArrayList<Question> questions = new ArrayList<>(); // For JSON serialization
+    private String examName;        // The name of the exam
+    private boolean isPublished;    // Stores whether the exam has been published
+    private int duration;           // Duration in minutes
+    private ArrayList<Question> questions = new ArrayList<>();
 
-    private String courseID; // Store course as courseID (Change)
-    private HashMap<String, Grade> studentToGrades = new HashMap<>();
+    private String courseID;
+    private HashMap<String, Grade> studentToGrades = new HashMap<>(); // Maps student ID to their grade
 
-    // Constructors
+    /**
+     * Constructs a new Exam object with the specified exam name, associated course,
+     * publication status and duration. If the course is not null, this exam will be added
+     * to the course's list of exams.
+     *
+     * @param examName   The name of the exam.
+     * @param course     The Course object associated with this exam.
+     * @param isPublished A boolean indicating whether the exam has been published.
+     * @param duration   The duration of the exam in minutes.
+     */
     public Exam(String examName, Course course, boolean isPublished, int duration) {
         setExamName(examName);
         this.courseID = course != null ? course.getCourseID() : null; // Change: Store courseID
@@ -27,6 +36,18 @@ public class Exam {
         }
     }
 
+    /**
+     * Constructs a new Exam object with the specified exam name, associated course,
+     * publication status, duration, and a list of questions. If the course is not
+     * null, this exam will be added to the course's list of exams.
+     *
+     * @param examName   The name of the exam.
+     * @param course     The Course object associated with this exam.
+     * @param isPublished A boolean indicating whether the exam has been published.
+     * @param duration   The duration of the exam in minutes.
+     * @param questions  An ArrayList containing the Question objects included in this exam.
+     */
+
     public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         this(examName, course, isPublished, duration);
         if (questions != null) {
@@ -34,6 +55,16 @@ public class Exam {
         }
     }
 
+    /**
+     * Constructs a new Exam object with the specified exam name, course ID,
+     * publication status, duration, and a list of questions.
+     *
+     * @param examName   The name of the exam.
+     * @param courseID   The identifier for the Course associated with this exam.
+     * @param isPublished A boolean indicating whether the exam has been published.
+     * @param duration   The duration of the exam in minutes.
+     * @param questions  An ArrayList containing the Question objects included in this exam.
+     */
     public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
         this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
         if (questions != null) {
@@ -41,65 +72,143 @@ public class Exam {
         }
     }
 
+    /**
+     * Constructs a new Exam object with the specified exam name, course ID,
+     * publication status, and duration.
+     *
+     * @param examName   The name of the exam.
+     * @param courseID   The identifier for the Course associated with this exam.
+     * @param isPublished A boolean indicating whether the exam has been published.
+     * @param duration   The duration of the exam in minutes.
+     */
     public Exam(String examName, String courseID, boolean isPublished, int duration) {
         this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
     }
 
-    // Property Getters
+    /**
+     * Returns a StringProperty representation of the exam name.
+     *
+     * @return A SimpleStringProperty containing the exam name.
+     */
     public StringProperty examNameProperty() {
         return new SimpleStringProperty(this.examName);
     }
 
+    /**
+     * Returns a BooleanProperty indicating whether the exam is published.
+     *
+     * @return A SimpleBooleanProperty representing the publication status of the exam.
+     */
     public BooleanProperty isPublishedProperty() {
         return new SimpleBooleanProperty(this.isPublished);
     }
 
+    /**
+     * Returns an IntegerProperty representing the duration of the exam in minutes.
+     *
+     * @return A SimpleIntegerProperty containing the exam duration.
+     */
     public IntegerProperty durationProperty() {
         return new SimpleIntegerProperty(this.duration);
     }
 
+    /**
+     * Returns a StringProperty representation of the course ID associated with this exam.
+     *
+     * @return A SimpleStringProperty containing the course ID.
+     */
     public StringProperty courseIDProperty() {
         return new SimpleStringProperty(this.courseID);
     }
 
-    // Getters and Setters for primitive fields
+    /**
+     * Retrieves the name of the exam.
+     *
+     * @return The name of the exam as a String.
+     */
     public String getExamName() {
         return examName;
     }
 
+    /**
+     * Sets a new name for the exam.
+     *
+     * @param examName The new name to be set for the exam.
+     */
     public void setExamName(String examName) {
         this.examName = examName;
     }
 
+    /**
+     * Checks if the exam is published.
+     *
+     * @return True if the exam is published, false otherwise.
+     */
     public boolean getIsPublished() {
         return isPublished;
     }
 
+    /**
+     * Sets the publication status of the exam.
+     *
+     * @param isPublished The new publication status to be set for the exam.
+     */
     public void setPublished(boolean isPublished) {
         this.isPublished = isPublished;
     }
 
+    /**
+     * Retrieves the duration of the exam in minutes.
+     *
+     * @return The duration of the exam as an int.
+     */
     public int getDuration() {
         return duration;
     }
 
+    /**
+     * Sets a new duration for the exam.
+     *
+     * @param duration The new duration to be set for the exam in minutes.
+     */
     public void setDuration(int duration) {
         this.duration = duration;
     }
 
+    /**
+     * Retrieves the list of questions associated with the exam.
+     *
+     * @return An ArrayList containing all Question objects included in this exam.
+     */
     public ArrayList<Question> getQuestions() {
         return questions;
     }
 
+    /**
+     * Sets a new list of questions for the exam.
+     *
+     * @param questions The new ArrayList of Question objects to be set for the exam.
+     */
     public void setQuestions(ArrayList<Question> questions) {
         this.questions = questions;
     }
 
+    /**
+     * Retrieves the Course object associated with this exam.
+     *
+     * @return The Course object if courseID is not null, otherwise returns null.
+     */
     public Course getCourse() {
         // Change: Dynamically retrieve the Course object using courseID
         return courseID != null ? SystemDatabase.getCourse(courseID) : null;
     }
 
+    /**
+     * Sets a new course for the exam. If there was an existing course associated with
+     * this exam, it removes the exam from that course before setting the new one.
+     *
+     * @param course The new Course object to be set for the exam.
+     */
     public void setCourse(Course course) {
         if (course != null) {
             if (this.courseID != null) {
@@ -113,15 +222,32 @@ public class Exam {
         }
     }
 
+    /**
+     * Retrieves the HashMap of student grades associated with this exam.
+     *
+     * @return A HashMap where keys are student IDs (String) and values are their corresponding
+    Grades.
+     */
     public HashMap<String, Grade> getStudentGrades() {
         return studentToGrades;
     }
 
+    /**
+     * Sets a new HashMap of student grades for the exam.
+     *
+     * @param studentToGrades The new HashMap to be set for student grades in this exam.
+     */
     public void setStudentGrades(HashMap<String, Grade> studentToGrades) {
         this.studentToGrades = studentToGrades;
     }
 
-    // Other Methods
+    /**
+     * Adds a question to the list of questions for the exam. Throws an exception
+     * if the question already exists in the exam.
+     *
+     * @param question The new Question object to be added to the exam.
+     * @throws IllegalArgumentException If the question already exists in the exam.
+     */
     public void addQuestion(Question question) {
         if (!questions.contains(question)) {
             questions.add(question);
@@ -130,6 +256,13 @@ public class Exam {
         }
     }
 
+    /**
+     * Removes a question from the list of questions for the exam. Throws an exception
+     * if the question does not exist in the exam.
+     *
+     * @param question The Question object to be removed from the exam.
+     * @throws IllegalArgumentException If the question does not exist in the exam.
+     */
     public void removeQuestion(Question question) {
         if (questions.contains(question)) {
             questions.remove(question);
@@ -138,18 +271,36 @@ public class Exam {
         }
     }
 
+    /**
+     * Calculates and returns the total score of all questions in the exam.
+     *
+     * @return The sum of scores of all questions in the exam.
+     */
     public int getFullScore() {
         int score = 0;
         for (Question q : questions) score += q.getScore();
         return score;
     }
 
+    /**
+     * Parses a string answer by sorting its characters.
+     *
+     * @param answer The answer to be parsed.
+     * @return A new string with sorted characters from the original answer.
+     */
     public String parseAnswer(String answer) {
         char[] chars = answer.toCharArray();
         Arrays.sort(chars);
         return new String(chars);
     }
 
+    /**
+     * Grades an exam based on a list of student answers. The grading logic differs
+     * depending on whether each question is multiple-choice or single-choice.
+     *
+     * @param answers An ArrayList containing the student's answers for each question.
+     * @return The total score obtained by the student in this exam.
+     */
     public Integer grade(ArrayList<Integer> answers) {
         int score = 0;
         for (int i = 0; i < questions.size(); i++) {
@@ -170,6 +321,14 @@ public class Exam {
         return score;
     }
 
+    /**
+     * Records a student's grade for this exam. The time spent by the student
+     * is capped at the duration of the exam.
+     *
+     * @param student The Student object whose grade is to be recorded.
+     * @param examScore The score obtained by the student in this exam.
+     * @param timeSpend The time (in minutes) taken by the student to complete the exam.
+     */
     public void gradeStudent(Student student, Integer examScore, int timeSpend) {
         studentToGrades.put(student.getUsername(), new Grade(student.getName(), getCourse().getCourseID(), getExamName(), examScore, getFullScore(), Math.min(timeSpend, duration)));
     }

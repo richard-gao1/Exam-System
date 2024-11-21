@@ -21,6 +21,18 @@ public class Teacher extends User {
     private HashMap<String, Double> exam_scores;
     // private List<Grade> grades;
 
+    /**
+     * Constructs a new Teacher account with the provided details.
+     *
+     * @param username   The new username to set.
+     * @param password   The new password to set.
+     * @param name       The new name to set.
+     * @param gender     The new gender to set.
+     * @param age        The new age to set.
+     * @param department The new department to set.
+     * @param position   The new position to set.
+     * @return This Teacher instance after updating the details.
+     */
     public Teacher(String username, String password, String name, String gender, int age, String department, String position) {
         super(username, password, name, gender, age, department);
         this.position = position;

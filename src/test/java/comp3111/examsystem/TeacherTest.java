@@ -1,11 +1,8 @@
 package comp3111.examsystem;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
