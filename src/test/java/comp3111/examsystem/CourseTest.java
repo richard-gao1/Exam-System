@@ -11,20 +11,20 @@ class CourseTest {
     @Test
     void getName() {
         Course c = new Course("software engineering","COMP3111","COMP");
-        assert Objects.equals(c.getCourseName(), "software engineering");
+        assertEquals(c.getCourseName(), "software engineering");
     }
 
     @Test
     void getCourseID() {
         Course c = new Course("software engineering","COMP3111","COMP");
-        assert Objects.equals(c.getCourseID(), "COMP3111");
+        assertEquals(c.getCourseID(), "COMP3111");
     }
 
     @Test
     void setName() {
         Course c = new Course("software engineering","COMP3111","COMP");
         c.setName("Software Engineering");
-        assert Objects.equals(c.getCourseID(), "Software Engineering");
+        assertEquals(c.getCourseID(), "Software Engineering");
     }
 
     @Test

@@ -1,3 +1,6 @@
+/**
+ * The main module
+ */
 module comp3111.examsystem {
     requires javafx.controls;
     requires javafx.fxml;

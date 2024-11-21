@@ -246,7 +246,7 @@ public class Course {
             throw new IllegalArgumentException("Exam is not in this course");
         }
         for (Exam e : exams) {
-            if (e.getExamName().equals(exam.getExamName())) {
+            if (Objects.equals(e.getExamName(), exam.getExamName())) {
                 throw new IllegalArgumentException("Already have this exam");
             }
         }

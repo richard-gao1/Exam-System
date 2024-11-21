@@ -18,6 +18,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * The controller for the Teacher Login interface.
+ */
 public class TeacherLoginController implements Initializable {
     @FXML
     private TextField usernameTxt;
@@ -26,10 +29,23 @@ public class TeacherLoginController implements Initializable {
 
     private Teacher teacher;
 
+    /**
+     * Initializes the controller when the FXML file is loaded.
+     *
+     * @param location  The location used to resolve relative paths for the root object, or
+    null if the location is not known.
+     * @param resources The resources used to localize the root object, or null if the root
+    object was not localized.
+     */
     public void initialize(URL location, ResourceBundle resources) {
 
     }
 
+    /**
+     * Handles the login action.
+     *
+     * @param e The action event triggered by clicking the login button.
+     */
     @FXML
     public void login(ActionEvent e) {
         teacher = (Teacher) SystemDatabase.login(usernameTxt.getText(),passwordTxt.getText(), AccountType.TEACHER);
@@ -59,6 +75,11 @@ public class TeacherLoginController implements Initializable {
         }
     }
 
+    /**
+     * Handles the register action.
+     *
+     * @param e The action event triggered by clicking the register button.
+     */
     @FXML
     public void register(ActionEvent e) {
         FXMLLoader registerLoader = new FXMLLoader(Main.class.getResource("RegisterUI.fxml"));
@@ -70,7 +91,6 @@ public class TeacherLoginController implements Initializable {
 
             // Get the controller and pass the stage
             RegisterController controller = registerLoader.getController();
-            controller.teacherSet();
 
         } catch (IOException e1) {
             e1.printStackTrace();

@@ -18,15 +18,47 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * The controller for the Student Main interface.
+ */
 public class StudentMainController implements Initializable {
+    /**
+     * The combo box for selecting an exam.
+     */
     @FXML
     ComboBox<String> examCombox;
 
+    /**
+     * The current student instance.
+     */
     Student student;
+
+    /**
+     * A map of exam names to their corresponding Exam objects.
+     */
     Map<String, Exam> examPairs = new HashMap<>();
 
+    /**
+     * Initializes the controller when the FXML file is loaded.
+     *
+     * @param location  The location used to resolve relative paths for the root object, or
+    null if the location is not known.
+     * @param resources The resources used to localize the root object, or null if the root
+    object was not localized.
+     */
     public void initialize(URL location, ResourceBundle resources) {
-        this.student = (Student)SystemDatabase.currentUser;
+//        System.out.println("in initialize");
+
+//        examCombox.getSelectionModel().select("Option B");
+    }
+
+    /**
+     * Initializes the student and sets up the exams for selection.
+     *
+     * @param student The current student.
+     */
+    public void initStudent(Student student) {
+        this.student = student;
         // manually make a new course and add the student to it
         ArrayList<Student> students = new ArrayList<>();
         students.add(this.student);
@@ -57,6 +89,11 @@ public class StudentMainController implements Initializable {
         examCombox.getItems().addAll(examPairs.keySet());
     }
 
+    /**
+     * Opens the Quiz Taking UI and sets the selected exam.
+     *
+     * @param e The action event triggered by selecting an option in the combo box.
+     */
     @FXML
     public void openExamUI(ActionEvent e) {
         FXMLLoader quizLoader = new FXMLLoader();
@@ -86,6 +123,7 @@ public class StudentMainController implements Initializable {
 
     @FXML
     public void openGradeStatistic(ActionEvent e) {
+        /*
         FXMLLoader gradeLoader = new FXMLLoader();
         gradeLoader.setLocation(Main.class.getResource("StudentGradeStatistic.fxml"));
         Stage stage = new Stage();
@@ -94,14 +132,27 @@ public class StudentMainController implements Initializable {
             Parent root = gradeLoader.load();
             StudentGradeStatisticController gradeController = gradeLoader.getController();
             stage.setScene(new Scene(root));
+
         } catch (IOException e1) {
             e1.printStackTrace();
         }
 
         stage.show();
         ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+
+         */
     }
 
+    /**
+     * Opens the Grade Statistics UI.
+     */
+    @FXML
+    public void openGradeStatistic() {
+    }
+
+    /**
+     * Exits the application.
+     */
     @FXML
     public void exit() {
         System.exit(0);
