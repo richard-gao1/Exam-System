@@ -19,6 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * Controller class for the Manager Login view.
+ *
+ * This class is responsible for handling user interactions and managing the state of the Manager Login view.
+ * It initializes the UI components, sets up the data bindings, and handles events such as logging in and navigating to the Manager Main view.
+ */
 public class ManagerLoginController implements Initializable {
     @FXML
     private TextField usernameTxt;

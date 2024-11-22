@@ -18,19 +18,33 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * This class is the controller for the student login page.
+ * It provides methods for logging in and registering a new student account.
+ */
 public class StudentLoginController implements Initializable {
     @FXML
     private TextField usernameTxt;
     @FXML
     private PasswordField passwordTxt;
 
+    /**
+     * Initializes the controller.
+     *
+     * @param location the location of the FXML file
+     * @param resources the resources used by the FXML file
+     */
     public void initialize(URL location, ResourceBundle resources) {
 
     }
 
+    /**
+     * Logs in the student.
+     *
+     * @param e the action event that triggered the login
+     */
     @FXML
     public void login(ActionEvent e) {
-//        FXMLLoader studentMainLoader = new FXMLLoader(Main.class.getResource("StudentMainUI.fxml"));
         FXMLLoader studentMainLoader = new FXMLLoader();
         studentMainLoader.setLocation(Main.class.getResource("StudentMainUI.fxml"));
         Stage stage = new Stage();
@@ -64,6 +78,11 @@ public class StudentLoginController implements Initializable {
         }
     }
 
+    /**
+     * Registers a new student account.
+     *
+     * @param e the action event that triggered the registration
+     */
     @FXML
     public void register(ActionEvent e) {
         FXMLLoader registerLoader = new FXMLLoader(Main.class.getResource("RegisterUI.fxml"));

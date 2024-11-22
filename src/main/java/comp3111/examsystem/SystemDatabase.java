@@ -300,7 +300,7 @@ public class SystemDatabase {
     }
 
     /**
-     * Retrieves a list of students filtered by containing specific substring in username, name, and department.
+     * Retrieves a list of students filtered by containing specific substring (not case-sensitive) in username, name, and department.
      *
      * @param usernameFilter The filter for student usernames.
      * @param nameFilter     The filter for student names.
@@ -318,15 +318,15 @@ public class SystemDatabase {
             }
         }
         return studentList.stream().filter(s ->
-                s.getUsername().toLowerCase().contains(usernameFilter) &&
-                        s.getName().toLowerCase().contains(nameFilter) &&
-                        s.getDepartment().toLowerCase().contains(departmentFilter)
+                s.getUsername().toLowerCase().contains(usernameFilter.toLowerCase()) &&
+                        s.getName().toLowerCase().contains(nameFilter.toLowerCase()) &&
+                        s.getDepartment().toLowerCase().contains(departmentFilter.toLowerCase())
         ).collect(Collectors.toCollection(ArrayList::new));
 
     }
 
     /**
-     * Retrieves a list of teachers filtered by containing specific substring in username, name, and department.
+     * Retrieves a list of teachers filtered by containing specific substring (not case-sensitive) in username, name, and department.
      *
      * @param usernameFilter The filter for teacher usernames.
      * @param nameFilter     The filter for teacher names.
@@ -344,14 +344,14 @@ public class SystemDatabase {
             }
         }
         return teacherList.stream().filter(t ->
-                t.getUsername().toLowerCase().contains(usernameFilter) &&
-                        t.getName().toLowerCase().contains(nameFilter) &&
-                        t.getDepartment().toLowerCase().contains(departmentFilter)
+                t.getUsername().toLowerCase().contains(usernameFilter.toLowerCase()) &&
+                        t.getName().toLowerCase().contains(nameFilter.toLowerCase()) &&
+                        t.getDepartment().toLowerCase().contains(departmentFilter.toLowerCase())
         ).collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
-     * Retrieves a list of courses filtered by containing specific substring in course ID, course name, and department.
+     * Retrieves a list of courses filtered by containing specific substring (not case-sensitive) in course ID, course name, and department.
      *
      * @param courseIDFilter The filter for course IDs.
      * @param courseNameFilter The filter for course names.
@@ -369,9 +369,9 @@ public class SystemDatabase {
             }
         }
         return courseList.stream().filter(c ->
-                c.getCourseID().toLowerCase().contains(courseIDFilter) &&
-                        c.getCourseName().toLowerCase().contains(courseNameFilter) &&
-                        c.getDepartment().toLowerCase().contains(departmentFilter)
+                c.getCourseID().toLowerCase().contains(courseIDFilter.toLowerCase()) &&
+                        c.getCourseName().toLowerCase().contains(courseNameFilter.toLowerCase()) &&
+                        c.getDepartment().toLowerCase().contains(departmentFilter.toLowerCase())
         ).collect(Collectors.toCollection(ArrayList::new));
     }
 

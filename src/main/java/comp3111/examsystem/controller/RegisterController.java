@@ -38,11 +38,22 @@ public class RegisterController implements Initializable {
     @FXML
     private TextField usernameTxt;
 
+    /**
+     * Initializes the controller.
+     *
+     * @param location the location of the FXML file
+     * @param resources the resources used by the FXML file
+     */
     public void initialize(URL location, ResourceBundle resources) {
         genderChoice.getItems().removeAll(genderChoice.getItems());
         genderChoice.getItems().addAll("Male", "Female");
     }
 
+    /**
+     * Registers a new student account.
+     *
+     * @param e the action event that triggered the registration
+     */
     @FXML
     public void register(ActionEvent e) {
         boolean reg = true;

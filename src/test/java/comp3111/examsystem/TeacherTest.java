@@ -34,6 +34,7 @@ class TeacherTest {
 //        SystemDatabase.removeAll();
 //    }
 
+
     @Test
     void testCreateExam() {
         teacher.createExam("Final", course.getCourseID(), true, 180,null);
@@ -73,7 +74,6 @@ class TeacherTest {
 
     @Test
     void testCreateQuestion() {
-        setUp();
         Question newQuestion = new Question("What is the first positive even number?", new String[]{"1", "2", "3", "6"}, "b" , 0, 5);
         teacher.getQuestionBank().add(newQuestion);
 

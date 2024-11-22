@@ -1,24 +1,26 @@
 package comp3111.examsystem;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 class SystemDatabaseTest {
-
-    @Test
+    
+    @BeforeEach
     void construct() {
         removeAll();
         SystemDatabase systemDatabase = new SystemDatabase();
     }
 
-    @Test
+    @AfterEach
     void removeAll() {
         SystemDatabase.removeAll();
     }
 
     @Test
     void registerStudent() {
-        construct();
+        
         Student student = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         String output = SystemDatabase.registerStudent(student);
         assertEquals("", output);
@@ -26,7 +28,7 @@ class SystemDatabaseTest {
 
     @Test
     void registerStudent_sameUsername() {
-        construct();
+        
         String username = "whwma";
         Student student1 = new Student(username, "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         SystemDatabase.registerStudent(student1);
@@ -37,7 +39,7 @@ class SystemDatabaseTest {
 
     @Test
     void registerTeacher() {
-        construct();
+        
         Teacher teacher = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ", "Professor");
         String output = SystemDatabase.registerTeacher(teacher);
         assertEquals("", output);
@@ -45,7 +47,6 @@ class SystemDatabaseTest {
 
     @Test
     void registerTeacher_sameUsername() {
-        construct();
         String username = "whwma";
         Teacher teacher1 = new Teacher(username, "comp3111", "Ma Wai Him", "F", 21, "econ", "Professor");
         SystemDatabase.registerTeacher(teacher1);
@@ -56,7 +57,7 @@ class SystemDatabaseTest {
 
     @Test
     void registerManager() {
-        construct();
+        
         Manager manager = new Manager("whwma", "comp3111");
         String output = SystemDatabase.registerManager(manager);
         assertEquals("", output);
@@ -64,7 +65,7 @@ class SystemDatabaseTest {
 
     @Test
     void registerManager_sameUsername() {
-        construct();
+        
         String username = "whwma";
         Manager manager1 = new Manager(username, "comp3111");
         SystemDatabase.registerManager(manager1);
@@ -75,7 +76,7 @@ class SystemDatabaseTest {
 
     @Test
     void createCourse() {
-        construct();
+        
         Course course = new Course("COMP3111", "Software Engineering", "cse");
         String output = SystemDatabase.createCourse(course);
         assertEquals("", output);
@@ -83,7 +84,7 @@ class SystemDatabaseTest {
 
     @Test
     void createCourse_sameCourseID() {
-        construct();
+        
         Course course1 = new Course("COMP3111", "Software Engineering", "cse");
         SystemDatabase.createCourse(course1);
         Course course2 = new Course("COMP3111", "Software Engineering", "cse");
@@ -93,7 +94,7 @@ class SystemDatabaseTest {
 
     @Test
     void updateStudent() {
-        construct();
+        
         Student student = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         SystemDatabase.registerStudent(student);
         Student newStudent = student.update("whwma", "comp3211", "Ma Wai Him", "F", 22, "cse");
@@ -104,7 +105,7 @@ class SystemDatabaseTest {
 
     @Test
     void updateStudent2_sameUsername() {
-        construct();
+        
         Student student = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         SystemDatabase.registerStudent(student);
         Student newStudent = student.update("whwma", "comp3211", "Ma Wai Him", "F", 22, "cse");
@@ -115,7 +116,7 @@ class SystemDatabaseTest {
 
     @Test
     void updateStudent2_changeUsername() {
-        construct();
+        
         Student student = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         SystemDatabase.registerStudent(student);
         student.update("wktangaf", "comp3511", "Tang Wai Kin", "M", 22, "fina");
@@ -128,7 +129,7 @@ class SystemDatabaseTest {
 
     @Test
     void updateTeacher() {
-        construct();
+        
         Teacher teacher = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ", "Professor");
         SystemDatabase.registerTeacher(teacher);
         Teacher newTeacher = teacher.update("whwma", "comp3211", "Ma Wai Him", "F", 22, "cse", "TA");
@@ -139,7 +140,7 @@ class SystemDatabaseTest {
 
     @Test
     void updateTeacher2_sameUsername() {
-        construct();
+        
         Teacher teacher = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ", "Professor");
         SystemDatabase.registerTeacher(teacher);
         Teacher newTeacher = teacher.update("whwma", "comp3211", "Ma Wai Him", "F", 22, "cse", "TA");
@@ -150,7 +151,7 @@ class SystemDatabaseTest {
 
     @Test
     void updateTeacher2_changeUsername() {
-        construct();
+        
         Teacher teacher = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ", "Associate Professor");
         SystemDatabase.registerTeacher(teacher);
         teacher.update("wktangaf", "comp3511", "Tang Wai Kin", "M", 22, "fina", "Professor");
@@ -163,7 +164,7 @@ class SystemDatabaseTest {
 
     @Test
     void getStudent() {
-        construct();
+        
         Student student = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         SystemDatabase.registerStudent(student);
         Student output = SystemDatabase.getStudent(student.getUsername());
@@ -172,7 +173,7 @@ class SystemDatabaseTest {
 
     @Test
     void getTeacher() {
-        construct();
+        
         Teacher teacher = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ", "Professor");
         SystemDatabase.registerTeacher(teacher);
         Teacher output = SystemDatabase.getTeacher(teacher.getUsername());
@@ -181,7 +182,7 @@ class SystemDatabaseTest {
     
     @Test
     void getManager() {
-        construct();
+        
         Manager manager = new Manager("whwma", "comp3111");
         SystemDatabase.registerManager(manager);
         Manager output = SystemDatabase.getManager(manager.getUsername());
@@ -190,7 +191,7 @@ class SystemDatabaseTest {
 
     @Test
     void loginStudent() {
-        construct();
+        
         Student student = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         SystemDatabase.registerStudent(student);
         Account output = SystemDatabase.login(student.getUsername(), student.getPassword(), AccountType.STUDENT);
@@ -199,7 +200,7 @@ class SystemDatabaseTest {
 
     @Test
     void loginTeacher() {
-        construct();
+        
         Teacher teacher = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ", "Professor");
         SystemDatabase.registerTeacher(teacher);
         Account output = SystemDatabase.login(teacher.getUsername(), teacher.getPassword(), AccountType.TEACHER);
@@ -208,7 +209,7 @@ class SystemDatabaseTest {
 
     @Test
     void loginManager() {
-        construct();
+        
         Manager manager = new Manager("whwma", "comp3111");
         SystemDatabase.registerManager(manager);
         Account output = SystemDatabase.login(manager.getUsername(), manager.getPassword(), AccountType.MANAGER);
@@ -217,7 +218,7 @@ class SystemDatabaseTest {
 
     @Test
     void modifyCourse1() {
-        construct();
+        
         Course course = new Course("COMP3111", "Software Engineering", "cse");
         SystemDatabase.createCourse(course);
         course.update("COMP3111", "Operating Systems", "cse");
@@ -228,7 +229,7 @@ class SystemDatabaseTest {
 
     @Test
     void modifyCourse2() {
-        construct();
+        
         Course course = new Course("COMP3111", "Software Engineering", "cse");
         SystemDatabase.createCourse(course);
         course.update("ECON3113", "Microeconomics Theory I", "econ");
@@ -241,7 +242,7 @@ class SystemDatabaseTest {
 
     @Test
     void getStudentList() {
-        construct();
+        
         Student student1 = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         Student student2 = new Student("wktangaf", "comp3211", "Tang Wai Kin", "M", 22, "fina");
         Student student3 = new Student("rdgao", "comp3311", "GAO, Richard Daniel", "M", 21, "cse");
@@ -255,7 +256,7 @@ class SystemDatabaseTest {
 
     @Test
     void getStudentList_filter1() {
-        construct();
+        
         Student student1 = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         Student student2 = new Student("wktangaf", "comp3211", "Tang Wai Kin", "M", 22, "fina");
         Student student3 = new Student("rdgao", "comp3311", "GAO, Richard Daniel", "M", 21, "cse");
@@ -269,7 +270,7 @@ class SystemDatabaseTest {
 
     @Test
     void getStudentList_filter2() {
-        construct();
+        
         Student student1 = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         Student student2 = new Student("wktangaf", "comp3211", "Tang Wai Kin", "M", 22, "fina");
         Student student3 = new Student("rdgao", "comp3311", "GAO, Richard Daniel", "M", 21, "cse");
@@ -283,7 +284,7 @@ class SystemDatabaseTest {
 
     @Test
     void getStudentList_filter3() {
-        construct();
+        
         Student student1 = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         Student student2 = new Student("wktangaf", "comp3211", "Tang Wai Kin", "M", 22, "fina");
         Student student3 = new Student("rdgao", "comp3311", "GAO, Richard Daniel", "M", 21, "cse");
@@ -297,7 +298,7 @@ class SystemDatabaseTest {
 
     @Test
     void getStudentList_filter4() {
-        construct();
+        
         Student student1 = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ");
         Student student2 = new Student("wktangaf", "comp3211", "Tang Wai Kin", "M", 22, "fina");
         Student student3 = new Student("rdgao", "comp3311", "GAO, Richard Daniel", "M", 21, "cse");
@@ -311,7 +312,7 @@ class SystemDatabaseTest {
 
     @Test
     void getTeacherList() {
-        construct();
+        
         Teacher teacher1 = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", "M", 21, "econ", "Associate Professor");
         Teacher teacher2 = new Teacher("wktangaf", "comp3511", "Tang Wai Kin", "M", 22, "fina", "Professor");
         SystemDatabase.registerTeacher(teacher1);
@@ -323,7 +324,7 @@ class SystemDatabaseTest {
 
     @Test
     void getCourseList() {
-        construct();
+        
         Course course1 = new Course("COMP3111", "Software Engineering", "cse");
         Course course2 = new Course("COMP3511", "Operating Systems", "cse");
         Course course3 = new Course("COMP3711", "Design and Analysis of Algorithms", "cse");
@@ -338,7 +339,7 @@ class SystemDatabaseTest {
 
     @Test
     void getCourseList_filter1() {
-        construct();
+        
         Course course1 = new Course("COMP3111", "Software Engineering", "cse");
         Course course2 = new Course("COMP3511", "Operating Systems", "cse");
         Course course3 = new Course("COMP3711", "Design and Analysis of Algorithms", "cse");
@@ -356,7 +357,7 @@ class SystemDatabaseTest {
 
     @Test
     void getCourseList_filter2() {
-        construct();
+        
         Course course1 = new Course("COMP3111", "Software Engineering", "cse");
         Course course2 = new Course("COMP3511", "Operating Systems", "cse");
         Course course3 = new Course("COMP3711", "Design and Analysis of Algorithms", "cse");
@@ -374,7 +375,7 @@ class SystemDatabaseTest {
 
     @Test
     void getCourseList_filter3() {
-        construct();
+        
         Course course1 = new Course("COMP3111", "Software Engineering", "cse");
         Course course2 = new Course("COMP3511", "Operating Systems", "cse");
         Course course3 = new Course("COMP3711", "Design and Analysis of Algorithms", "cse");
@@ -392,7 +393,7 @@ class SystemDatabaseTest {
 
     @Test
     void getCourseList_filter4() {
-        construct();
+        
         Course course1 = new Course("COMP3111", "Software Engineering", "cse");
         Course course2 = new Course("COMP3511", "Operating Systems", "cse");
         Course course3 = new Course("COMP3711", "Design and Analysis of Algorithms", "cse");

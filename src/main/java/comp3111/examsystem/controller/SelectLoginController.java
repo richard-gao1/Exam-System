@@ -8,7 +8,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * This class is the controller for the select login page.
+ * It provides methods for opening the login pages for students, teachers, and managers.
+ */
 public class SelectLoginController {
+
+    /**
+     * Opens the student login page.
+     */
     @FXML
     public void studentLogin() {
         try {
@@ -23,6 +31,9 @@ public class SelectLoginController {
         }
     }
 
+    /**
+     * Opens the teacher login page.
+     */
     @FXML
     public void teacherLogin() {
         try {
@@ -37,6 +48,9 @@ public class SelectLoginController {
         }
     }
 
+    /**
+     * Opens the manager login page.
+     */
     public void managerLogin() {
         try {
             Stage stage = new Stage();

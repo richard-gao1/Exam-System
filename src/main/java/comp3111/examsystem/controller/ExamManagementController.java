@@ -11,6 +11,12 @@ import javafx.scene.control.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller class for the Exam Management view.
+ *
+ * This class is responsible for handling user interactions and managing the state of the Exam Management view.
+ * It initializes the UI components, sets up the data bindings, and handles events such as adding, updating, and deleting questions.
+ */
 public class ExamManagementController implements Initializable {
     @FXML private TextField examFilter, questionFilter, scoreFilter, examInput, durationInput;
     @FXML private ChoiceBox<String> courseFilter, publishFilter, typeFilter, courseInput, publishInput;
@@ -29,6 +35,12 @@ public class ExamManagementController implements Initializable {
     private ObservableList<Question> examQuestionList = FXCollections.observableArrayList();
     private ObservableList<String> courseList =  FXCollections.observableArrayList("Course");
 
+    /**
+     * Initializes the UI components and sets up the data bindings.
+     *
+     * @param url the location used to resolve relative paths for the root object, or null if the location is not known.
+     * @param resourceBundle the resources used to localize the root object, or null if the root object was not localized.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Initialize the examTable
@@ -99,6 +111,9 @@ public class ExamManagementController implements Initializable {
 
     }
 
+    /**
+     * Resets the exam filter fields to their default values.
+     */
     @FXML
     private void onExamReset() {
         // Reset exam filter fields
@@ -107,6 +122,9 @@ public class ExamManagementController implements Initializable {
         publishFilter.setValue("Publish");
     }
 
+    /**
+     * Applies the exam filters to the exam table.
+     */
     @FXML
     private void onExamFilter() {
         // Apply exam filters
@@ -122,6 +140,9 @@ public class ExamManagementController implements Initializable {
         }));
     }
 
+    /**
+     * Resets the question filter fields.
+     */
     @FXML
     private void onQuestionReset() {
         // Reset question filter fields
@@ -130,6 +151,9 @@ public class ExamManagementController implements Initializable {
         scoreFilter.clear();
     }
 
+    /**
+     * Applies question filters and updates the question tables accordingly.
+     */
     @FXML
     private void onQuestionFilter() {
         Exam selectedExam = examTable.getSelectionModel().getSelectedItem();
@@ -160,6 +184,11 @@ public class ExamManagementController implements Initializable {
         }));
     }
 
+    /**
+     * Deletes the selected exam from the examList and updates the UI accordingly.
+     * This function checks if an exam is selected, removes it from the examList, and updates the examTable.
+     * It also clears the input fields and refreshes the UI.
+     */
     @FXML
     private void onDelete() {
         Exam selectedExam = examTable.getSelectionModel().getSelectedItem();
@@ -173,12 +202,18 @@ public class ExamManagementController implements Initializable {
         }
     }
 
+    /**
+     * Refreshes the UI.
+     */
     @FXML
     private void onRefresh() {
         // Refresh the UI
         refresh();
     }
 
+    /**
+     * Adds a new exam with the provided inputs.
+     */
     @FXML
     private void onAdd() {
         String examName = examInput.getText();
@@ -212,6 +247,10 @@ public class ExamManagementController implements Initializable {
         refresh();
     }
 
+    /**
+     * Updates an existing exam with the provided inputs.
+     * This function checks for validation, duplication, and updates the selected exam in the examList and currentTeacher.
+     */
     @FXML
     private void onUpdate() {
         // Handle updating an existing exam
@@ -252,6 +291,9 @@ public class ExamManagementController implements Initializable {
         refresh();
     }
 
+    /**
+     * Removes a selected question from the examQuestionTable and adds it to the questionTable.
+     */
     @FXML
     private void onUnselectQuestion() {
         // Remove question from left table
@@ -266,6 +308,9 @@ public class ExamManagementController implements Initializable {
         }
     }
 
+    /**
+     * Adds a selected question from the questionTable to the examQuestionTable.
+     */
     @FXML
     private void onSelectQuestion() {
         // Add question to left table
@@ -280,7 +325,9 @@ public class ExamManagementController implements Initializable {
         }
     }
 
-    // Utility
+    /**
+     * Clears all input fields related to exam creation.
+     */
     private void clearInputFields() {
         examInput.clear();
         durationInput.clear();
@@ -288,6 +335,12 @@ public class ExamManagementController implements Initializable {
         publishInput.setValue("Publish");
     }
 
+    /**
+     * Validates the input fields for exam creation.
+     * This function checks if all required fields are filled and validates the exam name, course ID, and duration.
+     *
+     * @return True if all inputs are valid, false otherwise.
+     */
     private boolean validateExamInputs() {
         String examName = examInput.getText();
         String courseID = courseInput.getValue();
@@ -320,7 +373,13 @@ public class ExamManagementController implements Initializable {
         return true;
     }
 
-
+    /**
+     * Displays an alert dialog with the given type, title, and message.
+     *
+     * @param type   The type of the alert dialog.
+     * @param title  The title of the alert dialog.
+     * @param message The message to be displayed in the alert dialog.
+     */
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -328,6 +387,12 @@ public class ExamManagementController implements Initializable {
         alert.showAndWait();
     }
 
+    /**
+     * Updates the question tables based on the selected exam.
+     * This function updates the examQuestionTable with questions in the selected exam and questionTable to exclude questions already in the selected exam.
+     *
+     * @param selectedExam The selected exam for which the question tables will be updated.
+     */
     private void updateQuestionTables(Exam selectedExam) {
         // Update examQuestionTable with questions in the selected exam
         examQuestionList.setAll(selectedExam.getQuestions());
@@ -336,6 +401,11 @@ public class ExamManagementController implements Initializable {
         questionTable.setItems(questionList.filtered(question -> !examQuestionList.contains(question)));
     }
 
+    /**
+     * Refreshes all input fields, filters, and tables.
+     * This function clears all input fields and filters, reloads the examTable and questionTable with full lists,
+     * and resets the selection for all tables.
+     */
     private void refresh() {
         // Clear all input fields and filters
         clearInputFields();

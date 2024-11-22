@@ -19,6 +19,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Controller class for the Question Bank view.
+ *
+ * This class is responsible for handling user interactions and managing the state of the Question Bank view.
+ * It initializes the UI components, sets up the data bindings, and handles events such as adding, updating, and deleting questions.
+ */
+
 public class QuestionBankController implements Initializable {
 
     @FXML private TextField questionFilter, scoreFilter;
@@ -35,6 +42,12 @@ public class QuestionBankController implements Initializable {
 
     private ObservableList<Question> questionList = FXCollections.observableArrayList(currentTeacher.getQuestionBank());
 
+    /**
+     * Initializes the controller and sets up the UI components.
+     *
+     * @param url the location used to resolve relative paths for the root object, or null if the location is not known.
+     * @param resourceBundle the resources used to localize the root object, or null if the root object was not localized.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Initialize button states
@@ -125,8 +138,9 @@ public class QuestionBankController implements Initializable {
         });
     }
 
-
-
+    /**
+     * Adds a new question to the question bank.
+     */
     @FXML
     private void onAdd() {
         if (!validateInputs()) {
@@ -153,6 +167,9 @@ public class QuestionBankController implements Initializable {
         currentTeacher.viewQuestionBank();
     }
 
+    /**
+     * Updates an existing question in the question bank.
+     */
     @FXML
     private void onUpdate() {
         Question selected = questionTable.getSelectionModel().getSelectedItem();
@@ -184,6 +201,9 @@ public class QuestionBankController implements Initializable {
         }
     }
 
+    /**
+     * Deletes the selected question from the question bank and the list.
+     */
     @FXML
     private void onDelete() {
         Question selected = questionTable.getSelectionModel().getSelectedItem();
@@ -194,6 +214,9 @@ public class QuestionBankController implements Initializable {
         }
     }
 
+    /**
+     * Refreshes the question bank and the table view.
+     */
     @FXML
     private void onRefresh() {
         questionList.setAll(currentTeacher.getQuestionBank());
@@ -201,6 +224,9 @@ public class QuestionBankController implements Initializable {
         questionTable.getSelectionModel().clearSelection();
     }
 
+    /**
+     * Filters the questions based on the filter fields.
+     */
     @FXML
     private void onFilter() {
         String questionText = questionFilter.getText().toLowerCase();
@@ -215,6 +241,9 @@ public class QuestionBankController implements Initializable {
         }));
     }
 
+    /**
+     * Resets the filter fields and the table view.
+     */
     @FXML
     private void onReset() {
         // Clear filter fields
@@ -224,8 +253,11 @@ public class QuestionBankController implements Initializable {
         questionTable.setItems(questionList); // Reset the table view to original data
     }
 
-    // Utility Functions
-
+    /**
+     * Populates the input fields with the properties of the given question.
+     *
+     * @param question the question to populate the input fields with
+     */
     private void populateFields(Question question) {
         questionInput.setText(question.getContent());
         aInput.setText(question.getOptions().size() > 0 ? question.getOptions().get(0) : "");
@@ -237,7 +269,13 @@ public class QuestionBankController implements Initializable {
         typeInput.setValue(question.getTypeChoice() == 0 ? "Single" : "Multiple");
     }
 
-
+    /**
+     * Shows an alert dialog with the given type, title, and message.
+     *
+     * @param type the type of the alert dialog
+     * @param title the title of the alert dialog
+     * @param message the message to display in the alert dialog
+     */
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -245,6 +283,11 @@ public class QuestionBankController implements Initializable {
         alert.showAndWait();
     }
 
+    /**
+     * Validates the inputs in the input fields.
+     *
+     * @return true if all inputs are valid, false otherwise
+     */
     private boolean validateInputs() {
         if (questionInput.getText().isEmpty()) {
             questionInput.requestFocus();
@@ -310,8 +353,9 @@ public class QuestionBankController implements Initializable {
         return true; // All fields are valid
     }
 
-
-
+    /**
+     * Clears the input fields.
+     */
     private void clearInputFields() {
         questionInput.clear();
         aInput.clear();
@@ -323,7 +367,13 @@ public class QuestionBankController implements Initializable {
         typeInput.setValue(null);
     }
 
-    // Utility method to check if a target is a descendant of a specific node type
+    /**
+     * Checks if the given target is a descendant of a node of the specified type.
+     *
+     * @param target the node to check
+     * @param nodeClass the type of the node to check for
+     * @return true if the node is a descendant of a node of the specified type, false otherwise
+     */
     private boolean isDescendantOf(Object target, Class<?> nodeClass) {
         if (!(target instanceof Node)) return false;
 
