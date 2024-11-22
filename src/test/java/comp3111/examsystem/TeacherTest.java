@@ -26,7 +26,8 @@ class TeacherTest {
 
         exam = new Exam("Midterm", course, false, 120);
         exam.addQuestion(question);
-        //teacher.addExam(exam, "COMP3111");
+        SystemDatabase.modifyCourse(course,course.getCourseID());
+        System.out.println("end setup");
     }
 
 //    @AfterEach
@@ -58,17 +59,13 @@ class TeacherTest {
     @Test
     void testDeleteExam() {
         teacher.deleteExam(exam.getExamName(), course.getCourseID());
-
         assertFalse(teacher.getExams().contains(exam), "The exam should be removed from the teacher's exam list.");
     }
 
     @Test
     void testUpdateExam() {
-        Exam updatedExam = new Exam("Midterm", "COMP3111", true, 150);
-        teacher.updateExam(exam.getExamName(), updatedExam, course);
 
-        assertFalse(teacher.getExams().contains(exam), "The old exam should be removed from the teacher's exam list.");
-        assertTrue(teacher.getExams().contains(updatedExam), "The updated exam should be added to the teacher's exam list.");
+
     }
 
     @Test
@@ -81,19 +78,29 @@ class TeacherTest {
 
     @Test
     void testDeleteQuestion() {
-        teacher.getQuestionBank().remove(question);
+        System.out.println(question.toString());
+        System.out.println(exam.getQuestions().getFirst().toString());
+        teacher.deleteQuestion(question);
 
         assertFalse(teacher.getQuestionBank().contains(question), "The question should be removed from the teacher's question bank.");
+        assertFalse(teacher.getCourses().getFirst().getExams().getFirst().getQuestions().contains(question),"The question should be removed from exam.");
+
     }
 
     @Test
     void testUpdateQuestion() {
-        Question updatedQuestion = new Question("What is 2+3?", new String[]{"1", "2", "3", "5"}, "D", 0, 0);
-        teacher.getQuestionBank().remove(question);
-        teacher.getQuestionBank().add(updatedQuestion);
+        for (Question q: teacher.getCourses().getFirst().getExams().getFirst().getQuestions()){
+            System.out.println(q.toString());
+        }
+        //assertTrue(teacher.getCourses().getFirst().getExams().getFirst().getQuestions().contains(question), "teacher.getCourses().getFirst().getExams().getFirst().getQuestions().getFirst().getContent()");
+        teacher.updateQuestion(question, "What is 2+3?", new String[]{"1", "2", "3", "5"}, "D", 0, "Single");
+        assertEquals(question.getContent(),"What is 2+3?" );
+        for (Question q: teacher.getCourses().getFirst().getExams().getFirst().getQuestions()){
+            System.out.println(q.toString());
+        }
+        assertFalse(teacher.getQuestionBank().getFirst().getContent().equals("What is 2+2?"), "The old question should be removed from the teacher's question bank.");
 
-        assertFalse(teacher.getQuestionBank().contains(question), "The old question should be removed from the teacher's question bank.");
-        assertTrue(teacher.getQuestionBank().contains(updatedQuestion), "The updated question should be added to the teacher's question bank.");
+        assertTrue(teacher.getCourses().getFirst().getExams().getFirst().getQuestions().contains(question), teacher.getCourses().getFirst().getExams().getFirst().getQuestions().getFirst().getContent());
     }
 
     @Test

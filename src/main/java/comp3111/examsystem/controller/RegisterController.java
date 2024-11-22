@@ -1,21 +1,16 @@
 package comp3111.examsystem.controller;
 
-import comp3111.examsystem.AccountType;
 import comp3111.examsystem.Student;
 import comp3111.examsystem.Teacher;
 import comp3111.examsystem.SystemDatabase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.RowConstraints;
-import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class RegisterController implements Initializable {
@@ -52,7 +47,6 @@ public class RegisterController implements Initializable {
 
     private boolean isTeacher = false;
 
-
     public void initialize(URL location, ResourceBundle resources) {
         positionRow.setMinHeight(0);
         positionRow.setPrefHeight(0);
@@ -75,73 +69,86 @@ public class RegisterController implements Initializable {
     }
 
     @FXML
-    public void register(ActionEvent e) {
-        boolean reg = true;
-        String gender = genderChoice.getValue();
-        if (gender == null){
-            // TODO: gender pop up
-            System.out.println("gender is null");
-            reg = false;
-        }
-        String username = usernameTxt.getText();
-        if (username.isEmpty()) {
-            // TODO: username popup
-            System.out.println("username is empty");
-            reg = false;
-        }
-        String password = passwordTxt.getText();
-        if (password.isEmpty()) {
-            // TODO: password popup
-            System.out.println("password is empty");
-            reg = false;
-        }
-        String name = nameTxt.getText();
-        if (name.isEmpty()) {
-            // TODO: name popup
-            System.out.println("name is empty");
-            reg = false;
-        }
-        String dept = departmentTxt.getText();
-        if (dept.isEmpty()) {
-            // TODO: name popup
-            System.out.println("dept is empty");
-            reg = false;
-        }
-        int age = 0;
+    public void onRegister(ActionEvent e) {
         try {
-            age = Integer.parseInt(ageTxt.getText());
-        } catch(NumberFormatException ex) {
-            System.out.println("invalid age");
-            reg = false;
-            // TODO: age error
-        }
-        if (!passwordTxt.getText().equals(passwordConfirmTxt.getText())) {
-            reg = false;
-            System.out.println("Passwords do not match");
-            // TODO: popup again
-        }
-        String pos = positionChoice.getValue();
-        if (isTeacher){
-            if (pos == null){
-                System.out.println("pos is empty");
-                reg = false;
-            }
-        }
-        if (reg) {
-            String registered = (isTeacher)
-                    ? SystemDatabase.registerTeacher(new Teacher(username, password, name, gender, age, dept, pos))
-                    : SystemDatabase.registerStudent(new Student(username, password, name, gender, age, dept));
+            String gender = genderChoice.getValue();
+            String username = usernameTxt.getText();
+            String password = passwordTxt.getText();
+            String name = nameTxt.getText();
+            String dept = departmentTxt.getText();
+            int age = Integer.parseInt(ageTxt.getText());
+            String pos = positionChoice.getValue();
+            if (validate(username,name,gender,age,pos,dept,password,passwordConfirmTxt.getText())) {
+                String registered = (isTeacher)
+                        ? SystemDatabase.registerTeacher(new Teacher(username, password, name, gender, age, dept, pos))
+                        : SystemDatabase.registerStudent(new Student(username, password, name, gender, age, dept));
 
-            if (registered.isEmpty()) {
-                System.out.println("Registered");
-                // TODO: make a successfully registered pop up or something similar
-                // TODO: perhaps reroute to the login page?
+                if (registered.isEmpty()) {
+                    if (showAlert(Alert.AlertType.INFORMATION,null, "Registration successful.").get()==ButtonType.OK){
+                        genderChoice.setValue(null);
+                        usernameTxt.clear();
+                        passwordTxt.clear();
+                        passwordConfirmTxt.clear();
+                        nameTxt.clear();
+                        departmentTxt.clear();
+                        ageTxt.clear();
+                        positionChoice.setValue(null);
+                    }
+                } else {
+                    showAlert(Alert.AlertType.ERROR,"Duplicate User",registered);
+                }
             } else {
-                System.out.println(registered);
-                // TODO: popup duplicate user
+                showAlert(Alert.AlertType.ERROR,"Registration Failed","Did not register.");
             }
-        } else {
-            System.out.println("Did not register");
+        } catch (NumberFormatException ne) {
+            showAlert(Alert.AlertType.ERROR, "Invalid age", "Age must be a positive integer.");
+        } catch (IllegalArgumentException ie){
+            showAlert(Alert.AlertType.ERROR, "Invalid input", ie.getMessage());
+        } catch (Exception ex){
+            return;
         }
+    }
+
+    private Optional<ButtonType> showAlert(Alert.AlertType alertType, String title, String message){
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        return alert.showAndWait();
+    }
+
+    private boolean validate(String userName, String name, String gender, int age, String position,String department,String pwd, String confirmPwd){
+        if (userName==null || userName.trim().isEmpty()){
+            usernameTxt.requestFocus();
+            throw new IllegalArgumentException("Username cannot be empty or null.");
+        }
+        if (name == null || name.trim().isEmpty()){
+            nameTxt.requestFocus();
+            throw new IllegalArgumentException("Name cannot be empty or null.");
+        }
+        if (gender == null || gender.equals("Gender")){
+            genderChoice.requestFocus();
+            throw new IllegalArgumentException("Please select a gender.");
+        }
+        if (age <= 0 || age >= 1000){
+            ageTxt.requestFocus();
+            throw new IllegalArgumentException("Are you serious?");
+        }
+        if (isTeacher &&(position == null || position.equals("Position"))){
+            positionChoice.requestFocus();
+            throw new IllegalArgumentException("Please select a position.");
+        }
+        if (department == null || department.trim().isEmpty()){
+            departmentTxt.requestFocus();
+            throw new IllegalArgumentException("Department cannot be empty or null.");
+        }
+        if (pwd == null){
+            passwordTxt.requestFocus();
+            throw new IllegalArgumentException("Password cannot be empty.");
+        }
+        if (!confirmPwd.equals(pwd)){
+            passwordConfirmTxt.requestFocus();
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+        return true;
     }
 }

@@ -4,6 +4,7 @@ package comp3111.examsystem.controller;
 import comp3111.examsystem.Question;
 import comp3111.examsystem.SystemDatabase;
 import comp3111.examsystem.Teacher;
+import javafx.animation.PauseTransition;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -14,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.List;
@@ -31,12 +33,18 @@ public class QuestionBankController implements Initializable {
     @FXML private ChoiceBox<String> typeInput;
 
     @FXML private Button addBtn, updateBtn, deleteBtn, refreshBtn, resetBtn, filterBtn;
+
+    @FXML private Label answerHint, scoreHint;
+
     private Teacher currentTeacher = (Teacher) SystemDatabase.currentUser;
 
     private ObservableList<Question> questionList = FXCollections.observableArrayList(currentTeacher.getQuestionBank());
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Hints are hidden
+        answerHint.setVisible(false);
+        scoreHint.setVisible(false);
         // Initialize button states
         updateBtn.setDisable(true); // Disabled by default
         deleteBtn.setDisable(true); // Disabled by default
@@ -74,9 +82,9 @@ public class QuestionBankController implements Initializable {
         scoreColumn.setCellValueFactory(cellData -> cellData.getValue().scoreProperty().asObject());
 
         // Bind ChoiceBox with options
-        typeInput.setItems(FXCollections.observableArrayList("Type", "Single", "Multiple"));
+        typeInput.setItems(FXCollections.observableArrayList("Single", "Multiple"));
         typeInput.setValue("Type"); // Default selection
-        typeFilter.setItems(FXCollections.observableArrayList("Type", "Single", "Multiple"));
+        typeFilter.setItems(FXCollections.observableArrayList("Single", "Multiple"));
         typeFilter.setValue("Type"); // Default selection
 
         // Load initial data into the table
@@ -90,13 +98,8 @@ public class QuestionBankController implements Initializable {
         questionTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 populateFields(newValue); // Populate input fields with selected question
-                //updateBtn.setDisable(false);
-                //deleteBtn.setDisable(false);
             } else {
                 clearInputFields(); // Clear input fields
-                //updateBtn.setDisable(true);
-                //deleteBtn.setDisable(true);
-
             }
         });
 
@@ -123,19 +126,44 @@ public class QuestionBankController implements Initializable {
                 });
             }
         });
+
+        // Restrict input and show hint for invalid characters
+        scoreInput.setTextFormatter(new TextFormatter<>(change -> {
+            String newText = change.getText();
+            if (!newText.matches("[0-9]*")) {
+                scoreHint.setVisible(true); // Show hint
+                startHintHideTimer(scoreHint); // Schedule to hide the hint
+                return null; // Reject invalid input
+            }
+            scoreHint.setVisible(false); // Hide hint for valid input
+            return change; // Accept valid input
+        }));
+
+        answerInput.setTextFormatter(new TextFormatter<>(change -> {
+            String newText = change.getText();
+            if (!newText.matches("[a-dA-D]*")) {
+                answerHint.setVisible(true); // Show hint
+                startHintHideTimer(answerHint); // Schedule to hide the hint
+                return null; // Reject invalid input
+            }
+            answerHint.setVisible(false); // Hide hint for valid input
+            change.setText(change.getText().toUpperCase()); // Convert to Uppercase
+            return change; // Accept valid input
+        }));
     }
 
 
 
     @FXML
     private void onAdd() {
-        if (!validateInputs()) {
-            return; // Stop if validation fails
-        }
-        // Collect data from input fields
-        String[] option = {aInput.getText(), bInput.getText(), cInput.getText(), dInput.getText()};
-        int typeChoice = typeInput.getValue().equals("Single") ? 0 : 1;
         try {
+            if (!validateInputs()) {
+                return; // Stop if validation fails
+            }
+            // Collect data from input fields
+            String[] option = {aInput.getText(), bInput.getText(), cInput.getText(), dInput.getText()};
+            int typeChoice = typeInput.getValue().equals("Single") ? 0 : 1;
+
             Question question = new Question(
                     questionInput.getText(),
                     option,
@@ -157,10 +185,11 @@ public class QuestionBankController implements Initializable {
     private void onUpdate() {
         Question selected = questionTable.getSelectionModel().getSelectedItem();
         // Validate Single Choice Answer
-        if (!validateInputs()) {
-            return; // Stop if validation fails
-        }
         try {
+            if (!validateInputs()) {
+                return; // Stop if validation fails
+            }
+
             // Update Question Properties
             currentTeacher.updateQuestion(selected,
                     questionInput.getText(),
@@ -209,7 +238,7 @@ public class QuestionBankController implements Initializable {
 
         questionTable.setItems(questionList.filtered(question -> {
             boolean matchesQuestion = questionText.isEmpty() || question.getContent().toLowerCase().contains(questionText);
-            boolean matchesType = type == null || (type.equals("Single") && question.getTypeChoice() == 0) || (type.equals("Multiple") && question.getTypeChoice() == 1);
+            boolean matchesType = type == null ||type.equals("Type") || (type.equals("Single") && question.getTypeChoice() == 0) || (type.equals("Multiple") && question.getTypeChoice() == 1);
             boolean matchesScore = scoreText.isEmpty() || Integer.toString(question.getScore()).equals(scoreText);
             return matchesQuestion && matchesType && matchesScore;
         }));
@@ -220,7 +249,7 @@ public class QuestionBankController implements Initializable {
         // Clear filter fields
         questionFilter.clear();
         scoreFilter.clear();
-        typeFilter.setValue(null);
+        typeFilter.setValue("Type");
         questionTable.setItems(questionList); // Reset the table view to original data
     }
 
@@ -232,7 +261,7 @@ public class QuestionBankController implements Initializable {
         bInput.setText(question.getOptions().size() > 1 ? question.getOptions().get(1) : "");
         cInput.setText(question.getOptions().size() > 2 ? question.getOptions().get(2) : "");
         dInput.setText(question.getOptions().size() > 3 ? question.getOptions().get(3) : "");
-        answerInput.setText(String.valueOf(question.getAnswer()));
+        answerInput.setText(String.valueOf(question.answerProperty().get()));
         scoreInput.setText(String.valueOf(question.getScore()));
         typeInput.setValue(question.getTypeChoice() == 0 ? "Single" : "Multiple");
     }
@@ -246,52 +275,57 @@ public class QuestionBankController implements Initializable {
     }
 
     private boolean validateInputs() {
-        if (questionInput.getText().isEmpty()) {
+        if (questionInput.getText() == null || questionInput.getText().trim().isEmpty()) {
             questionInput.requestFocus();
-            questionInput.getOnMouseClicked();
             showAlert(Alert.AlertType.WARNING, "Missing Input", "Question content is required.");
             return false;
         }
 
-        if (aInput.getText().isEmpty()) {
+        if (aInput.getText() == null || aInput.getText().trim().isEmpty()) {
             aInput.requestFocus();
             showAlert(Alert.AlertType.WARNING, "Missing Input", "Option A is required.");
             return false;
         }
 
-        if (bInput.getText().isEmpty()) {
+        if (bInput.getText() == null || bInput.getText().trim().isEmpty()) {
             bInput.requestFocus();
             showAlert(Alert.AlertType.WARNING, "Missing Input", "Option B is required.");
             return false;
         }
 
-        if (cInput.getText().isEmpty()) {
+        if (cInput.getText() == null || cInput.getText().trim().isEmpty()) {
             cInput.requestFocus();
             showAlert(Alert.AlertType.WARNING, "Missing Input", "Option C is required.");
             return false;
         }
 
-        if (dInput.getText().isEmpty()) {
+        if (dInput.getText() == null || dInput.getText().trim().isEmpty()) {
             dInput.requestFocus();
             showAlert(Alert.AlertType.WARNING, "Missing Input", "Option D is required.");
             return false;
         }
 
-        if (answerInput.getText().isEmpty()) {
+        if (answerInput.getText() == null || answerInput.getText().isEmpty()) {
             answerInput.requestFocus();
             showAlert(Alert.AlertType.WARNING, "Missing Input", "Answer is required.");
             return false;
         }
 
-        if (scoreInput.getText().isEmpty()) {
+        if (scoreInput.getText() == null || scoreInput.getText().isEmpty()) {
             scoreInput.requestFocus();
             showAlert(Alert.AlertType.WARNING, "Missing Input", "Score is required.");
             return false;
         }
-
+        int score = 0;
         try {
-            Integer.parseInt(scoreInput.getText()); // Validate numeric input
+            score = Integer.parseInt(scoreInput.getText()); // Validate numeric input
         } catch (NumberFormatException e) {
+            scoreInput.requestFocus();
+            showAlert(Alert.AlertType.ERROR, "Invalid Input", "Score must be a valid number.");
+            return false;
+        }
+
+        if ((score <0) || (score >1000000000)){
             scoreInput.requestFocus();
             showAlert(Alert.AlertType.ERROR, "Invalid Input", "Score must be a valid number.");
             return false;
@@ -320,7 +354,7 @@ public class QuestionBankController implements Initializable {
         dInput.clear();
         answerInput.clear();
         scoreInput.clear();
-        typeInput.setValue(null);
+        typeInput.setValue("Type");
     }
 
     // Utility method to check if a target is a descendant of a specific node type
@@ -335,6 +369,12 @@ public class QuestionBankController implements Initializable {
             node = node.getParent();
         }
         return false;
+    }
+    // Showing hint when input is invalid
+    private void startHintHideTimer(Label hintLabel) {
+        PauseTransition delay = new PauseTransition(Duration.seconds(2)); // Delay before hiding the hint
+        delay.setOnFinished(event -> hintLabel.setVisible(false));
+        delay.play();
     }
 
 }

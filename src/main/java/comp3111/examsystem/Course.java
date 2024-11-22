@@ -164,6 +164,23 @@ public class Course {
         SystemDatabase.modifyCourse(this, courseID);
     }
 
+    public void deleteExamQuestions(Question question){
+        for (Exam e: exams){
+            if (e.removeQuestion(question)){
+                SystemDatabase.modifyCourse(this, courseID);
+            }
+        }
+    }
+
+    public void updateExamQuestions(Question question, String content, String[] options, String answer, int score, String type){
+        for (Exam e: exams){
+            if (e.updateQuestion(question,  content,  options,  answer,  score,  type)){
+                SystemDatabase.modifyCourse(this, courseID);
+            }
+        }
+
+    }
+
     /**
      * Retrieves a list of all students enrolled in the course.
      *
@@ -263,15 +280,29 @@ public class Course {
      * it replaces the old one with the same name and may change the associated course.
      *
      * @param examName The name of the exam to be updated.
-     * @param exam     The new Exam object that will replace the existing one, or null if updating
-    without a new instance.
      */
-    public void updateExam(String examName, Exam exam) {
-        if (exam == null) {
-            return;
+    public void updateExam(String oldExamName, String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
+        for (Exam exam : exams) {
+            if (exam.getExamName().equals(oldExamName)) {
+                if (courseID.equals(course.getCourseID())){
+                    exam.setExamName(examName);
+                    exam.setDuration(duration);
+                    exam.setPublished(isPublished);
+                    exam.setQuestions(questions);
+                    for (String studentUsername : studentUsernames) {
+                        studentToGrade.get(studentUsername).remove(examName);
+                        studentToGrade.get(studentUsername).put(examName, null);
+                    }
+                    SystemDatabase.modifyCourse(this, courseID);
+                    return;
+                }
+                else{
+                    dropExam(oldExamName); // Drop original
+                    new Exam(examName,course,isPublished,duration,questions);
+                    return;
+                }
+            }
         }
-        dropExam(examName); // Drop original
-        exam.getCourse().addExam(exam); // Can change the course bound to the exam
     }
 
     /**
@@ -347,9 +378,18 @@ public class Course {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return Objects.equals(this.courseID, ((Course) obj).getCourseID()) &&
-                Objects.equals(this.name, ((Course) obj).getCourseName()) &&
-                Objects.equals(this.department, ((Course) obj).getDepartment());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return Objects.equals(getCourseID(), course.getCourseID())
+                && Objects.equals(name, course.name)
+                && Objects.equals(getDepartment(), course.getDepartment());
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getCourseID(), name, getDepartment());
+    }
+
 }

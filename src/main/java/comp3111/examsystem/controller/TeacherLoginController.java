@@ -23,11 +23,18 @@ public class TeacherLoginController implements Initializable {
     private TextField usernameTxt;
     @FXML
     private PasswordField passwordTxt;
+    @FXML
+    private Button loginBtn;
 
     private Teacher teacher;
 
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        passwordTxt.setOnKeyPressed(event -> {
+            if (event.getCode().toString().equals("ENTER")) { // Check if Enter key is pressed
+                loginBtn.fire(); // Programmatically click the button
+            }
+        });
     }
 
     @FXML
@@ -77,7 +84,8 @@ public class TeacherLoginController implements Initializable {
         }
 
         stage.show();
-        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+        // no need to close.
+        //((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
 
     }
 }
