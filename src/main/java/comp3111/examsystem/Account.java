@@ -1,5 +1,9 @@
 package comp3111.examsystem;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Objects;
+
 public class Account {
     private String username;
     private String password;
@@ -22,6 +26,15 @@ public class Account {
         }
     }
 
+    public void update(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public boolean login(String password) {
+        return Objects.equals(this.password, password);
+    }
+
     public String getPassword() {
         return this.password;
     }
@@ -33,5 +46,12 @@ public class Account {
         } else {
             throw new IllegalArgumentException("Password cannot be empty");
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        Account account = (Account) other;
+        if (other == null) return false;
+        return (Objects.equals(this.username, account.username)) && (Objects.equals(this.password, account.password));
     }
 }

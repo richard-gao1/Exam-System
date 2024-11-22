@@ -1,6 +1,9 @@
 package comp3111.examsystem;
 
-public class User extends Account{
+import java.util.HashMap;
+import java.util.Objects;
+
+public class User extends Account {
     private String name;
     private String gender;
     private int age;
@@ -12,6 +15,15 @@ public class User extends Account{
         this.gender = gender;
         this.age = age;
         this.department = department;
+    }
+
+    public User update(String username, String password, String name, String gender, int age, String department) {
+        super.update(username, password);
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+        this.department = department;
+        return this;
     }
 
     public String getName() {
@@ -54,5 +66,14 @@ public class User extends Account{
     public void setDepartment(String department) {
         // UI should ensure department is valid
         this.department = department;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other) &&
+                Objects.equals(this.name, ((User) other).getName()) &&
+                Objects.equals(this.gender, ((User) other).getGender()) &&
+                (this.age == ((User) other).getAge()) &&
+                Objects.equals(this.department, ((User) other).getDepartment());
     }
 }

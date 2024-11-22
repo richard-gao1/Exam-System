@@ -1,6 +1,8 @@
 package comp3111.examsystem;
 
-public class Manager extends Account{
+import java.util.HashMap;
+
+public class Manager extends Account {
     public Manager(String username, String password) {
         super(username, password);
     }
@@ -8,5 +10,11 @@ public class Manager extends Account{
     public Course makeCourse() {
         // TODO: to be implemented
         return null;
+
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
     }
 }
