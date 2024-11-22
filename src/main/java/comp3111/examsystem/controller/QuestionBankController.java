@@ -34,7 +34,7 @@ public class QuestionBankController implements Initializable {
 
     @FXML private Button addBtn, updateBtn, deleteBtn, refreshBtn, resetBtn, filterBtn;
 
-    @FXML private Label answerHint, scoreHint;
+    @FXML private Label answerHint, scoreHint, scoreFilterHint;
 
     private Teacher currentTeacher = (Teacher) SystemDatabase.currentUser;
 
@@ -42,50 +42,11 @@ public class QuestionBankController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Hints are hidden
-        answerHint.setVisible(false);
-        scoreHint.setVisible(false);
-        // Initialize button states
-        updateBtn.setDisable(true); // Disabled by default
-        deleteBtn.setDisable(true); // Disabled by default
-
-        // Bind addBtn to disable when table selection is not empty
-        BooleanBinding isTableEmpty = questionTable.getSelectionModel().selectedItemProperty().isNull();
-        addBtn.disableProperty().bind(isTableEmpty.not()); // Disable when something is selected
-
-        // Bind the disable property of deleteBtn to the selection model
-        deleteBtn.disableProperty().bind(isTableEmpty);
-
-        // Bind the disable property of updateBtn to the selection model
-        updateBtn.disableProperty().bind(isTableEmpty);
-
-        // Set up table columns
-        questionColumn.setCellValueFactory(cellData -> cellData.getValue().contentProperty());
-        optionAColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getOptions().size() > 0 ? cellData.getValue().getOptions().get(0) : "")
-        );
-        optionBColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getOptions().size() > 1 ? cellData.getValue().getOptions().get(1) : "")
-        );
-        optionCColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getOptions().size() > 2 ? cellData.getValue().getOptions().get(2) : "")
-        );
-        optionDColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getOptions().size() > 3 ? cellData.getValue().getOptions().get(3) : "")
-        );
-        answerColumn.setCellValueFactory(cellData -> cellData.getValue().answerProperty());
-        typeColumn.setCellValueFactory(cellData -> {
-            int typeChoice = cellData.getValue().getTypeChoice();
-            String typeString = (typeChoice == 0) ? "Single" : "Multiple";
-            return new SimpleStringProperty(typeString);
-        });
-        scoreColumn.setCellValueFactory(cellData -> cellData.getValue().scoreProperty().asObject());
-
-        // Bind ChoiceBox with options
-        typeInput.setItems(FXCollections.observableArrayList("Single", "Multiple"));
-        typeInput.setValue("Type"); // Default selection
-        typeFilter.setItems(FXCollections.observableArrayList("Single", "Multiple"));
-        typeFilter.setValue("Type"); // Default selection
+        setHint();
+        setBtn();
+        setChoiceBox();
+        initializeTable();
+        setListener();
 
         // Load initial data into the table
         questionTable.setItems(questionList);
@@ -93,66 +54,7 @@ public class QuestionBankController implements Initializable {
         // Placeholder
         questionFilter.setPromptText("Filter questions...");
         scoreFilter.setPromptText("Enter score...");
-
-        // Add a listener to the selection model
-        questionTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                populateFields(newValue); // Populate input fields with selected question
-            } else {
-                clearInputFields(); // Clear input fields
-            }
-        });
-
-        // Listener to unselect row
-        // Add a listener to execute logic after the TableView is added to the scene
-        questionTable.sceneProperty().addListener((observable, oldScene, newScene) -> {
-            if (newScene != null) {
-                Parent root = newScene.getRoot();
-
-                // Add a global mouse click listener
-                root.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                    Object target = event.getTarget();
-
-                    // Check if the target node or its parent is a TextField or ChoiceBox
-                    boolean isInInputField = isDescendantOf(target, TextField.class) ||
-                            isDescendantOf(target, ChoiceBox.class) ||
-                            isDescendantOf(target, Button.class) ||
-                            isDescendantOf(target, TableRow.class)
-                            ;
-
-                    if (!isInInputField) {
-                        questionTable.getSelectionModel().clearSelection();
-                    }
-                });
-            }
-        });
-
-        // Restrict input and show hint for invalid characters
-        scoreInput.setTextFormatter(new TextFormatter<>(change -> {
-            String newText = change.getText();
-            if (!newText.matches("[0-9]*")) {
-                scoreHint.setVisible(true); // Show hint
-                startHintHideTimer(scoreHint); // Schedule to hide the hint
-                return null; // Reject invalid input
-            }
-            scoreHint.setVisible(false); // Hide hint for valid input
-            return change; // Accept valid input
-        }));
-
-        answerInput.setTextFormatter(new TextFormatter<>(change -> {
-            String newText = change.getText();
-            if (!newText.matches("[a-dA-D]*")) {
-                answerHint.setVisible(true); // Show hint
-                startHintHideTimer(answerHint); // Schedule to hide the hint
-                return null; // Reject invalid input
-            }
-            answerHint.setVisible(false); // Hide hint for valid input
-            change.setText(change.getText().toUpperCase()); // Convert to Uppercase
-            return change; // Accept valid input
-        }));
     }
-
-
 
     @FXML
     private void onAdd() {
@@ -161,11 +63,11 @@ public class QuestionBankController implements Initializable {
                 return; // Stop if validation fails
             }
             // Collect data from input fields
-            String[] option = {aInput.getText(), bInput.getText(), cInput.getText(), dInput.getText()};
+            String[] option = {aInput.getText().trim(), bInput.getText().trim(), cInput.getText().trim(), dInput.getText().trim()};
             int typeChoice = typeInput.getValue().equals("Single") ? 0 : 1;
 
             Question question = new Question(
-                    questionInput.getText(),
+                    questionInput.getText().trim(),
                     option,
                     answerInput.getText(),
                     Integer.parseInt(scoreInput.getText()),
@@ -254,6 +156,132 @@ public class QuestionBankController implements Initializable {
     }
 
     // Utility Functions
+
+    private void setHint(){
+        // Hints are hidden
+        answerHint.setVisible(false);
+        answerHint.setPrefHeight(0);
+        scoreHint.setVisible(false);
+        scoreHint.setPrefHeight(0);
+        scoreFilterHint.setVisible(false);
+        scoreFilterHint.setPrefHeight(0);
+        // Add TextFormatter
+        setTextFormatter(scoreInput,scoreHint,"[0-9]*","Score must be a number",false);
+        setTextFormatter(scoreFilter,scoreFilterHint,"[0-9]*","Score must be a number",false);
+        setTextFormatter(answerInput,answerHint,"[a-dA-D]*","Answer must be in &quot;ABCD&quot;",true);
+    }
+
+    private void setBtn(){
+        // Initialize button states
+        updateBtn.setDisable(true); // Disabled by default
+        deleteBtn.setDisable(true); // Disabled by default
+
+        // Bind addBtn to disable when table selection is not empty
+        BooleanBinding isTableEmpty = questionTable.getSelectionModel().selectedItemProperty().isNull();
+        addBtn.disableProperty().bind(isTableEmpty.not()); // Disable when something is selected
+
+        // Bind the disable property of deleteBtn to the selection model
+        deleteBtn.disableProperty().bind(isTableEmpty);
+
+        // Bind the disable property of updateBtn to the selection model
+        updateBtn.disableProperty().bind(isTableEmpty);
+    }
+
+    private void setChoiceBox(){
+        // Bind ChoiceBox with options
+        typeInput.setItems(FXCollections.observableArrayList("Single", "Multiple"));
+        typeInput.setValue("Type"); // Default selection
+        typeFilter.setItems(FXCollections.observableArrayList("Single", "Multiple"));
+        typeFilter.setValue("Type"); // Default selection
+    }
+
+    private void initializeTable(){
+        // Set up table columns
+        questionColumn.setCellValueFactory(cellData -> cellData.getValue().contentProperty());
+        optionAColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getOptions().size() > 0 ? cellData.getValue().getOptions().get(0) : "")
+        );
+        optionBColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getOptions().size() > 1 ? cellData.getValue().getOptions().get(1) : "")
+        );
+        optionCColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getOptions().size() > 2 ? cellData.getValue().getOptions().get(2) : "")
+        );
+        optionDColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getOptions().size() > 3 ? cellData.getValue().getOptions().get(3) : "")
+        );
+        answerColumn.setCellValueFactory(cellData -> cellData.getValue().answerProperty());
+        typeColumn.setCellValueFactory(cellData -> {
+            int typeChoice = cellData.getValue().getTypeChoice();
+            String typeString = (typeChoice == 0) ? "Single" : "Multiple";
+            return new SimpleStringProperty(typeString);
+        });
+        scoreColumn.setCellValueFactory(cellData -> cellData.getValue().scoreProperty().asObject());
+
+
+    }
+
+    private void setTextFormatter(TextField textField, Label hintLabel, String regex, String hintMessage, boolean toUpperCase){
+        textField.setTextFormatter(new TextFormatter<>(change -> {
+            String newText = change.getText();
+            if (!newText.matches(regex)) {
+                hintLabel.setText(hintMessage); // Set hint message dynamically
+                hintLabel.setVisible(true); // Show hint
+                hintLabel.setPrefHeight(18);
+                startHintHideTimer(hintLabel); // Schedule to hide the hint
+                return null; // Reject invalid input
+            }
+            hintLabel.setVisible(false); // Hide hint for valid input
+            if (toUpperCase) {
+                change.setText(newText.toUpperCase()); // Convert to uppercase if specified
+            }
+            return change; // Accept valid input
+        }));
+    }
+
+    private void setListener(){
+        // Add a listener to the selection model
+        questionTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                populateFields(newValue); // Populate input fields with selected question
+            } else {
+                clearInputFields(); // Clear input fields
+            }
+        });
+        // Listener to unselect row
+        // Add a listener to execute logic after the TableView is added to the scene
+        questionTable.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Parent root = newScene.getRoot();
+                // Add a global mouse click listener
+                root.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                    Object target = event.getTarget();
+
+                    // Check if the target node or its parent is a TextField or ChoiceBox
+                    boolean isInInputField = isDescendantOf(target, TextField.class) ||
+                            isDescendantOf(target, ChoiceBox.class) ||
+                            isDescendantOf(target, Button.class) ||
+                            isDescendantOf(target, TableRow.class)
+                            ;
+                    if (!isInInputField) {
+                        questionTable.getSelectionModel().clearSelection();
+                    }
+                });
+            }
+        });
+        // Add a listener to resize the questionColumn dynamically
+        questionTable.widthProperty().addListener((observable, oldWidth, newWidth) -> {
+            // Calculate the available width for the questionColumn
+            double fixedWidth = optionAColumn.getWidth() + optionBColumn.getWidth() +
+                    optionCColumn.getWidth() + optionDColumn.getWidth() +
+                    answerColumn.getWidth() + typeColumn.getWidth() +
+                    scoreColumn.getWidth() + 2; // Account for borders
+            double availableWidth = newWidth.doubleValue() - fixedWidth;
+
+            // Set the column width to fill the remaining space
+            questionColumn.setPrefWidth(Math.max(availableWidth, questionColumn.getMinWidth())); // Minimum width of 100
+        });
+    }
 
     private void populateFields(Question question) {
         questionInput.setText(question.getContent());
@@ -373,7 +401,10 @@ public class QuestionBankController implements Initializable {
     // Showing hint when input is invalid
     private void startHintHideTimer(Label hintLabel) {
         PauseTransition delay = new PauseTransition(Duration.seconds(2)); // Delay before hiding the hint
-        delay.setOnFinished(event -> hintLabel.setVisible(false));
+        delay.setOnFinished(event -> {
+            hintLabel.setVisible(false);
+            hintLabel.setPrefHeight(0);
+        });
         delay.play();
     }
 

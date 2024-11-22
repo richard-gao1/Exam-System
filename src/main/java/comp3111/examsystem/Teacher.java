@@ -122,6 +122,17 @@ public class Teacher extends User {
         throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
     }
 
+    public void deleteExam(Exam exam, Course course){
+        if (course != null){
+            if (courseIDs.contains(course.getCourseID())){
+                course.dropExam(exam);
+                return;
+            }
+            throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
+        }
+        throw new IllegalArgumentException("No such course");
+    }
+
     public void updateExam(String oldExamName, Course oldCourse, String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
         Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
         updateExam(oldExamName, oldCourse, examName,  course,  isPublished,  duration, questions);

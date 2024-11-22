@@ -7,6 +7,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,15 +26,35 @@ public class ExamManagementController implements Initializable {
     @FXML private TableColumn<Question, Integer> examScoreColumn, scoreColumn;
     @FXML private Button deleteBtn, refreshBtn, addBtn, updateBtn;
     @FXML private Button unselectQuestionBtn, selectQuestionBtn;
+    @FXML private HBox tableBox;
+    @FXML private VBox leftPane, rightPane;
+    @FXML private BorderPane borderPane;
 
     private Teacher currentTeacher = (Teacher) SystemDatabase.currentUser;
     private ObservableList<Exam> examList = FXCollections.observableArrayList(currentTeacher.getExams());
     private ObservableList<Question> questionList = FXCollections.observableArrayList(currentTeacher.getQuestionBank());
     private ObservableList<Question> examQuestionList = FXCollections.observableArrayList();
+    private ObservableList<Question> tempQuestionList = FXCollections.observableArrayList();
     private ObservableList<String> courseList =  FXCollections.observableArrayList("Course");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        initializeTables();
+        initializeChoiceBoxes();
+        addListener();
+        bindButtonStates();
+    }
+
+    /**
+     * TODO: Now adding questions to existing exam would temporarily save it
+     * You can view them again when selecting
+     * But if you don't click "update" button it would not be written to the systemDatabase
+     * which kind of makes some sense tho
+     * if you press "refresh" before "update" the questions would be rolled back to before
+     * I would say "This is not a bug, this is a feature", but I want to know what you think
+     */
+
+    private void initializeTables(){
         // Initialize the examTable
         examTable.setItems(examList);
         examColumn.setCellValueFactory(cellData -> cellData.getValue().examNameProperty());
@@ -47,6 +70,15 @@ public class ExamManagementController implements Initializable {
                 new SimpleStringProperty(cellData.getValue().getTypeChoice() == 0 ? "Single" : "Multiple"));
         scoreColumn.setCellValueFactory(cellData -> cellData.getValue().scoreProperty().asObject());
 
+        // Initialize the examQuestionTable
+        examQuestionTable.setItems(examQuestionList);
+        examQuestionColumn.setCellValueFactory(cellData -> cellData.getValue().contentProperty());
+        examTypeColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTypeChoice() == 0 ? "Single" : "Multiple"));
+        examScoreColumn.setCellValueFactory(cellData -> cellData.getValue().scoreProperty().asObject());
+    }
+
+    private void initializeChoiceBoxes(){
         // Initialize the courseList for CourseID choice boxes
         courseList.addAll(currentTeacher.getCourseID());
         courseInput.setItems(courseList);
@@ -63,37 +95,61 @@ public class ExamManagementController implements Initializable {
         // Initialize Type
         typeFilter.setItems(FXCollections.observableArrayList("Single","Multiple"));
         typeFilter.setValue("Type");
+    }
 
-        // Initialize the examQuestionTable
-        examQuestionTable.setItems(examQuestionList);
-        examQuestionColumn.setCellValueFactory(cellData -> cellData.getValue().contentProperty());
-        examTypeColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getTypeChoice() == 0 ? "Single" : "Multiple"));
-        examScoreColumn.setCellValueFactory(cellData -> cellData.getValue().scoreProperty().asObject());
-
+    private void addListener(){
         // Add a listener to the examTable to update input fields
         examTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             boolean isExamSelected = (newSelection != null);
-
             if (isExamSelected) {
                 examInput.setText(newSelection.getExamName());
                 durationInput.setText(String.valueOf(newSelection.getDuration()));
                 courseInput.setValue(newSelection.getCourse().getCourseID());
                 publishInput.setValue(newSelection.getIsPublished() ? "Yes" : "No");
-
-                // Update examQuestionTable and questionTable based on selected exam
-                updateQuestionTables(newSelection);
             } else {
-                // Exam is unselected, clear the examQuestionList, reset the QuestionList
                 clearInputFields();
-                examQuestionList.clear();
-                questionList.setAll(currentTeacher.getQuestionBank());
-                questionTable.refresh();
-                examQuestionTable.refresh();
             }
-            // Apply back the filter, if any.
-            // onQuestionFilter();
+            updateQuestionLists(newSelection);
+            refreshQuestion();
         });
+
+        borderPane.widthProperty().addListener((observable, oldWidth, newWidth) ->
+                javafx.application.Platform.runLater(() -> initializeWidth(newWidth.doubleValue()))
+        );
+
+        examQuestionTable.widthProperty().addListener((observable, oldWidth, newWidth) ->
+                javafx.application.Platform.runLater(() -> initializeColumnWidth(newWidth.doubleValue(), examTypeColumn, examScoreColumn, examQuestionColumn))
+        );
+
+        questionTable.widthProperty().addListener((observable, oldWidth, newWidth) ->
+                javafx.application.Platform.runLater(() -> initializeColumnWidth(newWidth.doubleValue(), typeColumn, scoreColumn, questionColumn))
+        );
+
+    }
+
+    private void initializeWidth(double borderWidth) {
+        double leftWidth = leftPane.getWidth(); // New width of the right pane
+        double padding = borderPane.getInsets().getLeft() + borderPane.getInsets().getRight(); // Padding of the borderPane
+        double dynamicWidth = borderWidth - leftWidth- padding; // Remaining space for questionColumn (with padding)
+        // Set the width dynamically for the questionColumn
+        if (dynamicWidth > 0) {
+            rightPane.setPrefWidth(dynamicWidth);
+            tableBox.setPrefWidth(dynamicWidth);
+            examQuestionTable.setPrefWidth(dynamicWidth / 2);
+            questionTable.setPrefWidth(dynamicWidth / 2);
+        }
+    }
+
+    private void initializeColumnWidth(double tableWidth, TableColumn col1, TableColumn col2, TableColumn targetCol){
+        double fixedWidth = col1.getWidth()+col2.getWidth(); // New width of the right pane
+        double dynamicWidth = tableWidth - fixedWidth-1; // Remaining space for questionColumn (with padding)
+        // Set the width dynamically for the questionColumn
+        if (dynamicWidth > 0) {
+            targetCol.setPrefWidth(dynamicWidth);
+        }
+    }
+
+    private void bindButtonStates(){
         // Enable/disable buttons based on selection
         addBtn.disableProperty().bind(examTable.getSelectionModel().selectedItemProperty().isNotNull());
         deleteBtn.disableProperty().bind(examTable.getSelectionModel().selectedItemProperty().isNull());
@@ -113,6 +169,9 @@ public class ExamManagementController implements Initializable {
         examFilter.clear();
         courseFilter.setValue("Course");
         publishFilter.setValue("Publish");
+        // Reset exam List
+        examList.setAll(currentTeacher.getExams());
+        refreshExam();
     }
 
     @FXML
@@ -121,7 +180,6 @@ public class ExamManagementController implements Initializable {
         String examNameText = examFilter.getText().toLowerCase();
         String courseID = courseFilter.getValue();
         String published = publishFilter.getValue();
-
         examTable.setItems(examList.filtered
                 (exam -> {
             boolean matchesExamName = examNameText.isEmpty() || exam.getExamName().toLowerCase().contains(examNameText);
@@ -134,16 +192,6 @@ public class ExamManagementController implements Initializable {
                 }
             )
         );
-        // TODO: The problem is, when you are filtering and want to add question, the added question will disappear.
-        // This is because when you add to left/right, you have not commit the change until you press update,
-        // But the button already remove it from the current questionList/examQuestionList
-        // The content of the question list is given by question bank - questions in the examlist
-        // One solution might be, when pressing the button directly add the question to the exam.
-        // But such an approach has another problem: how about when no exam is selected?
-        // Maybe can check if selected exam is null
-        // Also, amend the listener, such that, if the selected exam changes, completely refresh the examlist
-        // if change from not selecting exam to selecting exam, keep the original examList as is, but add the existing exam qs.
-        // maybe the best solution is to have a temp observable list to do the filtering stuff.
     }
 
     @FXML
@@ -152,6 +200,10 @@ public class ExamManagementController implements Initializable {
         questionFilter.clear();
         typeFilter.setValue("Type");
         scoreFilter.clear();
+        // Reset question List
+        Exam selectedExam = examTable.getSelectionModel().getSelectedItem();
+        updateQuestionLists(selectedExam);
+        refreshQuestion();
     }
     // TODO: After filtering, add question to an exam will cause the question disappear, but still can add the course.
 
@@ -163,36 +215,42 @@ public class ExamManagementController implements Initializable {
         String type = typeFilter.getValue();
         String scoreText = scoreFilter.getText();
 
-        // Filter for examQuestionTable
-        if (selectedExam != null) {
-            examQuestionTable.setItems(FXCollections.observableArrayList(selectedExam.getQuestions()).filtered(question -> {
-                boolean matchesQuestion = questionText.isEmpty() || question.getContent().toLowerCase().contains(questionText);
-                boolean matchesType = type == null || type.equals("Type") || (type.equals("Single") && question.getTypeChoice() == 0) || (type.equals("Multiple") && question.getTypeChoice() == 1);
-                boolean matchesScore = scoreText.isEmpty() || Integer.toString(question.getScore()).equals(scoreText);
-                return matchesQuestion && matchesType && matchesScore;
-            }));
-        }
-
         // Filter for questionTable (remaining questions not in the selected exam)
-        questionTable.setItems(questionList.filtered(question -> {
-            boolean matchesQuestion = questionText.isEmpty() || question.getContent().toLowerCase().contains(questionText);
-            boolean matchesType = type == null || type.equals("Type")|| (type.equals("Single") && question.getTypeChoice() == 0) || (type.equals("Multiple") && question.getTypeChoice() == 1);
-            boolean matchesScore = scoreText.isEmpty() || Integer.toString(question.getScore()).equals(scoreText);
-
+        tempQuestionList.setAll(questionList);
+        questionList.setAll(tempQuestionList.filtered(question -> {
             // Exclude questions already in the selected exam
             boolean notInExam = (selectedExam == null)||(!selectedExam.getQuestions().contains(question));
             //showAlert(Alert.AlertType.INFORMATION,"Hi", String.valueOf(matchesQuestion).concat(String.valueOf(matchesType)).concat(String.valueOf(matchesScore)).concat(String.valueOf(notInExam)));
-            return matchesQuestion && matchesType && matchesScore && notInExam;
+            return filterQuestion(question,questionText,type,scoreText) && notInExam;
         }));
+        questionTable.setItems(questionList);
+
+        // Filter for examQuestionTable
+        if (selectedExam != null) {
+            tempQuestionList.setAll(selectedExam.getQuestions());
+            examQuestionList.setAll(tempQuestionList.filtered(
+                            question -> filterQuestion(question,questionText,type,scoreText)
+                    )
+            );
+            examQuestionTable.setItems(examQuestionList);
+        }
+    }
+
+    private boolean filterQuestion(Question question, String questionText, String type, String scoreText) {
+        boolean matchesQuestion = questionText.isEmpty() || question.getContent().toLowerCase().contains(questionText);
+        boolean matchesType = type == null ||type.equals("Type") || (type.equals("Single") && question.getTypeChoice() == 0) || (type.equals("Multiple") && question.getTypeChoice() == 1);
+        boolean matchesScore = scoreText.isEmpty() || Integer.toString(question.getScore()).equals(scoreText);
+        return matchesQuestion && matchesType && matchesScore;
     }
 
     @FXML
     private void onDelete() {
         Exam selectedExam = examTable.getSelectionModel().getSelectedItem();
         if (selectedExam != null) {
+            Course selectedCourse = selectedExam.getCourse();
             examList.remove(selectedExam);
             examTable.setItems(examList);
-
+            currentTeacher.deleteExam(selectedExam,selectedCourse);
             // Clear input fields
             clearInputFields();
             refresh();
@@ -210,11 +268,10 @@ public class ExamManagementController implements Initializable {
         if (!validateExamInputs()) {
             return; // Exit if validation fails
         }
-        String examName = examInput.getText();
+        String examName = examInput.getText().trim();
         String courseID = courseInput.getValue();
         int duration = Integer.parseInt(durationInput.getText());
         boolean isPublished = (publishInput.getValue().equals("Yes"));
-
 
         // Check for duplicate exam names
         for (Exam exam : examList) {
@@ -226,17 +283,17 @@ public class ExamManagementController implements Initializable {
         // Create and add new exam
 
         try {
-            Exam newExam = new Exam(examName, courseID, isPublished, duration);
-            newExam.getQuestions().addAll(examQuestionList);
-            examList.add(newExam);
-            // Update the table
+            Exam newExam = new Exam(examName, courseID, isPublished, duration, new ArrayList<>(examQuestionList));
 
+            // Update the table
+            examList.add(newExam);
             // Clear input fields
             clearInputFields();
         } catch (IllegalArgumentException e){
             showAlert(Alert.AlertType.ERROR, "Invalid Exam", e.getMessage());
         }
-        refresh();
+        refreshQuestion();
+        refreshExam();
     }
 
     @FXML
@@ -266,7 +323,8 @@ public class ExamManagementController implements Initializable {
                     return;
                 }
             }
-            currentTeacher.updateExam(selectedExam.getExamName(),selectedExam.getCourse(), updatedExamName,updatedCourseID,updatedIsPublished,updatedDuration,new ArrayList<>(examQuestionList));
+            // Now update won't update the question according to the
+            currentTeacher.updateExam(selectedExam.getExamName(),selectedExam.getCourse(), updatedExamName,updatedCourseID,updatedIsPublished,updatedDuration,new ArrayList<>(selectedExam.getQuestions()));
             examList.setAll(currentTeacher.getExams());
             clearInputFields();
         } catch (IllegalArgumentException e){
@@ -286,28 +344,32 @@ public class ExamManagementController implements Initializable {
     @FXML
     private void onUnselectQuestion() {
         // Remove question from left table
-        // Won't really remove the question from exam unless "update" is clicked
+        // Really remove the question from exam, no need to wait for "update" is clicked
         Question selectedQuestion = examQuestionTable.getSelectionModel().getSelectedItem();
+        Exam selectedExam = examTable.getSelectionModel().getSelectedItem();
         if (selectedQuestion != null) {
             examQuestionList.remove(selectedQuestion);
             questionList.add(selectedQuestion);
-            examQuestionTable.refresh();
-            questionTable.refresh();
-            //onQuestionFilter();       // no use, don't add
+            if (selectedExam != null){
+                selectedExam.removeQuestion(selectedQuestion);
+            }
+            refreshQuestion();
         }
     }
 
     @FXML
     private void onSelectQuestion() {
         // Add question to left table
-        // Won't really add the question to exam unless "update" is clicked
+        // Really add the question to exam, no need to wait for "update" is clicked
         Question selectedQuestion = questionTable.getSelectionModel().getSelectedItem();
+        Exam selectedExam = examTable.getSelectionModel().getSelectedItem();
         if (selectedQuestion != null) {
             questionList.remove(selectedQuestion);
             examQuestionList.add(selectedQuestion);
-            questionTable.refresh();
-            examQuestionTable.refresh();
-            //onQuestionFilter();       // no use, don't add
+            if (selectedExam != null){
+                selectedExam.addQuestion(selectedQuestion);
+            }
+            refreshQuestion();
         }
     }
 
@@ -359,52 +421,51 @@ public class ExamManagementController implements Initializable {
         alert.showAndWait();
     }
 
-    private void updateQuestionTables(Exam selectedExam) {
-        // Update examQuestionTable with questions in the selected exam
-        examQuestionList.setAll(selectedExam.getQuestions());
-        // Update questionTable to exclude questions already in the selected exam
+    private void updateQuestionLists(Exam selectedExam) {
         questionList.setAll(currentTeacher.getQuestionBank());
-        questionTable.setItems(questionList.filtered(question -> {
-            for (Question q : examQuestionList) {
-                if (question.equals(q)){
-                    return false;
+        if (selectedExam != null){
+            // Update examQuestionTable with questions in the selected exam
+            examQuestionList.setAll(selectedExam.getQuestions());
+            // Update questionTable to exclude questions already in the selected exam
+            tempQuestionList.setAll(currentTeacher.getQuestionBank());
+            questionList.setAll(tempQuestionList.filtered(question -> {
+                for (Question q : examQuestionList) {
+                    if (question.equals(q)){
+                        return false;
+                    }
                 }
-            }
-            return true;
-        }));
-        questionTable.refresh();
+                return true;
+            }));
+        }
+        else{
+            examQuestionList.clear();
+        }
+
+    }
+
+    private void refreshExam(){
+        // Reload the examTable with the full list
+        examTable.setItems(examList);
+        examTable.refresh();
+    }
+
+    private void refreshQuestion(){
+        // Reload the examQuestionTable and questionTable
+        examQuestionTable.setItems(examQuestionList);
+        questionTable.setItems(questionList);
         examQuestionTable.refresh();
+        questionTable.refresh();
     }
 
     private void refresh() {
-        // Clear all input fields and filters
-        clearInputFields();
-        examFilter.clear();
-        courseFilter.setValue("Course");
-        publishFilter.setValue("Publish");
-        questionFilter.clear();
-        typeFilter.setValue("Type");
-        scoreFilter.clear();
-
-        // Reload the examTable with the full list
-        examTable.setItems(examList);
-
-        // Reload the questionTable with the full list
-        questionTable.setItems(questionList);
-
-        // Clear the examQuestionTable
-        examQuestionList.clear();
-        examQuestionTable.setItems(examQuestionList);
-
-        // Refresh the tables to ensure UI updates
-        examTable.refresh();
-        questionTable.refresh();
-        examQuestionTable.refresh();
-
         // Reset selection
         examTable.getSelectionModel().clearSelection();
         questionTable.getSelectionModel().clearSelection();
         examQuestionTable.getSelectionModel().clearSelection();
+        // Clear all input fields and filters
+        clearInputFields();
+        onExamReset();
+        onQuestionReset();
     }
 
 
