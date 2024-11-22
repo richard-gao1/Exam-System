@@ -21,6 +21,14 @@ import java.util.ResourceBundle;
  */
 public class TeacherManagementController implements Initializable {
     @FXML
+    private Button refreshBtn;
+    @FXML
+    private Button deleteBtn;
+    @FXML
+    private Button addBtn;
+    @FXML
+    private Button updateBtn;
+    @FXML
     private ChoiceBox genderSet;
     @FXML
     private TextField departmentSet;
@@ -163,20 +171,39 @@ public class TeacherManagementController implements Initializable {
     is created.
      * @return The newly created or updated Teacher instance.
      */
-    private Teacher newTeacher(boolean existing) {
+    private Teacher setTeacher(boolean existing) {
         String username = usernameSet.getText();
         String name = nameSet.getText();
         String gender = (String) genderSet.getSelectionModel().getSelectedItem();
+        if (gender == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Invalid Gender");
+            alert.setHeaderText("Empty gender input");
+            alert.show();
+            return null;
+        }
         String ageText = ageSet.getText();
         int age = 20;
         try {
             age = Integer.parseInt(ageText);
         } catch (NumberFormatException e) {
             // invalid age input
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Invalid Number");
+            alert.setHeaderText("Invalid age input");
+            alert.show();
+            return null;
         }
         String department = departmentSet.getText();
         String password = passwordSet.getText();
         String position = (String) positionSet.getSelectionModel().getSelectedItem();
+        if (position == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Invalid Position");
+            alert.setHeaderText("Empty position input");
+            alert.show();
+            return null;
+        }
         if (existing && updating != null) {
             return updating.update(username, password, name, gender, age, department, position);
         } else {
@@ -189,7 +216,8 @@ public class TeacherManagementController implements Initializable {
      */
     @FXML
     public void add() {
-        Teacher newTeacher = newTeacher(false);
+        Teacher newTeacher = setTeacher(false);
+        if (newTeacher == null) return;
         resetSetFields();
         String msg = SystemDatabase.registerTeacher(newTeacher);
         if (!msg.isEmpty()) {
@@ -207,10 +235,15 @@ public class TeacherManagementController implements Initializable {
     public void update() {
         if (updating == null) {
             // no teacher is selected
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("No teacher is selected.");
+            alert.show();
         } else {
             String old_username = updating.getUsername();
             System.out.println("Updating teacher " + old_username);
-            Teacher newTeacher = newTeacher(true);
+            Teacher newTeacher = setTeacher(true);
+            if (newTeacher == null) return;
             resetSetFields();
             SystemDatabase.updateTeacher(newTeacher, old_username);
             refresh();
@@ -224,6 +257,10 @@ public class TeacherManagementController implements Initializable {
     public void delete() {
         if (updating == null) {
             // no teacher is selected
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("No teacher is selected.");
+            alert.show();
         } else {
             String username = updating.getUsername();
             SystemDatabase.updateTeacher(null, username);

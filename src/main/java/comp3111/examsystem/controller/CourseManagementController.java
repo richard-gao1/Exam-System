@@ -130,7 +130,7 @@ public class CourseManagementController implements Initializable {
     is created.
      * @return The newly created or updated Course instance.
      */
-    private Course newCourse(boolean existing) {
+    private Course setCourse(boolean existing) {
         String courseID = courseIDSet.getText();
         String name = courseNameSet.getText();
         String department = departmentSet.getText();
@@ -147,7 +147,7 @@ public class CourseManagementController implements Initializable {
      */
     @FXML
     public void add() {
-        Course newCourse = newCourse(false);
+        Course newCourse = setCourse(false);
         resetSetFields();
         String msg = SystemDatabase.createCourse(newCourse);
         if (!msg.isEmpty()) {
@@ -164,12 +164,16 @@ public class CourseManagementController implements Initializable {
     @FXML
     public void modify() {
         if (updating == null) {
-            // no student is selected
+            // no course is selected
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("No course is selected.");
+            alert.show();
         } else {
             String old_courseID = updating.getCourseID();
             resetSetFields();
             System.out.println("Updating course " + old_courseID);
-            Course newCourse = newCourse(true);
+            Course newCourse = setCourse(true);
             SystemDatabase.modifyCourse(newCourse, old_courseID);
             refresh();
         }
@@ -181,7 +185,10 @@ public class CourseManagementController implements Initializable {
     @FXML
     public void delete() {
         if (updating == null) {
-            // no student is selected
+            // no course is selected
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("No course is selected.");
         } else {
             String courseID = updating.getCourseID();
             SystemDatabase.modifyCourse(null, courseID);

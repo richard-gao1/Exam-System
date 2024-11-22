@@ -152,16 +152,28 @@ public class StudentManagementController implements Initializable {
     is created.
      * @return The newly created or updated Student instance.
      */
-    private Student newStudent(boolean existing) {
+    private Student setStudent(boolean existing) {
         String username = usernameSet.getText();
         String name = nameSet.getText();
         String gender = (String) genderSet.getSelectionModel().getSelectedItem();
+        if (gender == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Invalid Gender");
+            alert.setHeaderText("Empty gender input");
+            alert.show();
+            return null;
+        }
         String ageText = ageSet.getText();
         int age = 20;
         try {
             age = Integer.parseInt(ageText);
         } catch (NumberFormatException e) {
             // invalid age input
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Invalid Number");
+            alert.setHeaderText("Invalid age input");
+            alert.show();
+            return null;
         }
         String department = departmentSet.getText();
         String password = passwordSet.getText();
@@ -177,7 +189,8 @@ public class StudentManagementController implements Initializable {
      */
     @FXML
     public void add() {
-        Student newStudent = newStudent(false);
+        Student newStudent = setStudent(false);
+        if (newStudent == null) return;
         resetSetFields();
         String msg = SystemDatabase.registerStudent(newStudent);
         if (!msg.isEmpty()) {
@@ -195,10 +208,15 @@ public class StudentManagementController implements Initializable {
     public void update() {
         if (updating == null) {
             // no student is selected
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("No student is selected.");
+            alert.show();
         } else {
             String old_username = updating.getUsername();
             System.out.println("Updating student " + old_username);
-            Student newStudent = newStudent(true);
+            Student newStudent = setStudent(true);
+            if (newStudent == null) return;
             resetSetFields();
             SystemDatabase.updateStudent(newStudent, old_username);
             refresh();
@@ -212,6 +230,10 @@ public class StudentManagementController implements Initializable {
     public void delete() {
         if (updating == null) {
             // no student is selected
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("No student is selected.");
+            alert.show();
         } else {
             String username = updating.getUsername();
             SystemDatabase.removeStudent(username);
