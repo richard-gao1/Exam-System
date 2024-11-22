@@ -26,8 +26,12 @@ public class TeacherLoginController implements Initializable {
     private TextField usernameTxt;
     @FXML
     private PasswordField passwordTxt;
+    @FXML
+    private Button loginBtn;
 
     private Teacher teacher;
+
+
 
     /**
      * Initializes the controller when the FXML file is loaded.
@@ -37,8 +41,13 @@ public class TeacherLoginController implements Initializable {
      * @param resources The resources used to localize the root object, or null if the root
     object was not localized.
      */
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        passwordTxt.setOnKeyPressed(event -> {
+            if (event.getCode().toString().equals("ENTER")) { // Check if Enter key is pressed
+                loginBtn.fire(); // Programmatically click the button
+            }
+        });
     }
 
     /**
@@ -91,13 +100,15 @@ public class TeacherLoginController implements Initializable {
 
             // Get the controller and pass the stage
             RegisterController controller = registerLoader.getController();
+            controller.teacherSet();
 
         } catch (IOException e1) {
             e1.printStackTrace();
         }
 
         stage.show();
-        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+        // no need to close.
+        //((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
 
     }
 }
