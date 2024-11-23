@@ -1,9 +1,6 @@
 package comp3111.examsystem.controller;
 
-import comp3111.examsystem.Course;
-import comp3111.examsystem.Manager;
-import comp3111.examsystem.SystemDatabase;
-import comp3111.examsystem.Teacher;
+import comp3111.examsystem.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Controller for Course Management UI
@@ -24,9 +22,33 @@ import java.util.ResourceBundle;
  */
 public class CourseManagementController implements Initializable {
     @FXML
-    private TableColumn usernameColumn;
+    private Button deleteBtn;
     @FXML
-    private TableColumn nameColumn;
+    private Button refreshBtn;
+    @FXML
+    private Button filterBtn;
+    @FXML
+    private Button resetBtn;
+    @FXML
+    private Button addStduentBtn;
+    @FXML
+    private Button removeStudentBtn;
+    @FXML
+    private TableView enrollTable;
+    @FXML
+    private TableView notEnrollTable;
+    @FXML
+    private TableColumn enrollStudentUsername;
+    @FXML
+    private TableColumn enrollStudentName;
+    @FXML
+    private TableColumn notEnrollStudentUsername;
+    @FXML
+    private TableColumn notEnrollStudentName;
+    @FXML
+    private TableColumn teacherUsername;
+    @FXML
+    private TableColumn teacherName;
     @FXML
     private TableView teacherTable;
     @FXML
@@ -54,6 +76,9 @@ public class CourseManagementController implements Initializable {
 
     private ObservableList<Course> courseList = FXCollections.observableArrayList();
     private ObservableList<Teacher> teacherList = FXCollections.observableArrayList();
+    private ObservableList<Student> studentList = FXCollections.observableArrayList();
+    private ObservableList<Student> enrollList = FXCollections.observableArrayList();
+    private ObservableList<Student> notEnrollList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -64,8 +89,18 @@ public class CourseManagementController implements Initializable {
         departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
 
         teacherTable.setItems(teacherList);
-        usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        teacherUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
+        teacherName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        enrollTable.setItems(enrollList);
+        enrollStudentUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
+        enrollStudentName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        notEnrollTable.setItems(notEnrollList);
+        notEnrollStudentUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
+        notEnrollStudentName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        resetStudentList();
     }
 
     /**
@@ -94,6 +129,14 @@ public class CourseManagementController implements Initializable {
     }
 
     /**
+     * Retrieves the list of students from the system database.
+     */
+    private void getStudentList() {
+        studentList.clear();
+        studentList.addAll(SystemDatabase.getStudentList("", "", ""));
+    }
+
+    /**
      * Refreshes both the course and teacher lists by fetching them from the system database and
      updating the UI tables.
      */
@@ -101,6 +144,7 @@ public class CourseManagementController implements Initializable {
     public void refresh() {
         getCourseList();
         getTeacherList();
+        getStudentList();
     }
 
     /**
@@ -139,6 +183,7 @@ public class CourseManagementController implements Initializable {
                 new Course(courseID, name, department, new ArrayList<>(), new ArrayList<>());
         Teacher teacher = (Teacher) teacherTable.getSelectionModel().getSelectedItem();
         course.setTeacher(teacher);
+        course.addStudents(enrollList);
         return course;
     }
 
@@ -148,7 +193,10 @@ public class CourseManagementController implements Initializable {
     @FXML
     public void add() {
         Course newCourse = setCourse(false);
+        System.out.println(newCourse.getCourseName());
+        if (newCourse == null) return;
         resetSetFields();
+        resetStudentList();
         String msg = SystemDatabase.createCourse(newCourse);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
@@ -171,9 +219,11 @@ public class CourseManagementController implements Initializable {
             alert.show();
         } else {
             String old_courseID = updating.getCourseID();
-            resetSetFields();
             System.out.println("Updating course " + old_courseID);
             Course newCourse = setCourse(true);
+            if (newCourse == null) return;
+            resetSetFields();
+            resetStudentList();
             SystemDatabase.modifyCourse(newCourse, old_courseID);
             refresh();
         }
@@ -213,9 +263,13 @@ public class CourseManagementController implements Initializable {
             if (teacherList.contains(teacher)) {
                 teacherTable.getSelectionModel().select(teacher);
             }
+            enrollList.clear();
+            enrollList.addAll(updating.getStudents());
+            notEnrollList.removeAll(updating.getStudents());
         } 
         if (selectedItem == null) {
             resetSetFields();
+            resetStudentList();
         }
     }
 
@@ -226,6 +280,15 @@ public class CourseManagementController implements Initializable {
         courseIDSet.setText("");
         courseNameSet.setText("");
         departmentSet.setText("");
+    }
+
+    /**
+     * Puts all students into the not enrolled list
+     */
+    private void resetStudentList() {
+        enrollList.clear();
+        notEnrollList.clear();
+        notEnrollList.addAll(studentList);
     }
 
     /**
@@ -251,5 +314,38 @@ public class CourseManagementController implements Initializable {
      */
     public void removeTeacher() {
         teacherTable.getSelectionModel().clearSelection();
+    }
+
+    /**
+     * Handles the selection of a student in the table view.
+     *
+     * @param mouseEvent The MouseEvent associated with the selection action.
+     */
+    public void studentSelected(MouseEvent mouseEvent) {
+
+    }
+
+    /**
+     * Adds the selected student from the "not enrolled" table to the "enrolled" table.
+     *
+     * @param actionEvent the action event that triggered this method
+     */
+    public void addStudent(ActionEvent actionEvent) {
+        Student student = (Student) notEnrollTable.getSelectionModel().getSelectedItem();
+        if (student == null) return;
+        enrollList.add(student);
+        notEnrollList.remove(student);
+    }
+
+    /**
+     * Removes the selected student from the "enrolled" table and adds it to the "not enrolled" table.
+     *
+     * @param actionEvent the action event that triggered this method
+     */
+    public void removeStudent(ActionEvent actionEvent) {
+        Student student = (Student) enrollTable.getSelectionModel().getSelectedItem();
+        if (student == null) return;
+        notEnrollList.add(student);
+        enrollList.remove(student);
     }
 }

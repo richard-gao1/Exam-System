@@ -351,4 +351,22 @@ public class Course {
                 Objects.equals(this.name, ((Course) obj).getCourseName()) &&
                 Objects.equals(this.department, ((Course) obj).getDepartment());
     }
+
+    /**
+     * Adds multiple students to the course if they are not already enrolled,
+     * establishes bidirectional relationship, initializes their grades,
+     * and updates the database.
+     *
+     * @param studentList The list of Student objects to be added.
+     * @throws IllegalArgumentException If the student is already enrolled in the course.
+     */
+    public void addStudents(List<Student> studentList) {
+        for (Student student : studentList) {
+            try {
+                addStudent(student);
+            } catch (Exception e) {
+
+            }
+        }
+    }
 }

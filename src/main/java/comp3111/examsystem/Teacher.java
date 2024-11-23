@@ -1,5 +1,7 @@
 package comp3111.examsystem;
 
+import com.google.gson.Gson;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -226,5 +228,10 @@ public class Teacher extends User {
         question.setScore(score);
         question.setTypeChoice(type.equals("Multiple") ? 1 : 0);
         SystemDatabase.updateTeacher(this);
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

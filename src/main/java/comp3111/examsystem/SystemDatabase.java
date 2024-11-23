@@ -628,7 +628,9 @@ public class SystemDatabase {
         }
         List<Student> students = oldCourse.getStudents();
         for (Student student : students) {
-            student.dropCourse(oldCourse);
+            try {
+                student.dropCourse(oldCourse);
+            } catch (Exception e) {}
             if (newCourse != null) student.addCourse(newCourse);
         }
         removeCourse(old_courseID);

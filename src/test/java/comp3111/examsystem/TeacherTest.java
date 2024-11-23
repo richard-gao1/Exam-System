@@ -74,7 +74,7 @@ class TeacherTest {
 
     @Test
     void testCreateQuestion() {
-        Question newQuestion = new Question("What is the first positive even number?", new String[]{"1", "2", "3", "6"}, "b" , 0, 5);
+        Question newQuestion = new Question("What is the first positive even number?", new String[]{"1", "2", "3", "6"}, "B" , 0, 5);
         teacher.getQuestionBank().add(newQuestion);
 
         assertTrue(teacher.getQuestionBank().contains(newQuestion), "The question should be added to the teacher's question bank.");

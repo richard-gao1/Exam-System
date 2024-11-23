@@ -23,16 +23,16 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.testfx.api.FxAssert.verifyThat;
 
-class TeacherManagementControllerTest extends ApplicationTest implements FxRobotInterface {
-    Teacher teacher1;
-    Teacher teacher2;
+class CourseManagementControllerTest extends ApplicationTest implements FxRobotInterface {
+    Student student1;
+    Student student2;
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent parent = FXMLLoader.load(Main.class.getResource("TeacherManagementUI.fxml"));
+        Parent parent = FXMLLoader.load(Main.class.getResource("CourseManagementUI.fxml"));
         Scene scene = new Scene(parent);
         stage.setScene(scene);
-        stage.setTitle("Teacher Management");
+        stage.setTitle("Course Management");
         stage.show();
         stage.toFront();
     }
@@ -42,23 +42,26 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
         return lookup(query).query();
     }
 
-    @BeforeEach
+    @Test
     void initialize() {
         SystemDatabase.removeAll();
         new SystemDatabase();
-        teacher1 = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", Gender.list[0], 21, "econ", Position.list[1]);
-        teacher2 = new Teacher("wktangaf", "comp3511", "Tang Wai Kin", Gender.list[0], 22, "fina", Position.list[0]);
-        SystemDatabase.registerTeacher(teacher1);
-        SystemDatabase.registerTeacher(teacher2);
+        Course course1 = new Course("COMP3111", "Software Engineering", "cse");
+        Course course2 = new Course("COMP3511", "Operating Systems", "cse");
+        Course course3 = new Course("COMP3711", "Design and Analysis of Algorithms", "cse");
+
+        SystemDatabase.createCourse(course1);
+        SystemDatabase.createCourse(course2);
+        SystemDatabase.createCourse(course3);
     }
 
     @Test
     void refresh() {
         Button refreshBtn = find("#refreshBtn");
         clickOn(refreshBtn);
-        TableView<Teacher> accountTable = find("#accountTable");
-        Teacher[] output = accountTable.getItems().toArray(Teacher[]::new);
-        Teacher[] expected = SystemDatabase.getTeacherList("", "", "").toArray(Teacher[]::new);
+        TableView<Student> accountTable = find("#accountTable");
+        Student[] output = accountTable.getItems().toArray(Student[]::new);
+        Student[] expected = SystemDatabase.getStudentList("", "", "").toArray(Student[]::new);
         assertArrayEquals(expected, output);
     }
 
@@ -66,10 +69,10 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     @Test
     void reset() {
         Button resetBtn = find("#resetBtn");
-        TableView<Teacher> accountTable = find("#accountTable");
+        TableView<Student> accountTable = find("#accountTable");
         clickOn(resetBtn);
-        Teacher[] output = accountTable.getItems().toArray(Teacher[]::new);
-        Teacher[] expected = SystemDatabase.getTeacherList("", "", "").toArray(Teacher[]::new);
+        Student[] output = accountTable.getItems().toArray(Student[]::new);
+        Student[] expected = SystemDatabase.getStudentList("", "", "").toArray(Student[]::new);
         assertArrayEquals(output, expected);
     }
 
@@ -78,7 +81,7 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
         String usernameFilter = "whwma";
         String nameFilter = "";
         String departmentFilter = "";
-        Teacher[] expected = SystemDatabase.getTeacherList(usernameFilter, nameFilter, departmentFilter).toArray(Teacher[]::new);
+        Student[] expected = SystemDatabase.getStudentList(usernameFilter, nameFilter, departmentFilter).toArray(Student[]::new);
 
         writeTextField("#usernameFilter", usernameFilter);
         writeTextField("#nameFilter", nameFilter);
@@ -87,9 +90,9 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
         Button filterBtn = find("#filterBtn");
         clickOn(filterBtn);
 
-        TableView<Teacher> accountTable = find("#accountTable");
+        TableView<Student> accountTable = find("#accountTable");
 
-        Teacher[] output = accountTable.getItems().toArray(Teacher[]::new);
+        Student[] output = accountTable.getItems().toArray(Student[]::new);
         assertArrayEquals(expected, output);
     }
 
@@ -116,20 +119,19 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     }
 
     @Test
-    void addTeacher_valid1() {
+    void addStudent_valid1() {
         refresh();
-        TableView<Teacher> teacherTable = find("#accountTable");
-        ArrayList<Teacher> original = new ArrayList<>(teacherTable.getItems());
+        TableView<Student> studentTable = find("#accountTable");
+        ArrayList<Student> original = new ArrayList<>(studentTable.getItems());
 
         String gender = Gender.list[0];
-        String position = Position.list[2];
 
-        add("kwtleung", "comp2711", "Kenneth Leung", 0, "18", "cse", 2);
-        Teacher newTeacher = new Teacher("kwtleung", "comp2711", "Kenneth Leung", gender, 18, "cse", position);
+        add("kwtleung", "comp2711", "Kenneth Leung", 0, "18", "cse");
+        Student newStudent = new Student("kwtleung", "comp2711", "Kenneth Leung", gender, 18, "cse");
 
-        Teacher[] output = teacherTable.getItems().toArray(Teacher[]::new);
-        original.add(newTeacher);
-        Teacher[] expected = original.toArray(Teacher[]::new);
+        Student[] output = studentTable.getItems().toArray(Student[]::new);
+        original.add(newStudent);
+        Student[] expected = original.toArray(Student[]::new);
         assertArrayEquals(expected, output);
         checkSetFieldEmpty();
     }
@@ -143,49 +145,40 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     }
 
     @Test
-    void addTeacher_invalid1() {
-        add("teacher", "comp2711", "Kenneth Leung", 0, "18a", "cse", 2);
+    void addStudent_invalid1() {
+        add("student", "comp2711", "Kenneth Leung", 0, "18a", "cse");
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");
         clickOn(ok);
     }
 
     @Test
-    void addTeacher_invalid2() {
-        add("teacher", "comp2711", "Kenneth Leung", -1, "18", "cse", 2);
+    void addStudent_invalid2() {
+        add("student", "comp2711", "Kenneth Leung", -1, "18", "cse");
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");
         clickOn(ok);
     }
 
     @Test
-    void addTeacher_invalid3() {
-        add("teacher", "comp2711", "Kenneth Leung", 0, "18", "cse", -1);
+    void addStudent_invalid3() {
+        add("whwma", "comp3111", "Ma Wai Him Wesley", 0, "21", "econ");
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");
         clickOn(ok);
     }
 
-    @Test
-    void addTeacher_invalid4() {
-        add("whwma", "comp3111", "Ma Wai Him Wesley", 0, "21", "econ", 2);
-        verifyThat("OK", NodeMatchers.isVisible());
-        Button ok = find("OK");
-        clickOn(ok);
-    }
-
-    void writeSetFields(String username, String password, String name, int genderIndex, String age, String department, int positionIndex) {
+    void writeSetFields(String username, String password, String name, int genderIndex, String age, String department) {
         writeTextField("#usernameSet", username);
         writeTextField("#nameSet", name);
         chooseChoiceBox("#genderSet", genderIndex);
         writeTextField("#ageSet", age);
         writeTextField("#departmentSet", department);
-        chooseChoiceBox("#positionSet", positionIndex);
         writeTextField("#passwordSet", password);
     }
 
-    void add(String username, String password, String name, int genderIndex, String ageText, String department, int positionIndex) {
-        writeSetFields(username, password, name, genderIndex, ageText, department, positionIndex);
+    void add(String username, String password, String name, int genderIndex, String ageText, String department) {
+        writeSetFields(username, password, name, genderIndex, ageText, department);
 
         Button addBtn = find("#addBtn");
         clickOn(addBtn);
@@ -194,48 +187,37 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     @Test
     void update_valid() {
         refresh();
-        TableView<Teacher> accountTable = find("#accountTable");
+        TableView<Student> accountTable = find("#accountTable");
         accountTable.getSelectionModel().select(0);
         Node node = lookup("#usernameColumn").nth(0).query();
         clickOn(node);
 
-        ArrayList<Teacher> original = new ArrayList<>(accountTable.getItems());
-        Teacher teacher = accountTable.getSelectionModel().getSelectedItem();
-        Teacher newTeacher = new Teacher("kwtleung12", teacher.getPassword(), teacher.getName(), teacher.getGender(), teacher.getAge(), teacher.getDepartment(), teacher.getPosition());
+        ArrayList<Student> original = new ArrayList<>(accountTable.getItems());
+        Student student = accountTable.getSelectionModel().getSelectedItem();
+        Student newStudent = new Student("kwtleung12", student.getPassword(), student.getName(), student.getGender(), student.getAge(), student.getDepartment());
         original.remove(0);
-        original.add(newTeacher);
+        original.add(newStudent);
 
-        update("kwtleung12", "", "", -1, "", "",-1);
+        update("kwtleung12", "", "", -1, "", "");
 
-        Teacher[] expected = original.toArray(Teacher[]::new);
-        Teacher[] output = accountTable.getItems().toArray(Teacher[]::new);
+        Student[] expected = original.toArray(Student[]::new);
+        Student[] output = accountTable.getItems().toArray(Student[]::new);
         assertArrayEquals(expected, output);
-    }
-
-    @Test
-    void update_invalid1() {
-        refresh();
-
-        update("kwtleung12", "", "", -1, "18a", "",-1);
-
-        verifyThat("OK", NodeMatchers.isVisible());
-        Button ok = find("OK");
-        clickOn(ok);
     }
 
     @Test
     void update_invalid2() {
         refresh();
 
-        update("", "", "", -1, "18a", "",-1);
+        update("", "", "", -1, "18a", "");
 
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");
         clickOn(ok);
     }
 
-    void update(String username, String password, String name, int genderIndex, String ageText, String department, int positionIndex) {
-        writeSetFields(username, password, name, genderIndex, ageText, department, positionIndex);
+    void update(String username, String password, String name, int genderIndex, String ageText, String department) {
+        writeSetFields(username, password, name, genderIndex, ageText, department);
 
         Button updateBtn = find("#updateBtn");
         clickOn(updateBtn);
@@ -244,18 +226,18 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     @Test
     void delete_valid1() {
         refresh();
-        TableView<Teacher> accountTable = find("#accountTable");
+        TableView<Student> accountTable = find("#accountTable");
         accountTable.getSelectionModel().select(0);
         Node node = lookup("#usernameColumn").nth(0).query();
         clickOn(node);
 
-        ArrayList<Teacher> original = new ArrayList<>(accountTable.getItems());
+        ArrayList<Student> original = new ArrayList<>(accountTable.getItems());
         original.remove(0);
 
         delete();
 
-        Teacher[] expected = original.toArray(Teacher[]::new);
-        Teacher[] output = accountTable.getItems().toArray(Teacher[]::new);
+        Student[] expected = original.toArray(Student[]::new);
+        Student[] output = accountTable.getItems().toArray(Student[]::new);
         assertArrayEquals(expected, output);
     }
 
@@ -274,4 +256,5 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
         Button deleteBtn = find("#deleteBtn");
         clickOn(deleteBtn);
     }
+
 }
