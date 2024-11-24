@@ -17,6 +17,10 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * This class is the controller for the quiz page.
+ * It provides methods for initializing the controller, setting the exam, and updating the question list.
+ */
 public class QuizController implements Initializable {
 
     @FXML
@@ -75,6 +79,12 @@ public class QuizController implements Initializable {
 
     Time time = new Time(0, 0, 0);
 
+    /**
+     * Initializes the controller.
+     *
+     * @param location the location of the FXML file
+     * @param resources the resources used by the FXML file
+     */
     public void initialize(URL location, ResourceBundle resources) {
         answerChoiceButtons = new RadioButton[]{this.answerOne, this.answerTwo, this.answerThree, this.answerFour};
         sataChoiceButtons = new CheckBox[]{this.sataOne, this.sataTwo, this.sataThree, this.sataFour};
@@ -103,6 +113,12 @@ public class QuizController implements Initializable {
         timeline.play();
     }
 
+    /**
+     * Sets the exam and initializes various data structures based on the questions in the exam.
+     *
+     * @param exam the exam to set
+     * @throws NullPointerException if the exam is null
+     */
     public void setExam(Exam exam) {
         this.exam = exam;
         ArrayList<Question> questions = exam.getQuestions();
@@ -153,6 +169,12 @@ public class QuizController implements Initializable {
         });
     }
 
+    /**
+     * Sets the current question and updates the UI based on the type of the question.
+     *
+     * @param question the question to set as the current question
+     * @throws NullPointerException if the question is null
+     */
     public void setQuestion(Question question) {
         this.currentQuestion = question;
         if (this.currentQuestion.getTypeChoice() == 0){
@@ -200,6 +222,12 @@ public class QuizController implements Initializable {
         }
     }
 
+    /**
+     * Saves the answers to the current question (if applicable), calculates the score of the exam, and displays an alert with the score.
+     *
+     * @param e the action event that triggered the submission of the exam
+     * @throws NullPointerException if the current question is null
+     */
     public void submit(ActionEvent e) {  // ActionEvent e
         // in case last question's answer choice hasn't been saved
         if (currentQuestion != null){

@@ -14,16 +14,23 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller class for the Manager Main view.
+ *
+ * This class is responsible for handling user interactions and managing the state of the Manager Main view.
+ * It initializes the UI components, sets up the data bindings, and handles events such as loading views and managing users.
+ */
 public class ManagerMainController implements Initializable {
     @FXML
     private VBox mainbox;
-
-    private Manager manager;
 
     public void initialize(URL location, ResourceBundle resources) {
 
     }
 
+    /**
+     * Opens the Student Management UI.
+     */
     @FXML
     public void openStudentManageUI() {
         try {
@@ -32,13 +39,15 @@ public class ManagerMainController implements Initializable {
             stage.setTitle("Student Management");
             stage.setScene(new Scene(fxmlLoader.load()));
             StudentManagementController smc = fxmlLoader.getController();
-            smc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Opens the Teacher Management UI.
+     */
     @FXML
     public void openTeacherManageUI() {
         try {
@@ -47,13 +56,15 @@ public class ManagerMainController implements Initializable {
             stage.setTitle("Teacher Management");
             stage.setScene(new Scene(fxmlLoader.load()));
             TeacherManagementController tmc = fxmlLoader.getController();
-            tmc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Opens the Course Management UI.
+     */
     @FXML
     public void openCourseManageUI() {
         try {
@@ -62,19 +73,17 @@ public class ManagerMainController implements Initializable {
             stage.setTitle("Course Management");
             stage.setScene(new Scene(fxmlLoader.load()));
             CourseManagementController cmc = fxmlLoader.getController();
-            cmc.getManager(manager);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Exits the application.
+     */
     @FXML
     public void exit() {
         System.exit(0);
-    }
-
-    public void setManager(Manager manager) {
-        this.manager = manager;
     }
 }

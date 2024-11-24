@@ -13,6 +13,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for Student Management UI
+ * @author whwmaust2125
+ */
 public class StudentManagementController implements Initializable {
     @FXML
     private ChoiceBox genderSet;
@@ -45,7 +49,6 @@ public class StudentManagementController implements Initializable {
     @FXML
     private TableColumn passwordColumn;
 
-    private Manager manager;
     private Student updating;
 
     @FXML
@@ -63,7 +66,6 @@ public class StudentManagementController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // get all students
-        getStudentList();
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
@@ -74,53 +76,104 @@ public class StudentManagementController implements Initializable {
 
         genderList.addAll(Gender.list);
         genderSet.setItems(genderList);
+        refresh();
     }
 
-    public void getManager(Manager manager) {
-        this.manager = manager;
-    }
-
+    /**
+     * Retrieves the list of students from the system database based on optional filters.
+     */
     private void getStudentList() {
         String username = "";
         String name = "";
         String department = "";
         if (filtering) {
-            username = usernameFilter.getText();
-            name = nameFilter.getText();
-            department = departmentFilter.getText();
+            username = usernameFilter.getText().toLowerCase().trim();
+            name = nameFilter.getText().toLowerCase().trim();
+            department = departmentFilter.getText().toLowerCase().trim();
         }
         List<Student> students = SystemDatabase.getStudentList(username, name, department);
         studentList.clear();
         studentList.addAll(students);
     }
 
+    /**
+     * Refreshes the list of students by fetching it from the system database and updating the UI
+     table.
+     */
     @FXML
     public void refresh() {
         getStudentList();
     }
 
+    /**
+     * Resets the filtering criteria and refreshes the student list.
+     */
     @FXML
     public void reset() {
         filtering = false;
+        resetFilterFields();
         getStudentList();
     }
 
+    /**
+     * Applies the current filter criteria (username, name and department) to query the system database for students matching those
+     criteria.
+     */
     @FXML
     public void query() {
         filtering = true;
         getStudentList();
     }
 
-    private Student newStudent(boolean existing) {
+    /**
+     * Clears all text fields used for filtering students.
+     */
+    private void resetFilterFields() {
+        usernameFilter.setText("");
+        nameFilter.setText("");
+        departmentFilter.setText("");
+    }
+
+    /**
+     * Clears all text fields used for setting new student attributes.
+     */
+    private void resetSetFields() {
+        usernameSet.setText("");
+        nameSet.setText("");
+        departmentSet.setText("");
+        passwordSet.setText("");
+        ageSet.setText("");
+    }
+
+    /**
+     * Creates a new Student instance based on the input fields.
+     *
+     * @param existing A flag indicating whether an existing student is being updated or a new one
+    is created.
+     * @return The newly created or updated Student instance.
+     */
+    private Student setStudent(boolean existing) {
         String username = usernameSet.getText();
         String name = nameSet.getText();
         String gender = (String) genderSet.getSelectionModel().getSelectedItem();
+        if (gender == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Invalid Gender");
+            alert.setHeaderText("Empty gender input");
+            alert.show();
+            return null;
+        }
         String ageText = ageSet.getText();
         int age = 20;
         try {
             age = Integer.parseInt(ageText);
         } catch (NumberFormatException e) {
             // invalid age input
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Invalid Number");
+            alert.setHeaderText("Invalid age input");
+            alert.show();
+            return null;
         }
         String department = departmentSet.getText();
         String password = passwordSet.getText();
@@ -131,9 +184,14 @@ public class StudentManagementController implements Initializable {
         }
     }
 
+    /**
+     * Adds a new student to the system based on the input fields.
+     */
     @FXML
     public void add() {
-        Student newStudent = newStudent(false);
+        Student newStudent = setStudent(false);
+        if (newStudent == null) return;
+        resetSetFields();
         String msg = SystemDatabase.registerStudent(newStudent);
         if (!msg.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
@@ -143,23 +201,39 @@ public class StudentManagementController implements Initializable {
         refresh();
     }
 
+    /**
+     * Updates an existing student's details in the system using the input fields.
+     */
     @FXML
     public void update() {
         if (updating == null) {
             // no student is selected
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("No student is selected.");
+            alert.show();
         } else {
             String old_username = updating.getUsername();
             System.out.println("Updating student " + old_username);
-            Student newStudent = newStudent(true);
+            Student newStudent = setStudent(true);
+            if (newStudent == null) return;
+            resetSetFields();
             SystemDatabase.updateStudent(newStudent, old_username);
             refresh();
         }
     }
 
+    /**
+     * Deletes the selected student from the system.
+     */
     @FXML
     public void delete() {
         if (updating == null) {
             // no student is selected
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Update Error");
+            alert.setHeaderText("No student is selected.");
+            alert.show();
         } else {
             String username = updating.getUsername();
             SystemDatabase.removeStudent(username);
@@ -167,6 +241,12 @@ public class StudentManagementController implements Initializable {
         }
     }
 
+    /**
+     * Handles the selection of a student in the table view, updating related UI components and
+     setting the 'updating' student.
+     *
+     * @param mouseEvent The MouseEvent associated with the selection action.
+     */
     public void selected(MouseEvent mouseEvent) {
         Student selectedItem = (Student) accountTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null && selectedItem != updating) {

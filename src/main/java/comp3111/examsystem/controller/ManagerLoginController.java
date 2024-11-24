@@ -19,21 +19,30 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * Controller class for the Manager Login view.
+ *
+ * This class is responsible for handling user interactions and managing the state of the Manager Login view.
+ * It initializes the UI components, sets up the data bindings, and handles events such as logging in and navigating to the Manager Main view.
+ */
 public class ManagerLoginController implements Initializable {
     @FXML
     private TextField usernameTxt;
     @FXML
     private PasswordField passwordTxt;
 
-    private Manager manager;
-
     public void initialize(URL location, ResourceBundle resources) {
 
     }
 
+    /**
+     * Handles the manager login request from an actor.
+     *
+     * @param e The ActionEvent associated with the login button click.
+     */
     @FXML
     public void login(ActionEvent e) {
-        manager = (Manager) new SystemDatabase().login(usernameTxt.getText(), passwordTxt.getText(), AccountType.MANAGER);
+        Manager manager = (Manager) SystemDatabase.login(usernameTxt.getText(), passwordTxt.getText(), AccountType.MANAGER);
         if (manager == null) {
             Alert alert = new Alert(Alert.AlertType.NONE, "Invalid username or password", ButtonType.OK);
             alert.setTitle("Login error");
@@ -53,7 +62,6 @@ public class ManagerLoginController implements Initializable {
                     e1.printStackTrace();
                 }
                 ManagerMainController mmc = fxmlLoader.getController();
-                mmc.setManager(manager);
                 stage.show();
                 ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
             }

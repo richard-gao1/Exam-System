@@ -108,6 +108,28 @@
                                         left="10.0" right="10.0"/>
                             </VBox.margin>
                         </TextField>
+                        <Label text="Teacher:">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <TableView fx:id="teacherTable" prefHeight="125.0" prefWidth="130.0" onMouseClicked="#teacherSelected">
+                            <columns>
+                                <TableColumn fx:id="usernameColumn" prefWidth="70.0" text="username" />
+                                <TableColumn fx:id="nameColumn" prefWidth="100.0" text="name" />
+                            </columns>
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </TableView>
+                        <Button mnemonicParsing="false" onAction="#removeTeacher" text="Remove Teacher">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </Button>
                     </children>
                 </VBox>
                 <HBox alignment="CENTER_LEFT" prefHeight="71.0" prefWidth="980.0" BorderPane.alignment="CENTER">

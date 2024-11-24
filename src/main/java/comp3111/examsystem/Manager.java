@@ -1,16 +1,24 @@
 package comp3111.examsystem;
 
-import java.util.HashMap;
-
+/**
+ * A class representing a student, which extends the User class.
+ */
 public class Manager extends Account {
-    public Manager(String username, String password) {
-        super(username, password);
+    /**
+     * Constructs a new Manager instance with default credentials.
+     */
+    public Manager() {
+        super("admin", "comp3111");
     }
 
-    public Course makeCourse() {
-        // TODO: to be implemented
-        return null;
-
+    /**
+     * Constructs a new Manager instance with the specified username and password.
+     *
+     * @param username The unique identifier for the manager.
+     * @param password The password for the manager.
+     */
+    public Manager(String username, String password) {
+        super(username, password);
     }
 
     @Override

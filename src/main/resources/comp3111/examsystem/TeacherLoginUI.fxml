@@ -36,7 +36,7 @@
         <HBox alignment="CENTER" prefHeight="47.0" prefWidth="600.0" spacing="20.0">
             <children>
                 <Button mnemonicParsing="false" onAction="#register" text="Register" />
-                <Button mnemonicParsing="false" onAction="#login" text="Login" />
+                <Button fx:id="loginBtn" mnemonicParsing="false" onAction="#login" text="Login" />
             </children>
         </HBox>
     </children>
