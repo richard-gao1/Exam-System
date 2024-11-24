@@ -17,6 +17,10 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The StudentGradeStatisticController class is responsible for managing and displaying
+ * student grade statistics of the exams.
+ */
 public class StudentGradeStatisticController implements Initializable {
 
     @FXML
@@ -79,6 +83,12 @@ public class StudentGradeStatisticController implements Initializable {
 
     private String removeNull(String input) { return (input == null) ? "" : input; }
 
+    /**
+     * Initializes the UI components and loads student grade data.
+     *
+     * @param url            The URL of the FXML file.
+     * @param resourceBundle The resource bundle containing locale-specific objects.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.student = (Student) SystemDatabase.currentUser;
@@ -106,6 +116,9 @@ public class StudentGradeStatisticController implements Initializable {
 
     }
 
+    /**
+     * Loads the available choices for courses and exams into their respective lists.
+     */
     private void loadChoices() {
         courseList.clear();
         courseList.add("");
@@ -121,6 +134,9 @@ public class StudentGradeStatisticController implements Initializable {
         examList.addAll(by_exam.keySet());
     }
 
+    /**
+     * Loads the student grades data and updates the grade list accordingly.
+     */
     private void loadData() {
         gradeList.clear();
         ArrayList<Exam> exams = new ArrayList<>();
@@ -151,7 +167,9 @@ public class StudentGradeStatisticController implements Initializable {
             });
         }
     }
-
+    /**
+     * Updates the filtered list of grades based on selected course filter.
+     */
     private void updateFilter(String courseFilter) {
         displayGradeList.clear();
         if (!hasFilter) {
@@ -169,6 +187,9 @@ public class StudentGradeStatisticController implements Initializable {
         updateHashMaps();
     }
 
+    /**
+     * Updates the bar chart with data from the `by_course` hash map.
+     */
     private void updateChart() {
         seriesBar.getData().clear();
 
@@ -177,6 +198,11 @@ public class StudentGradeStatisticController implements Initializable {
         });
     }
 
+    /**
+     * Handles the query action, and displays the filtered results.
+     *
+     * @param event The action event that triggered this method.
+     */
     @FXML
     void query(ActionEvent event) {
         hasFilter = true;
@@ -184,6 +210,12 @@ public class StudentGradeStatisticController implements Initializable {
         updateChart();
     }
 
+    /**
+     * Refreshes the data and UI components based on the current state of the student grades
+     statistic view.
+     *
+     * @param event The action event that triggered this method.
+     */
     @FXML
     void refresh() { //ActionEvent event) {
         loadData();
@@ -192,6 +224,11 @@ public class StudentGradeStatisticController implements Initializable {
         updateChart();
     }
 
+    /**
+     * Resets the UI components and data to their initial state.
+     *
+     * @param event The action event that triggered this method.
+     */
     @FXML
     void reset(ActionEvent event) {
         hasFilter = false;

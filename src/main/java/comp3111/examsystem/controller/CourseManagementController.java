@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 /**
  * Controller for Course Management UI
- * @author whwmaust2125
  */
 public class CourseManagementController implements Initializable {
     @FXML
@@ -84,6 +83,14 @@ public class CourseManagementController implements Initializable {
     private ObservableList<Student> enrollList = FXCollections.observableArrayList();
     private ObservableList<Student> notEnrollList = FXCollections.observableArrayList();
 
+    /**
+     * Initializes the UI components and sets up the data bindings.
+     *
+     * @param url the location used to resolve relative paths for the root object, or null if the
+    location is not known
+     * @param resourceBundle the resources used to localize the root object, or null if the root
+    object was not localized
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         refresh();

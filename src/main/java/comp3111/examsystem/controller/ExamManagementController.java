@@ -17,7 +17,6 @@ import java.util.ResourceBundle;
 
 /**
  * Controller class for the Exam Management view.
- *
  * This class is responsible for handling user interactions and managing the state of the Exam Management view.
  * It initializes the UI components, sets up the data bindings, and handles events such as adding, updating, and deleting questions.
  */
@@ -58,14 +57,8 @@ public class ExamManagementController implements Initializable {
     }
 
     /**
-     * TODO: Now adding questions to existing exam would temporarily save it
-     * You can view them again when selecting
-     * But if you don't click "update" button it would not be written to the systemDatabase
-     * which kind of makes some sense tho
-     * if you press "refresh" before "update" the questions would be rolled back to before
-     * I would say "This is not a bug, this is a feature", but I want to know what you think
+     * Initialize the exam table, question table, and examQuestion table with their respective properties and items.
      */
-
     private void initializeTables(){
         // Initialize the examTable
         examTable.setItems(examList);
@@ -90,6 +83,13 @@ public class ExamManagementController implements Initializable {
         examScoreColumn.setCellValueFactory(cellData -> cellData.getValue().scoreProperty().asObject());
     }
 
+    /**
+     * Initializes the choice boxes used in the application.
+     *
+     * This method sets up the course ID, published status, and question type choice boxes
+     * with appropriate values. It populates the course list from the current teacher's courses
+     * and sets default values for each choice box.
+     */
     private void initializeChoiceBoxes(){
         // Initialize the courseList for CourseID choice boxes
         courseList.addAll(currentTeacher.getCourseID());
@@ -109,6 +109,10 @@ public class ExamManagementController implements Initializable {
         typeFilter.setValue("Type");
     }
 
+    /**
+     * Adds listeners to the UI components for updating input fields and handling table width
+     changes.
+     */
     private void addListener(){
         // Add a listener to the examTable to update input fields
         examTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -139,6 +143,11 @@ public class ExamManagementController implements Initializable {
 
     }
 
+    /**
+     * Initializes the width of various UI components based on the border pane's width.
+     *
+     * @param borderWidth the new width of the border pane
+     */
     private void initializeWidth(double borderWidth) {
         double leftWidth = leftPane.getWidth(); // New width of the right pane
         double padding = borderPane.getInsets().getLeft() + borderPane.getInsets().getRight(); // Padding of the borderPane
@@ -152,6 +161,14 @@ public class ExamManagementController implements Initializable {
         }
     }
 
+    /**
+     * Initializes the column widths of a table based on the total table width.
+     *
+     * @param tableWidth the total width of the table
+     * @param col1 the first column with fixed width
+     * @param col2 the second column with fixed width
+     * @param targetCol the target column to dynamically adjust its width
+     */
     private void initializeColumnWidth(double tableWidth, TableColumn col1, TableColumn col2, TableColumn targetCol){
         double fixedWidth = col1.getWidth()+col2.getWidth(); // New width of the right pane
         double dynamicWidth = tableWidth - fixedWidth-1; // Remaining space for questionColumn (with padding)
@@ -161,6 +178,9 @@ public class ExamManagementController implements Initializable {
         }
     }
 
+    /**
+     * Binds the enabled state of various buttons to the selection state of UI components.
+     */
     private void bindButtonStates(){
         // Enable/disable buttons based on selection
         addBtn.disableProperty().bind(examTable.getSelectionModel().selectedItemProperty().isNotNull());
@@ -259,6 +279,15 @@ public class ExamManagementController implements Initializable {
         }
     }
 
+    /**
+     * Filters a question based on the provided criteria.
+     *
+     * @param question the question to be filtered
+     * @param questionText the text to search within the question content
+     * @param type the type of the question (e.g., "Single", "Multiple")
+     * @param scoreText the score to match against the question's score
+     * @return true if the question matches all criteria, false otherwise
+     */
     private boolean filterQuestion(Question question, String questionText, String type, String scoreText) {
         boolean matchesQuestion = questionText.isEmpty() || question.getContent().toLowerCase().contains(questionText);
         boolean matchesType = type == null ||type.equals("Type") || (type.equals("Single") && question.getTypeChoice() == 0) || (type.equals("Multiple") && question.getTypeChoice() == 1);
@@ -370,10 +399,6 @@ public class ExamManagementController implements Initializable {
         }
         refresh();
     }
-    /* 
-     *
-     *
-     */
 
 
     /**
@@ -481,6 +506,11 @@ public class ExamManagementController implements Initializable {
         alert.showAndWait();
     }
 
+    /**
+     * Updates the question lists based on the selected exam.
+     *
+     * @param selectedExam the selected exam to update questions for
+     */
     private void updateQuestionLists(Exam selectedExam) {
         questionList.setAll(currentTeacher.getQuestionBank());
         if (selectedExam != null) {
@@ -502,12 +532,18 @@ public class ExamManagementController implements Initializable {
     }
 
 
+    /**
+     * Refreshes the UI components displaying exams.
+     */
     private void refreshExam(){
         // Reload the examTable with the full list
         examTable.setItems(examList);
         examTable.refresh();
     }
 
+    /**
+     * Refreshes the UI components displaying questions.
+     */
     private void refreshQuestion(){
         // Reload the examQuestionTable and questionTable
         examQuestionTable.setItems(examQuestionList);
@@ -531,8 +567,5 @@ public class ExamManagementController implements Initializable {
         onExamReset();
         onQuestionReset();
     }
-
-
-
 }
 
