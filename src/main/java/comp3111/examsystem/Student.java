@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * A class representing a student, which extends the User class.
  */
 public class Student extends User {
-    private ArrayList<String> courseIDs = new ArrayList<>(); // Stores the IDs of the courses the student is enrolled in
+    private ArrayList<String> courseIDs; // = new ArrayList<>(); // Stores the IDs of the courses the student is enrolled in
 
     /**
      * Constructs a new Student object with the provided details.
@@ -20,6 +20,7 @@ public class Student extends User {
      */
     public Student(String username, String password, String name, String gender, int age, String department) {
         super(username, password, name, gender, age, department);
+        this.courseIDs = new ArrayList<>();
     }
 
     /**
@@ -45,8 +46,8 @@ public class Student extends User {
      */
     public void addCourse(Course course) {
         // Only call this method via Course class
-        if (!courseIDs.contains(course.getCourseID())) {
-            courseIDs.add(course.getCourseID());
+        if (!this.courseIDs.contains(course.getCourseID())) {
+            this.courseIDs.add(course.getCourseID());
         } else {
             throw new IllegalArgumentException("Already enrolled in this course");
         }

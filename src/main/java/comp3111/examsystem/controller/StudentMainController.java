@@ -12,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,6 +39,7 @@ public class StudentMainController implements Initializable {
 
     /**
      * Initializes the controller when the FXML file is loaded.
+     * Initializes the student and sets up the exams for selection.
      *
      * @param location  The location used to resolve relative paths for the root object, or
     null if the location is not known.
@@ -47,18 +47,9 @@ public class StudentMainController implements Initializable {
     object was not localized.
      */
     public void initialize(URL location, ResourceBundle resources) {
-//        System.out.println("in initialize");
+        this.student = (Student) SystemDatabase.currentUser;
+        System.out.println(student);
 
-//        examCombox.getSelectionModel().select("Option B");
-    }
-
-    /**
-     * Initializes the student and sets up the exams for selection.
-     *
-     * @param student The current student.
-     */
-    public void initStudent(Student student) {
-        this.student = student;
         // manually make a new course and add the student to it
         ArrayList<Student> students = new ArrayList<>();
         students.add(this.student);
@@ -76,8 +67,12 @@ public class StudentMainController implements Initializable {
         Course testCourse = new Course("CourseID","testCourse", "dept", null, students, initExams);
         Exam testExam = new Exam("exam", testCourse, false, 30, questions);
         initExams.add(testExam);
+        // put it in the database
+        SystemDatabase.createCourse(testCourse);
 
+        // add exam options to the dropdown
         ArrayList<Course> courses = student.getCourses();
+        System.out.println(courses);
         ArrayList<Exam> exams = new ArrayList<Exam>();
         for (Course course : courses) {
             exams.addAll(course.getExams());
@@ -123,7 +118,6 @@ public class StudentMainController implements Initializable {
 
     @FXML
     public void openGradeStatistic(ActionEvent e) {
-        /*
         FXMLLoader gradeLoader = new FXMLLoader();
         gradeLoader.setLocation(Main.class.getResource("StudentGradeStatistic.fxml"));
         Stage stage = new Stage();
@@ -139,8 +133,6 @@ public class StudentMainController implements Initializable {
 
         stage.show();
         ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
-
-         */
     }
 
     /**
