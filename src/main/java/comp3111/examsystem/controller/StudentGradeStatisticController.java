@@ -171,13 +171,13 @@ public class StudentGradeStatisticController implements Initializable {
 
         if (filtered) {
             displayGradeList.forEach((grade) -> {
-                by_course.put(grade.getCourseNum(), grade.getScore());
-                by_exam.put(grade.getExamName(), grade.getScore());
+                by_course.put(grade.getCourseNum(), Integer.parseInt(grade.getScore()));
+                by_exam.put(grade.getExamName(), Integer.parseInt(grade.getScore()));
             });
         } else {
             gradeList.forEach((grade) -> {
-                by_course.put(grade.getCourseNum(), grade.getScore());
-                by_exam.put(grade.getExamName(), grade.getScore());
+                by_course.put(grade.getCourseNum(), Integer.parseInt(grade.getScore()));
+                by_exam.put(grade.getExamName(), Integer.parseInt(grade.getScore()));
             });
         }
     }

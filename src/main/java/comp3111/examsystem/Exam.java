@@ -355,6 +355,7 @@ public class Exam {
      */
     public void gradeStudent(Student student, Integer examScore, int timeSpend) {
         studentToGrades.put(student.getUsername(), new Grade(student.getName(), getCourse().getCourseID(), getExamName(), examScore, getFullScore(), Math.min(timeSpend, duration)));
+        SystemDatabase.createCourse(this.course);
     }
 
     @Override
@@ -371,5 +372,6 @@ public class Exam {
     @Override
     public int hashCode() {
         return Objects.hash(getExamName(), isPublished, getDuration(), getQuestions(), getCourse(), studentToGrades);
+
     }
 }
