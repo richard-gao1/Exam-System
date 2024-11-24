@@ -69,7 +69,7 @@ public class Exam {
      * @param questions  An ArrayList containing the Question objects included in this exam.
      */
     public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
-        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
+        this(examName, (Course) SystemDatabase.getCourse(courseID), isPublished, duration);
         if (questions != null) {
             this.questions.addAll(questions);
         }
@@ -85,7 +85,7 @@ public class Exam {
      * @param duration   The duration of the exam in minutes.
      */
     public Exam(String examName, String courseID, boolean isPublished, int duration) {
-        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
+        this(examName, (Course) SystemDatabase.getCourse(courseID), isPublished, duration);
     }
 
     /**
@@ -207,10 +207,11 @@ public class Exam {
     }
 
     /**
-     * Sets a new course for the exam. If there was an existing course associated with
-     * this exam, it removes the exam from that course before setting the new one.
+     * Sets a new course for this teacher and updates the related exams.
      *
-     * @param course The new Course object to be set for the exam.
+     * @param course The Course object to be set for the teacher.
+     * @throws IllegalArgumentException If the course already has an exam with the same name
+    as this teacher's exam.
      */
     public void setCourse(Course course) {
         if (course != null) {
@@ -221,7 +222,12 @@ public class Exam {
                 }
             }
             this.courseID = course.getCourseID(); // Change: Store courseID
-            course.addExam(this);
+            boolean haveExam = false;
+            for (Exam e : course.getExams()) {
+                haveExam = haveExam | Objects.equals(e.getExamName(), this.getExamName());
+            }
+            if (!haveExam) course.addExam(this);
+            else throw new IllegalArgumentException("Already have an exam with the same name.");
         }
     }
 
@@ -252,13 +258,11 @@ public class Exam {
      * @throws IllegalArgumentException If the question already exists in the exam.
      */
     public void addQuestion(Question question) {
-        if (this.questions == null) {
-            this.questions = new ArrayList<>();
-        }
-        if (this.questions.contains(question)) {
+        if (!questions.contains(question)) {
+            questions.add(question);
+        } else {
             throw new IllegalArgumentException("Question already exists in the exam");
         }
-        this.questions.add(question);
     }
 
     /**
@@ -282,10 +286,11 @@ public class Exam {
         if (questions.contains(question)){
             Question q = questions.get(questions.indexOf(question));
             q.setScore(score);
+            q.setTypeChoice(type);
             q.setAnswer(answer);
             q.setOptions(options);
             q.setContent(content);
-            q.setTypeChoice(type);
+
             return true;
         }
         return false;
@@ -351,6 +356,7 @@ public class Exam {
      */
     public void gradeStudent(Student student, Integer examScore, int timeSpend) {
         studentToGrades.put(student.getUsername(), new Grade(student.getName(), getCourse().getCourseID(), getExamName(), examScore, getFullScore(), Math.min(timeSpend, duration)));
+        SystemDatabase.getCourse(courseID).updateGrade(this);
     }
 
     @Override
@@ -367,5 +373,6 @@ public class Exam {
     @Override
     public int hashCode() {
         return Objects.hash(getExamName(), isPublished, getDuration(), getQuestions(), getCourse(), studentToGrades);
+
     }
 }

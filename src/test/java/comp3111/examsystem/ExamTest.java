@@ -28,18 +28,22 @@ class ExamTest {
 
     @Test
     void examNameProperty() {
+        assertEquals(exam.examNameProperty().get(), exam.getExamName());
     }
 
     @Test
     void isPublishedProperty() {
+        assertEquals(exam.isPublishedProperty().get(),exam.getIsPublished());
     }
 
     @Test
     void durationProperty() {
+        assertEquals(exam.durationProperty().get(),exam.getDuration());
     }
 
     @Test
     void courseIDProperty() {
+        assertEquals(exam.courseIDProperty().get(),exam.getCourse().getCourseID());
     }
 
     @Test
@@ -79,7 +83,19 @@ class ExamTest {
     }
 
     @Test
+    void setnullCourse() {
+        exam.setCourse((Course)null);
+
+    }
+
+    @Test
     void setCourse() {
+        Course c = new Course("COMP5111","software engineering ii","CSE");
+        SystemDatabase.createCourse(c);
+        exam.setCourse(c);
+        assertFalse(SystemDatabase.getCourse("COMP3111").getExams().contains(exam));
+        assertTrue(SystemDatabase.getCourse("COMP5111").getExams().contains(exam));
+
     }
 
     @Test
@@ -106,6 +122,7 @@ class ExamTest {
 
     @Test
     void getFullScore() {
+        assertEquals(exam.getFullScore(),exam.getQuestions().getFirst().getScore());
     }
 
     @Test

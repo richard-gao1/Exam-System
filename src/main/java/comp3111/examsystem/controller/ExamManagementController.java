@@ -370,7 +370,8 @@ public class ExamManagementController implements Initializable {
     }
 
     /**
-     * Handles the update of an existing exam based on user input.
+     * Updates an existing exam with the provided inputs.
+     * This function checks for validation, duplication, and updates the selected exam in the examList and currentTeacher.
      */
     @FXML
     private void onUpdate() {
@@ -408,11 +409,17 @@ public class ExamManagementController implements Initializable {
         }
         refresh();
     }
-
-    /**
-     * Handles the removal of a selected question from an exam.
+    /* Select question logic
+     * If no exam is selected, questionList should load the full list of the teacher's question bank.
+     * If an exam is selected, examList will display the question it has
+     * while the questionList will display the question not in the examList
+     *
+     *
      */
 
+    /**
+     * Removes a selected question from the examQuestionTable and adds it to the questionTable.
+     */
     @FXML
     private void onUnselectQuestion() {
         // Remove question from left table
@@ -429,24 +436,13 @@ public class ExamManagementController implements Initializable {
         }
     }
 
-    /*
-
-     * Select question logic
-     * If no exam is selected, questionList should load the full list of the teacher's question bank.
-     * If an exam is selected, examList will display the question it has
-     * while the questionList will display the question not in the examList
-     *
-     *
-     */
-
     /**
-     * Handles the addition of a selected question to an exam.
+     * Adds a selected question from the questionTable to the examQuestionTable.
      *
      * Select question logic
      * If no exam is selected, questionList should load the full list of the teacher's question bank.
      * If an exam is selected, examList will display the question it has
      * while the questionList will display the question not in the examList
-     *
      */
     @FXML
     private void onSelectQuestion() {
@@ -552,6 +548,7 @@ public class ExamManagementController implements Initializable {
     }
 
 
+
     /**
      * Refreshes the UI components displaying exams.
      */
@@ -587,5 +584,8 @@ public class ExamManagementController implements Initializable {
         onExamReset();
         onQuestionReset();
     }
+
+
+
 }
 

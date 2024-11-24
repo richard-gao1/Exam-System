@@ -260,7 +260,7 @@ public class Course {
      *                                  or if an exam with the same name already exists.
      */
     public void addExam(Exam exam) {
-        if (!exam.getCourse().getCourseID().equals(this.courseID)) {
+        if ((exam.getCourse() == null) ||(!exam.getCourse().getCourseID().equals(this.courseID))) {
             throw new IllegalArgumentException("Exam is not in this course");
         }
         for (Exam e : exams) {
