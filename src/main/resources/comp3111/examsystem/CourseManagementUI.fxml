@@ -44,7 +44,7 @@
     <left>
         <VBox prefHeight="720.0" prefWidth="924.0" BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="accountTable" prefHeight="649.0" prefWidth="924.0" onMouseClicked="#selected">
+                <TableView fx:id="courseTable" prefHeight="649.0" prefWidth="924.0" onMouseClicked="#selected">
                     <columns>
                         <TableColumn fx:id="courseIDColumn" prefWidth="308.0" text="Course ID" />
                         <TableColumn fx:id="courseNameColumn" prefWidth="308.0" text="Course Name" />
@@ -52,12 +52,12 @@
                 </TableView>
                 <HBox alignment="CENTER_RIGHT" prefHeight="71.0" prefWidth="924.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#delete" text="Delete">
+                        <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#delete" text="Delete">
                             <HBox.margin>
                                 <Insets right="20.0" />
                             </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#refresh" text="Refresh">
+                        <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refresh" text="Refresh">
                             <HBox.margin>
                                 <Insets right="40.0" />
                             </HBox.margin>
@@ -68,9 +68,9 @@
         </VBox>
     </left>
     <right>
-        <VBox prefHeight="720.0" prefWidth="150.0" BorderPane.alignment="CENTER">
+        <VBox prefHeight="720.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
-                <VBox prefHeight="649.0" prefWidth="150.0" BorderPane.alignment="TOP_CENTER">
+                <VBox prefHeight="649.0" prefWidth="200.0" BorderPane.alignment="TOP_CENTER">
                     <children>
                         <Label text="Course ID:">
                             <VBox.margin>
@@ -114,32 +114,72 @@
                                         left="10.0" right="10.0"/>
                             </VBox.margin>
                         </Label>
-                        <TableView fx:id="teacherTable" prefHeight="125.0" prefWidth="130.0" onMouseClicked="#teacherSelected">
+                        <TableView fx:id="teacherTable" prefHeight="125.0" prefWidth="180.0" onMouseClicked="#teacherSelected">
                             <columns>
-                                <TableColumn fx:id="usernameColumn" prefWidth="70.0" text="username" />
-                                <TableColumn fx:id="nameColumn" prefWidth="100.0" text="name" />
+                                <TableColumn fx:id="teacherUsername" prefWidth="70.0" text="username" />
+                                <TableColumn fx:id="teacherName" prefWidth="105.0" text="name" />
                             </columns>
                             <VBox.margin>
                                 <Insets top="10.0"
                                         left="10.0" right="10.0"/>
                             </VBox.margin>
                         </TableView>
-                        <Button mnemonicParsing="false" onAction="#removeTeacher" text="Remove Teacher">
+                        <Button fx:id="removeTeacher" mnemonicParsing="false" onAction="#removeTeacher" text="Remove Teacher">
                             <VBox.margin>
                                 <Insets top="10.0"
                                         left="10.0" right="10.0"/>
                             </VBox.margin>
                         </Button>
+                        <Label text="Students:">
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <TableView fx:id="enrollTable" prefHeight="125.0" prefWidth="180.0" onMouseClicked="#studentSelected">
+                            <columns>
+                                <TableColumn fx:id="enrollStudentUsername" prefWidth="70.0" text="username" />
+                                <TableColumn fx:id="enrollStudentName" prefWidth="105.0" text="name" />
+                            </columns>
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </TableView>
+                        <HBox prefHeight="70.0" prefWidth="180.0">
+                            <children>
+                                <Button fx:id="addStudentBtn" mnemonicParsing="false" onAction="#addStudent" text="^ Add">
+                                    <HBox.margin>
+                                        <Insets left="10.0" top="10.0" right="10.0" />
+                                    </HBox.margin>
+                                </Button>
+                                <Button fx:id="removeStudentBtn" mnemonicParsing="false" onAction="#removeStudent" text="v Remove">
+                                    <HBox.margin>
+                                        <Insets top="10.0" right="10.0" />
+                                    </HBox.margin>
+                                </Button>
+                            </children>
+                        </HBox>
+                        <TableView fx:id="notEnrollTable" prefHeight="125.0" prefWidth="180.0" onMouseClicked="#studentSelected">
+                            <columns>
+                                <TableColumn fx:id="notEnrollStudentUsername" prefWidth="70.0" text="username" />
+                                <TableColumn fx:id="notEnrollStudentName" prefWidth="105.0" text="name" />
+                            </columns>
+                            <VBox.margin>
+                                <Insets top="10.0"
+                                        left="10.0" right="10.0"/>
+                            </VBox.margin>
+                        </TableView>
                     </children>
                 </VBox>
                 <HBox alignment="CENTER_LEFT" prefHeight="71.0" prefWidth="980.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#add" text="Add">
+                        <Button fx:id="addBtn" mnemonicParsing="false" onAction="#add" text="Add">
                             <HBox.margin>
                                 <Insets left="20.0" />
                             </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#modify" text="Modify">
+                        <Button fx:id="modifyBtn" mnemonicParsing="false" onAction="#modify" text="Modify">
                             <HBox.margin>
                                 <Insets left="20.0" />
                             </HBox.margin>

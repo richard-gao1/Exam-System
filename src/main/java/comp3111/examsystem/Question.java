@@ -188,7 +188,7 @@ public class Question {
      * @param answer An integer representing the new correct answers in bit form.
      */
     public void setAnswer(int answer) {
-        if (this.typeChoice == 0 && answer > 1) {
+        if (this.typeChoice == 0 && ((answer!=1)&&(answer != 2)&&(answer != 4)&&(answer!=8))) {
             throw new IllegalArgumentException("Single choice question must have exactly one answer");
         }
         this.answer = answer;

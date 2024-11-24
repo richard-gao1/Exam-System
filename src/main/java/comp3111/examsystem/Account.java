@@ -1,5 +1,7 @@
 package comp3111.examsystem;
 
+import com.google.gson.Gson;
+
 import java.util.Objects;
 
 /**
@@ -92,5 +94,9 @@ public abstract class Account {
         Account account = (Account) other;
         if (other == null) return false;
         return (Objects.equals(this.username, account.username)) && (Objects.equals(this.password, account.password));
+    }
+
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

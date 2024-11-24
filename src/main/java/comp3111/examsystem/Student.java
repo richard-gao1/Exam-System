@@ -1,5 +1,7 @@
 package comp3111.examsystem;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 /**
@@ -96,5 +98,10 @@ public class Student extends User {
     public Student update(String username, String password, String name, String gender, int age, String department) {
         super.update(username, password, name, gender, age, department);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }
