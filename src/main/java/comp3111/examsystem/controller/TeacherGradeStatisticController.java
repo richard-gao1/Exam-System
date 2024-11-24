@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 
 /**
  * Controller for Teacher Grade Statistics UI
- * @author whwmaust2125
- * @since 2024-11-21
  */
 public class TeacherGradeStatisticController implements Initializable {
     private Teacher currentTeacher;

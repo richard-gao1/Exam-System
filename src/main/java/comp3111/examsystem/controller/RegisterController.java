@@ -13,6 +13,10 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * The RegisterController class manages the registration process for both students and
+ teachers.
+ */
 public class RegisterController implements Initializable {
 
     @FXML
@@ -47,6 +51,12 @@ public class RegisterController implements Initializable {
 
     private boolean isTeacher = false;
 
+    /**
+     * Initializes the UI components.
+     *
+     * @param location  The location of the FXML file.
+     * @param resources The resource bundle containing locale-specific objects.
+     */
     public void initialize(URL location, ResourceBundle resources) {
         positionRow.setMinHeight(0);
         positionRow.setPrefHeight(0);
@@ -58,6 +68,9 @@ public class RegisterController implements Initializable {
         genderChoice.getItems().addAll("Male", "Female");
     }
 
+    /**
+     * Configures the UI for teacher-specific settings.
+     */
     public void teacherSet(){
         positionRow.setMinHeight(10);
         positionRow.setMaxHeight(30);
@@ -68,6 +81,11 @@ public class RegisterController implements Initializable {
         isTeacher = true;
     }
 
+    /**
+     * Handles the registration action.
+     *
+     * @param e The action event triggered by the register button.
+     */
     @FXML
     public void onRegister(ActionEvent e) {
         try {
@@ -109,6 +127,14 @@ public class RegisterController implements Initializable {
         }
     }
 
+    /**
+     * Shows an alert dialog with the specified type, title, and message.
+     *
+     * @param alertType The type of alert (e.g., INFORMATION, ERROR).
+     * @param title     The title of the alert dialog.
+     * @param message   The message to display in the alert dialog.
+     * @return An Optional containing the button type clicked by the user.
+     */
     private Optional<ButtonType> showAlert(Alert.AlertType alertType, String title, String message){
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -116,6 +142,20 @@ public class RegisterController implements Initializable {
         return alert.showAndWait();
     }
 
+    /**
+     * Validates the input data for user registration.
+     *
+     * @param userName   The username provided by the user.
+     * @param name       The full name provided by the user.
+     * @param gender     The gender selected by the user.
+     * @param age        The age provided by the user.
+     * @param position   The position selected by the teacher (if applicable).
+     * @param department The department provided by the user.
+     * @param pwd        The password provided by the user.
+     * @param confirmPwd The confirmation password provided by the user.
+     * @return True if all inputs are valid, false otherwise.
+     * @throws IllegalArgumentException If any input is invalid.
+     */
     private boolean validate(String userName, String name, String gender, int age, String position,String department,String pwd, String confirmPwd){
         if (userName==null || userName.trim().isEmpty()){
             usernameTxt.requestFocus();

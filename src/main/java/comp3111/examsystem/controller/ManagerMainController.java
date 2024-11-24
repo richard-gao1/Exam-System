@@ -16,7 +16,6 @@ import java.util.ResourceBundle;
 
 /**
  * Controller class for the Manager Main view.
- *
  * This class is responsible for handling user interactions and managing the state of the Manager Main view.
  * It initializes the UI components, sets up the data bindings, and handles events such as loading views and managing users.
  */

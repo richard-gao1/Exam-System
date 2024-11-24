@@ -17,6 +17,10 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The StudentGradeStatisticController class is responsible for managing and displaying
+ * student grade statistics of the exams.
+ */
 public class StudentGradeStatisticController implements Initializable {
 
     @FXML
@@ -79,6 +83,12 @@ public class StudentGradeStatisticController implements Initializable {
 
     private String removeNull(String input) { return (input == null) ? "" : input; }
 
+    /**
+     * Initializes the UI components and loads student grade data.
+     *
+     * @param url            The URL of the FXML file.
+     * @param resourceBundle The resource bundle containing locale-specific objects.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.student = (Student) SystemDatabase.currentUser;
@@ -106,10 +116,16 @@ public class StudentGradeStatisticController implements Initializable {
         loadChart();
     }
 
+    /**
+     * Refreshes the UI components and data displayed in the student grade statistic view.
+     */
     @FXML
     public void refresh() {
     }
 
+    /**
+     * Loads the chart data and updates the bar chart with student grades.
+     */
     private void loadChart() {
         XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();
 
@@ -119,6 +135,9 @@ public class StudentGradeStatisticController implements Initializable {
 
     }
 
+    /**
+     * Loads the available choices for courses and exams into their respective lists.
+     */
     private void loadChoices() {
         courseList.clear();
         courseList.add("");
@@ -134,6 +153,9 @@ public class StudentGradeStatisticController implements Initializable {
         examList.addAll(by_exam.keySet());
     }
 
+    /**
+     * Loads the student grades data and updates the grade list accordingly.
+     */
     private void loadData() {
         gradeList.clear();
         /*
@@ -165,23 +187,32 @@ public class StudentGradeStatisticController implements Initializable {
         updateHashMaps(false);
     }
 
+    /**
+     * Updates the hash maps with student grades data, either filtered or from the full list.
+     *
+     * @param filtered Indicates whether to use the filtered grade list or the full grade
+    list.
+     */
     private void updateHashMaps(boolean filtered) {
         by_course.clear();
         by_exam.clear();
 
         if (filtered) {
             displayGradeList.forEach((grade) -> {
-                by_course.put(grade.getCourseNum(), Integer.parseInt(grade.getScore()));
-                by_exam.put(grade.getExamName(), Integer.parseInt(grade.getScore()));
+                by_course.put(grade.getCourseNum(), grade.getScore());
+                by_exam.put(grade.getExamName(), grade.getScore());
             });
         } else {
             gradeList.forEach((grade) -> {
-                by_course.put(grade.getCourseNum(), Integer.parseInt(grade.getScore()));
-                by_exam.put(grade.getExamName(), Integer.parseInt(grade.getScore()));
+                by_course.put(grade.getCourseNum(), grade.getScore());
+                by_exam.put(grade.getExamName(), grade.getScore());
             });
         }
     }
 
+    /**
+     * Updates the filtered list of grades based on selected course filter.
+     */
     private void updateFilter() {
         displayGradeList.clear();
         if (!hasFilter) {
@@ -198,6 +229,9 @@ public class StudentGradeStatisticController implements Initializable {
         updateHashMaps(true);
     }
 
+    /**
+     * Updates the bar chart with data from the `by_course` hash map.
+     */
     private void updateChart() {
         XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();
 
@@ -208,11 +242,22 @@ public class StudentGradeStatisticController implements Initializable {
         });
     }
 
+    /**
+     * Handles the query action, and displays the filtered results.
+     *
+     * @param event The action event that triggered this method.
+     */
     @FXML
     void query(ActionEvent event) {
 
     }
 
+    /**
+     * Refreshes the data and UI components based on the current state of the student grades
+     statistic view.
+     *
+     * @param event The action event that triggered this method.
+     */
     @FXML
     void refresh(ActionEvent event) {
         loadData();
@@ -221,6 +266,11 @@ public class StudentGradeStatisticController implements Initializable {
         updateChart();
     }
 
+    /**
+     * Resets the UI components and data to their initial state.
+     *
+     * @param event The action event that triggered this method.
+     */
     @FXML
     void reset(ActionEvent event) {
 

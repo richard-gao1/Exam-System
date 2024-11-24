@@ -59,6 +59,12 @@ public class Teacher extends User {
         return this;
     }
 
+    /**
+     * Adds a new course to the list of courses taught by this teacher.
+     *
+     * @param courseID The ID of the course to be added.
+     *
+     */
     public void addCourse(String courseID) {
         if (!courseIDs.contains(courseID)) {
             courseIDs.add(courseID);
@@ -66,11 +72,21 @@ public class Teacher extends User {
         }
     }
 
+    /**
+     * Removes a course from the list of courses taught by this teacher.
+     *
+     * @param courseID The ID of the course to be removed.
+     */
     public void dropCourse(String courseID) {
         courseIDs.remove(courseID);
         SystemDatabase.updateTeacher(this);
     }
 
+    /**
+     * Retrieves a list of Course objects associated with the teacher.
+     *
+     * @return A list of Course objects.
+     */
     public List<Course> getCourses() {
         // Changes: Retrieve Course objects dynamically using SystemDatabase
         ArrayList<Course> courses = new ArrayList<>();
@@ -83,10 +99,28 @@ public class Teacher extends User {
         return courses;
     }
 
+    /**
+     * Returns a list of course IDs taught by the teacher.
+     *
+     * @return A list of course IDs.
+     */
     public List<String> getCourseID() {
         return new ArrayList<>(courseIDs); // Return a copy to avoid external modifications
     }
 
+    /**
+     * Creates a new exam for a specified course.
+     *
+     * @param examName   The name of the exam.
+     * @param courseID   The ID of the course for which the exam is created.
+     * @param isPublished Indicates whether the exam is published.
+     * @param duration   The duration of the exam in minutes.
+     * @param questions  A list of questions for the exam.
+     *
+     * @throws IllegalArgumentException If the teacher does not have permission to manage the
+    specified course
+                                        or if there is no such course.
+     */
     public void createExam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
         if (courseIDs.contains(courseID)){
             Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
@@ -99,6 +133,16 @@ public class Teacher extends User {
         throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
     }
 
+    /**
+     * Adds an existing exam to a specified course.
+     *
+     * @param exam     The exam object to be added.
+     * @param courseID The ID of the course to which the exam should be added.
+     *
+     * @throws IllegalArgumentException If the teacher does not have permission to manage the
+    specified course
+     *                                  or if there is no such course.
+     */
     public void addExam(Exam exam, String courseID) {
         // Exams are added to courses when they are constructed.
         // This method is called when the exam is not initialized with a course.
@@ -113,6 +157,16 @@ public class Teacher extends User {
         throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
     }
 
+    /**
+     * Deletes an exam from a specified course.
+     *
+     * @param examName The name of the exam to be deleted.
+     * @param courseID The ID of the course from which the exam should be deleted.
+     *
+     * @throws IllegalArgumentException If the teacher does not have permission to manage the
+    specified course
+     *                                  or if there is no such course.
+     */
     public void deleteExam(String examName, String courseID) {
         if (courseIDs.contains(courseID)) {
             Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
@@ -125,6 +179,16 @@ public class Teacher extends User {
         throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
     }
 
+    /**
+     * Deletes an exam from a specified course.
+     *
+     * @param exam  The exam object to be deleted.
+     * @param course The course object from which the exam should be deleted.
+     *
+     * @throws IllegalArgumentException If the teacher does not have permission to manage the
+    specified course
+     *                                  or if there is no such course.
+     */
     public void deleteExam(Exam exam, Course course){
         if (course != null){
             if (courseIDs.contains(course.getCourseID())){
@@ -136,11 +200,41 @@ public class Teacher extends User {
         throw new IllegalArgumentException("No such course");
     }
 
+    /**
+     * Updates an existing exam with new details.
+     *
+     * @param oldExamName The original name of the exam to be updated.
+     * @param oldCourse   The original course associated with the exam.
+     * @param examName    The new name for the exam.
+     * @param courseID    The ID of the new course for the exam.
+     * @param isPublished Indicates whether the updated exam should be published.
+     * @param duration    The new duration of the exam in minutes.
+     * @param questions   A list of new questions for the exam.
+     *
+     * @throws IllegalArgumentException If there is no such course or if the teacher does not
+    have permission
+     *                                  to manage the specified course.
+     */
     public void updateExam(String oldExamName, Course oldCourse, String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
         Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
         updateExam(oldExamName, oldCourse, examName,  course,  isPublished,  duration, questions);
     }
 
+    /**
+     * Updates an existing exam with new details.
+     *
+     * @param oldExamName The original name of the exam to be updated.
+     * @param oldCourse   The original course associated with the exam.
+     * @param examName    The new name for the exam.
+     * @param course      The new course for the exam.
+     * @param isPublished Indicates whether the updated exam should be published.
+     * @param duration    The new duration of the exam in minutes.
+     * @param questions   A list of new questions for the exam.
+     *
+     * @throws IllegalArgumentException If there is no such course or if the teacher does not
+    have permission
+     *                                  to manage the specified course.
+     */
     public void updateExam(String oldExamName, Course oldCourse, String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         if (course != null) {
             if (course.getTeacher().equals(this)) {
@@ -155,6 +249,11 @@ public class Teacher extends User {
         else throw new IllegalArgumentException("No such course");
     }
 
+    /**
+     * Retrieves a list of all exams associated with the teacher's courses.
+     *
+     * @return An ArrayList containing all exam objects managed by the teacher.
+     */
     public ArrayList<Exam> getExams() {
         ArrayList<Exam> exams = new ArrayList<>();
         for (String courseID : courseIDs) {
@@ -166,14 +265,29 @@ public class Teacher extends User {
         return exams;
     }
 
+    /**
+     * Adds a course to the teacher's list of courses.
+     *
+     * @param course The Course object to be added.
+     */
     public void addCourse(Course course) {
         addCourse(course.getCourseID()); // Changes: Store course ID instead of Course object
     }
 
+    /**
+     * Removes a course from the teacher's list of courses.
+     *
+     * @param course The Course object to be removed.
+     */
     public void dropCourse(Course course) {
         dropCourse(course.getCourseID()); // Changes: Use course ID to remove course
     }
 
+    /**
+     * Retrieves the position of the teacher.
+     *
+     * @return A string representing the teacher's position.
+     */
     public String getPosition() {
         return this.position;
     }
@@ -183,12 +297,27 @@ public class Teacher extends User {
         return super.equals(other) && (Objects.equals(this.position, ((Teacher) other).position));
     }
 
+    /**
+     * Displays all questions in the teacher's question bank.
+     */
     public void viewQuestion() {
         for (Question question : questionBank) {
             System.out.println(question.getContent());
         }
     }
 
+    /**
+     * Creates a new question and adds it to the teacher's question bank.
+     *
+     * @param content The content of the question.
+     * @param options An array of strings representing the answer choices.
+     * @param answer  The correct answer to the question.
+     * @param score   The score assigned to this question.
+     * @param type    The type of the question (e.g., multiple-choice, true/false).
+     *
+     * @throws IllegalArgumentException If a question with the same content and options
+    already exists in the question bank.
+     */
     public void createQuestion(String content, String[] options, String answer, int score, int type) {
         Question question = new Question(content, options, answer, score, type);
         for (Question q: questionBank){
@@ -202,6 +331,14 @@ public class Teacher extends User {
         SystemDatabase.updateTeacher(this);
     }
 
+    /**
+     * Creates a new question and adds it to the teacher's question bank.
+     *
+     * @param question The Question object to be added.
+     *
+     * @throws IllegalArgumentException If a question with the same content and options
+    already exists in the question bank.
+     */
     public void createQuestion(Question question) {
         for (Question q: questionBank){
             if (q.getContent().equals(question.getContent())
@@ -214,6 +351,12 @@ public class Teacher extends User {
         SystemDatabase.updateTeacher(this);
     }
 
+    /**
+     * Deletes a specified question from the teacher's question bank and removes it from all
+     associated exams.
+     *
+     * @param question The Question object to be deleted.
+     */
     public void deleteQuestion(Question question) {
         String result = "no exam";
         questionBank.remove(question);
@@ -229,6 +372,9 @@ public class Teacher extends User {
         }
     }
 
+    /**
+     * Displays the content of all questions in the teacher's question bank.
+     */
     public ArrayList<Question> getQuestionBank() {
         return questionBank;
     }
@@ -245,6 +391,16 @@ public class Teacher extends User {
         // TODO: implement
     }
 
+    /**
+     * Updates the details of an existing question in the teacher's question bank.
+     *
+     * @param question The Question object to be updated.
+     * @param content  The new content for the question.
+     * @param options  An array of strings representing the new answer choices.
+     * @param answer   The new correct answer to the question.
+     * @param score    The new score assigned to this question.
+     * @param type     The new type of the question as integer (0 - Single, 1 - Multiple).
+     */
     public void updateQuestion(Question question, String content, String[] options, String answer, int score, int type) {
         question.setContent(content);
         question.setOptions(options);
@@ -254,6 +410,16 @@ public class Teacher extends User {
         SystemDatabase.updateTeacher(this);
     }
 
+    /**
+     * Updates the details of an existing question in the teacher's question bank.
+     *
+     * @param question The Question object to be updated.
+     * @param content  The new content for the question.
+     * @param options  An array of strings representing the new answer choices.
+     * @param answer   The new correct answer to the question.
+     * @param score    The new score assigned to this question.
+     * @param type     The new type of the question ("Multiple", "Single").
+     */
     public void updateQuestion(Question question, String content, String[] options, String answer, int score, String type) {
         ArrayList<Exam> examList = new ArrayList<>();
         for (Course course: getCourses()){

@@ -202,7 +202,7 @@ public class Exam {
      * @return The Course object if courseID is not null, otherwise returns null.
      */
     public Course getCourse() {
-        return course;
+        return SystemDatabase.getCourse(courseID);
     }
 
     /**

@@ -121,9 +121,11 @@ public class StudentMainController implements Initializable {
         }
     }
 
+    /**
+     * Opens the Grade Statistics UI.
+     */
     @FXML
     public void openGradeStatistic(ActionEvent e) {
-        /*
         FXMLLoader gradeLoader = new FXMLLoader();
         gradeLoader.setLocation(Main.class.getResource("StudentGradeStatistic.fxml"));
         Stage stage = new Stage();
@@ -139,15 +141,6 @@ public class StudentMainController implements Initializable {
 
         stage.show();
         ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
-
-         */
-    }
-
-    /**
-     * Opens the Grade Statistics UI.
-     */
-    @FXML
-    public void openGradeStatistic() {
     }
 
     /**

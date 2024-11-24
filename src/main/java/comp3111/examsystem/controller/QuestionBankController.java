@@ -189,6 +189,9 @@ public class QuestionBankController implements Initializable {
 
     // Utility Functions
 
+    /**
+     * Sets up text formatters and hints for input fields.
+     */
     private void setHint(){
         // Hints are hidden
         answerHint.setVisible(false);
@@ -203,6 +206,9 @@ public class QuestionBankController implements Initializable {
         setTextFormatter(answerInput,answerHint,"[a-dA-D]*","Answer must be in &quot;ABCD&quot;",true);
     }
 
+    /**
+     * Initializes and binds the button states.
+     */
     private void setBtn(){
         // Initialize button states
         updateBtn.setDisable(true); // Disabled by default
@@ -219,6 +225,9 @@ public class QuestionBankController implements Initializable {
         updateBtn.disableProperty().bind(isTableEmpty);
     }
 
+    /**
+     * Initializes and configures the ChoiceBox components for selecting product types.
+     */
     private void setChoiceBox(){
         // Bind ChoiceBox with options
         typeInput.setItems(FXCollections.observableArrayList("Single", "Multiple"));
@@ -227,6 +236,9 @@ public class QuestionBankController implements Initializable {
         typeFilter.setValue("Type"); // Default selection
     }
 
+    /**
+     * Initializes the table columns with appropriate data binding.
+     */
     private void initializeTable(){
         // Set up table columns
         questionColumn.setCellValueFactory(cellData -> cellData.getValue().contentProperty());
@@ -253,6 +265,15 @@ public class QuestionBankController implements Initializable {
 
     }
 
+    /**
+     * Sets a text formatter on the given text field with validation and optional transformation.
+     *
+     * @param textField The text field to which the formatter is applied.
+     * @param hintLabel The label used to display hints for invalid input.
+     * @param regex     The regular expression to validate the input against.
+     * @param hintMessage The message to display in the hint label when input is invalid.
+     * @param toUpperCase A flag indicating whether to convert valid input to uppercase.
+     */
     private void setTextFormatter(TextField textField, Label hintLabel, String regex, String hintMessage, boolean toUpperCase){
         textField.setTextFormatter(new TextFormatter<>(change -> {
             String newText = change.getText();
@@ -271,6 +292,9 @@ public class QuestionBankController implements Initializable {
         }));
     }
 
+    /**
+     * Sets up listeners for various events on the question table.
+     */
     private void setListener(){
         // Add a listener to the selection model
         questionTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -421,8 +445,9 @@ public class QuestionBankController implements Initializable {
         return true; // All fields are valid
     }
 
-
-
+    /**
+     * Clears all input fields.
+     */
     private void clearInputFields() {
         questionInput.clear();
         aInput.clear();
