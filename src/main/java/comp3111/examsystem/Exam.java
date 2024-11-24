@@ -142,9 +142,6 @@ public class Exam {
         this.examName = examName;
     }
 
-
-
-
     /**
      * Checks if the exam is published.
      *
@@ -224,7 +221,12 @@ public class Exam {
                 }
             }
             this.courseID = course.getCourseID(); // Change: Store courseID
-            course.addExam(this);
+            boolean haveExam = false;
+            for (Exam e : course.getExams()) {
+                haveExam = haveExam | Objects.equals(e.getExamName(), this.getExamName());
+            }
+            if (!haveExam) course.addExam(this);
+            else throw new IllegalArgumentException("Already have an exam with the same name.");
         }
     }
 
@@ -354,7 +356,7 @@ public class Exam {
      */
     public void gradeStudent(Student student, Integer examScore, int timeSpend) {
         studentToGrades.put(student.getUsername(), new Grade(student.getName(), getCourse().getCourseID(), getExamName(), examScore, getFullScore(), Math.min(timeSpend, duration)));
-        SystemDatabase.createCourse(getCourse());
+        SystemDatabase.getCourse(courseID).updateGrade(this);
     }
 
     @Override

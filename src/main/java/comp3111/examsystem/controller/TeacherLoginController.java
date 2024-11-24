@@ -31,8 +31,6 @@ public class TeacherLoginController implements Initializable {
 
     private Teacher teacher;
 
-
-
     /**
      * Initializes the controller when the FXML file is loaded.
      *

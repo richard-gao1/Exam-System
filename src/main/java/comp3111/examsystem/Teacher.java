@@ -1,5 +1,7 @@
 package comp3111.examsystem;
 
+import com.google.gson.Gson;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,15 +88,15 @@ public class Teacher extends User {
     }
 
     public void createExam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
-        if (courseIDs.contains(courseID)){
-            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
-            if (course != null) {
+        Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
+        if (course != null) {
+            if (courseIDs.contains(courseID)){
                 Exam exam = new Exam(examName, course, isPublished, duration, questions);
                 return;
             }
-            throw new IllegalArgumentException("No such course");
+            throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
         }
-        throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
+        throw new IllegalArgumentException("No such course");
     }
 
     public void addExam(Exam exam, String courseID) {
@@ -142,10 +144,7 @@ public class Teacher extends User {
     public void updateExam(String oldExamName, Course oldCourse, String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         if (course != null) {
             if (course.getTeacher().equals(this)) {
-                // Case 1: course is the same
-                //if (course.getCourseID().equals(oldCourse.getCourseID()))
                     oldCourse.updateExam(oldExamName,  examName,  course,  isPublished,  duration, questions);
-                // Case 2: need to update the course as well
             } else {
                 throw new IllegalArgumentException("Not allowed to access this course");
             }
@@ -179,12 +178,6 @@ public class Teacher extends User {
     @Override
     public boolean equals(Object other) {
         return super.equals(other) && (Objects.equals(this.position, ((Teacher) other).position));
-    }
-
-    public void viewQuestion() {
-        for (Question question : questionBank) {
-            System.out.println(question.getContent());
-        }
     }
 
     public void createQuestion(String content, String[] options, String answer, int score, int type) {
@@ -231,25 +224,9 @@ public class Teacher extends User {
         return questionBank;
     }
 
-    public void viewStudent() {
-        // TODO: implement
-    }
-
-    public void viewStudentAnswer() {
-        // TODO: implement
-    }
-
-    public void gradeStudentAnswer() {
-        // TODO: implement
-    }
 
     public void updateQuestion(Question question, String content, String[] options, String answer, int score, int type) {
-        question.setContent(content);
-        question.setOptions(options);
-        question.setAnswer(answer);
-        question.setScore(score);
-        question.setTypeChoice(type);
-        SystemDatabase.updateTeacher(this);
+        updateQuestion( question,  content,  options,  answer,  score,  (type==0 ?"Single":"Multiple"));
     }
 
     public void updateQuestion(Question question, String content, String[] options, String answer, int score, String type) {
@@ -259,10 +236,15 @@ public class Teacher extends User {
         }
         question.setContent(content);
         question.setOptions(options);
+        question.setTypeChoice(type.equals("Multiple") ? 1 : 0);
         question.setAnswer(answer);
         question.setScore(score);
-        question.setTypeChoice(type.equals("Multiple") ? 1 : 0);
         SystemDatabase.updateTeacher(this);
 
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

@@ -12,6 +12,7 @@ public class Position {
             "Associate professor",
             "Assistant professor",
             "TA",
+            "Senior Lecturer",
             "Lecturer"
     };
 }

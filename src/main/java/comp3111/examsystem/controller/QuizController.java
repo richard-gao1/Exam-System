@@ -248,6 +248,8 @@ public class QuizController implements Initializable {
 
         int score = this.exam.grade(this.answerChoices);
         this.exam.gradeStudent((Student) SystemDatabase.currentUser, score, time.getTotalTime());
+        Course course = this.exam.getCourse();
+        course.updateGrade(exam);
 
         this.timeline.stop();
 
