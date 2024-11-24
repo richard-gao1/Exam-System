@@ -202,7 +202,8 @@ public class Exam {
      * @return The Course object if courseID is not null, otherwise returns null.
      */
     public Course getCourse() {
-        return SystemDatabase.getCourse(courseID);
+        // Change: Dynamically retrieve the Course object using courseID
+        return courseID != null ? SystemDatabase.getCourse(courseID) : null;
     }
 
     /**
@@ -220,11 +221,7 @@ public class Exam {
                 }
             }
             this.courseID = course.getCourseID(); // Change: Store courseID
-            boolean haveExam = false;
-            for (Exam e : course.getExams()) {
-                haveExam = haveExam | Objects.equals(e.getExamName(), this.getExamName());
-            }
-            if (!haveExam) course.addExam(this);
+            course.addExam(this);
         }
     }
 
@@ -255,11 +252,13 @@ public class Exam {
      * @throws IllegalArgumentException If the question already exists in the exam.
      */
     public void addQuestion(Question question) {
-        if (!questions.contains(question)) {
-            questions.add(question);
-        } else {
+        if (this.questions == null) {
+            this.questions = new ArrayList<>();
+        }
+        if (this.questions.contains(question)) {
             throw new IllegalArgumentException("Question already exists in the exam");
         }
+        this.questions.add(question);
     }
 
     /**
