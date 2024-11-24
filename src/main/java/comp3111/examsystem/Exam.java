@@ -202,8 +202,7 @@ public class Exam {
      * @return The Course object if courseID is not null, otherwise returns null.
      */
     public Course getCourse() {
-        // Change: Dynamically retrieve the Course object using courseID
-        return courseID != null ? SystemDatabase.getCourse(courseID) : null;
+        return course;
     }
 
     /**
