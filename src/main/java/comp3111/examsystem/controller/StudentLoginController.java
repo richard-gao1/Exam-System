@@ -99,7 +99,8 @@ public class StudentLoginController implements Initializable {
         }
 
         stage.show();
-        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+        // No need to close the login menu
+        //((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
 
     }
 }

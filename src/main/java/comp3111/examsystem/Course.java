@@ -1,5 +1,6 @@
 package comp3111.examsystem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -163,6 +164,23 @@ public class Course {
         SystemDatabase.modifyCourse(this, courseID);
     }
 
+    public void deleteExamQuestions(Question question){
+        for (Exam e: exams){
+            if (e.removeQuestion(question)){
+                SystemDatabase.modifyCourse(this, courseID);
+            }
+        }
+    }
+
+    public void updateExamQuestions(Question question, String content, String[] options, String answer, int score, String type){
+        for (Exam e: exams){
+            if (e.updateQuestion(question,  content,  options,  answer,  score,  type)){
+                SystemDatabase.modifyCourse(this, courseID);
+            }
+        }
+
+    }
+
     /**
      * Retrieves a list of all students enrolled in the course.
      *
@@ -210,12 +228,12 @@ public class Course {
         if (this.teacherUsername != null) {
             Teacher existingTeacher = SystemDatabase.getTeacher(this.teacherUsername);
             if (existingTeacher != null) {
-                existingTeacher.dropCourse(courseID);
+                existingTeacher.dropCourse(this);
             }
         }
         if (teacher != null) {
             this.teacherUsername = teacher.getUsername();
-            teacher.addCourse(courseID);
+            teacher.addCourse(this);
         } else {
             this.teacherUsername = null;
         }
@@ -246,7 +264,7 @@ public class Course {
             throw new IllegalArgumentException("Exam is not in this course");
         }
         for (Exam e : exams) {
-            if (Objects.equals(e.getExamName(), exam.getExamName())) {
+            if (e.getExamName().equals(exam.getExamName())) {
                 throw new IllegalArgumentException("Already have this exam");
             }
         }
@@ -265,9 +283,27 @@ public class Course {
      * @param exam     The new Exam object that will replace the existing one, or null if updating
     without a new instance.
      */
-    public void updateExam(String examName, Exam exam) {
-        if (exam == null) {
-            return;
+    public void updateExam(String oldExamName, String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
+        for (Exam exam : exams) {
+            if (exam.getExamName().equals(oldExamName)) {
+                if (courseID.equals(course.getCourseID())){
+                    exam.setExamName(examName);
+                    exam.setDuration(duration);
+                    exam.setPublished(isPublished);
+                    exam.setQuestions(questions);
+                    for (String studentUsername : studentUsernames) {
+                        studentToGrade.get(studentUsername).remove(examName);
+                        studentToGrade.get(studentUsername).put(examName, null);
+                    }
+                    SystemDatabase.modifyCourse(this, courseID);
+                    return;
+                }
+                else{
+                    dropExam(oldExamName); // Drop original
+                    new Exam(examName,course,isPublished,duration,questions);
+                    return;
+                }
+            }
         }
         dropExam(examName); // Drop original
         exam.getCourse().addExam(exam); // Can change the course bound to the exam
@@ -346,11 +382,20 @@ public class Course {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return Objects.equals(this.courseID, ((Course) obj).getCourseID()) &&
-                Objects.equals(this.name, ((Course) obj).getCourseName()) &&
-                Objects.equals(this.department, ((Course) obj).getDepartment());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return Objects.equals(getCourseID(), course.getCourseID())
+                && Objects.equals(name, course.name)
+                && Objects.equals(getDepartment(), course.getDepartment());
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getCourseID(), name, getDepartment());
+    }
+
 
     /**
      * Adds multiple students to the course if they are not already enrolled,

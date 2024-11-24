@@ -252,13 +252,11 @@ public class Exam {
      * @throws IllegalArgumentException If the question already exists in the exam.
      */
     public void addQuestion(Question question) {
-        if (this.questions == null) {
-            this.questions = new ArrayList<>();
-        }
-        if (this.questions.contains(question)) {
+        if (!questions.contains(question)) {
+            questions.add(question);
+        } else {
             throw new IllegalArgumentException("Question already exists in the exam");
         }
-        this.questions.add(question);
     }
 
     /**
@@ -268,10 +266,27 @@ public class Exam {
      * @param question The Question object to be removed from the exam.
      * @throws IllegalArgumentException If the question does not exist in the exam.
      */
-    public void removeQuestion(Question question) {
-        if (!this.questions.contains(question)) {
-            throw new IllegalArgumentException("Question does not exist in the exam");
+    public boolean removeQuestion(Question question) {
+        for (Question q: questions){
+            if (q.equals(question)){
+                questions.remove(q);
+                return true;
+            }
         }
+        return false;
+    }
+
+    public boolean updateQuestion(Question question, String content, String[] options, String answer, int score, String type){
+        if (questions.contains(question)){
+            Question q = questions.get(questions.indexOf(question));
+            q.setScore(score);
+            q.setAnswer(answer);
+            q.setOptions(options);
+            q.setContent(content);
+            q.setTypeChoice(type);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -341,7 +356,10 @@ public class Exam {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Exam exam = (Exam) o;
-        return isPublished == exam.isPublished && getDuration() == exam.getDuration() && Objects.equals(getExamName(), exam.getExamName()) && getQuestions().containsAll(exam.getQuestions())&& exam.getQuestions().containsAll(getQuestions()) && Objects.equals(getCourse().getCourseID(), exam.getCourse().getCourseID()) && Objects.equals(studentToGrades, exam.studentToGrades);
+        return Objects.equals(getExamName(), exam.getExamName())
+                && getQuestions().containsAll(exam.getQuestions())
+                && exam.getQuestions().containsAll(getQuestions())
+                && Objects.equals(getCourse().getCourseID(), exam.getCourse().getCourseID());
     }
 
     @Override

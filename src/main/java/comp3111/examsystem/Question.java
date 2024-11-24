@@ -294,15 +294,20 @@ public class Question {
      * Compares this question to another object for equality based on its content, options, score,
      type choice, and answer.
      *
-     * @param o The other object to compare with.
+     * @param obj The other object to compare with.
      * @return true if this question is equal to the specified object; false otherwise.
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Question question = (Question) o;
-        return getScore() == question.getScore() && getTypeChoice() == question.getTypeChoice() && getAnswer() == question.getAnswer() && Objects.equals(getContent(), question.getContent()) && getOptions().containsAll(question.getOptions()) && question.getOptions().containsAll(getOptions());
+    public boolean equals(Object obj) { // if questions has same content and same options, they are referred as the same question.
+        if (this == obj) return true; // Reference equality
+        if (obj == null || getClass() != obj.getClass()) return false; // Null or type mismatch
+
+        Question question = (Question) obj;
+
+        // Custom equality logic
+        return content.equals(question.content) &&
+                options.containsAll(question.options) &&
+                question.options.containsAll(options);
     }
 
     /**
@@ -313,7 +318,7 @@ public class Question {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getContent(), getOptions(), getScore(), getTypeChoice(), getAnswer());
+        return Objects.hash(content, options);
     }
 
     /**

@@ -32,7 +32,13 @@
                   <Insets left="10.0" />
                </HBox.margin>
             </Label>
-            <TextField fx:id="scoreFilter" />
+            <VBox alignment="CENTER_LEFT">
+               <children>
+                  <Label visible="false" />
+                  <TextField fx:id="scoreFilter" />
+                  <Label fx:id="scoreFilterHint" text="Score must be a number" textFill="RED" visible="false" />
+               </children>
+            </VBox>
             <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#onReset" text="Reset">
                <HBox.margin>
                   <Insets left="10.0" />
@@ -135,6 +141,11 @@
                   <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                </VBox.margin>
             </TextField>
+            <Label fx:id="answerHint" maxHeight="18.0" minHeight="0.0" minWidth="0.0" prefHeight="0.0" text="Answer must be in &quot;ABCD&quot;" textFill="RED">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </Label>
             <Label text="Type:" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -155,20 +166,25 @@
                   <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                </VBox.margin>
             </TextField>
+            <Label fx:id="scoreHint" maxHeight="18.0" minHeight="0.0" minWidth="0.0" prefHeight="0.0" text="Score must be a number" textFill="RED">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </Label>
          </children>
       </VBox>
    </right>
    <center>
       <TableView fx:id="questionTable" prefHeight="571.0" prefWidth="810.0" BorderPane.alignment="CENTER_RIGHT">
         <columns>
-          <TableColumn fx:id="questionColumn" minWidth="150.0" prefWidth="250.0" text="Question" />
-          <TableColumn fx:id="optionAColumn" maxWidth="100.0" minWidth="50.0" text="Option A" />
-            <TableColumn fx:id="optionBColumn" maxWidth="100.0" minWidth="50.0" text="Option B" />
-            <TableColumn fx:id="optionCColumn" maxWidth="100.0" minWidth="50.0" text="Option C" />
-            <TableColumn fx:id="optionDColumn" maxWidth="100.0" minWidth="50.0" text="Option D" />
-            <TableColumn fx:id="answerColumn" maxWidth="100.0" minWidth="50.0" text="Answer" />
-            <TableColumn fx:id="typeColumn" maxWidth="100.0" minWidth="50.0" text="Type" />
-            <TableColumn fx:id="scoreColumn" maxWidth="100.0" minWidth="50.0" text="Score" />
+          <TableColumn fx:id="questionColumn" minWidth="150.0" prefWidth="-1.0" text="Question" />
+          <TableColumn fx:id="optionAColumn" maxWidth="500.0" minWidth="80.0" prefWidth="100.0" text="Option A" />
+            <TableColumn fx:id="optionBColumn" maxWidth="500.0" minWidth="80.0" prefWidth="100.0" text="Option B" />
+            <TableColumn fx:id="optionCColumn" maxWidth="500.0" minWidth="80.0" prefWidth="100.0" text="Option C" />
+            <TableColumn fx:id="optionDColumn" maxWidth="500.0" minWidth="80.0" prefWidth="100.0" text="Option D" />
+            <TableColumn fx:id="answerColumn" maxWidth="100.0" minWidth="50.0" prefWidth="65.0" resizable="false" text="Answer" />
+            <TableColumn fx:id="typeColumn" maxWidth="100.0" minWidth="50.0" prefWidth="65.0" resizable="false" text="Type" />
+            <TableColumn fx:id="scoreColumn" maxWidth="100.0" minWidth="50.0" prefWidth="65.0" resizable="false" text="Score" />
         </columns>
       </TableView>
    </center>

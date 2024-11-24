@@ -125,20 +125,34 @@ public class Teacher extends User {
         throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
     }
 
-    public void updateExam(String examName, Exam exam, String courseID) {
-        Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
-        updateExam(examName,exam,course);
+    public void deleteExam(Exam exam, Course course){
+        if (course != null){
+            if (courseIDs.contains(course.getCourseID())){
+                course.dropExam(exam);
+                return;
+            }
+            throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
+        }
+        throw new IllegalArgumentException("No such course");
     }
 
-    public void updateExam(String examName, Exam exam, Course course) {
+    public void updateExam(String oldExamName, Course oldCourse, String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
+        Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
+        updateExam(oldExamName, oldCourse, examName,  course,  isPublished,  duration, questions);
+    }
+
+    public void updateExam(String oldExamName, Course oldCourse, String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         if (course != null) {
             if (course.getTeacher().equals(this)) {
-                course.updateExam(examName, exam);
+                // Case 1: course is the same
+                //if (course.getCourseID().equals(oldCourse.getCourseID()))
+                    oldCourse.updateExam(oldExamName,  examName,  course,  isPublished,  duration, questions);
+                // Case 2: need to update the course as well
             } else {
                 throw new IllegalArgumentException("Not allowed to access this course");
             }
         }
-        throw new IllegalArgumentException("No such course");
+        else throw new IllegalArgumentException("No such course");
     }
 
     public ArrayList<Exam> getExams() {
@@ -177,17 +191,35 @@ public class Teacher extends User {
 
     public void createQuestion(String content, String[] options, String answer, int score, int type) {
         Question question = new Question(content, options, answer, score, type);
+        for (Question q: questionBank){
+            if (q.getContent().equals(question.getContent())
+                    && q.getOptions().containsAll(question.getOptions())
+                    && question.getOptions().containsAll(q.getOptions())){
+                throw new IllegalArgumentException("This question already existed.");
+            }
+        }
         questionBank.add(question);
         SystemDatabase.updateTeacher(this);
     }
 
     public void createQuestion(Question question) {
+        for (Question q: questionBank){
+            if (q.getContent().equals(question.getContent())
+                    && q.getOptions().containsAll(question.getOptions())
+                    && question.getOptions().containsAll(q.getOptions())){
+                throw new IllegalArgumentException("This question already existed.");
+            }
+        }
         questionBank.add(question);
         SystemDatabase.updateTeacher(this);
     }
 
     public void deleteQuestion(Question question) {
+        String result = "no exam";
         questionBank.remove(question);
+        for (Course c:getCourses()){
+            c.deleteExamQuestions(question);
+        }
         SystemDatabase.updateTeacher(this);
     }
 
@@ -221,13 +253,19 @@ public class Teacher extends User {
         question.setTypeChoice(type);
         SystemDatabase.updateTeacher(this);
     }
+
     public void updateQuestion(Question question, String content, String[] options, String answer, int score, String type) {
+        ArrayList<Exam> examList = new ArrayList<>();
+        for (Course course: getCourses()){
+                course.updateExamQuestions(question,  content,  options,  answer,  score,  type);
+        }
         question.setContent(content);
         question.setOptions(options);
         question.setAnswer(answer);
         question.setScore(score);
         question.setTypeChoice(type.equals("Multiple") ? 1 : 0);
         SystemDatabase.updateTeacher(this);
+
     }
 
     @Override
