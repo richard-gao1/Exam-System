@@ -148,7 +148,12 @@ public class TeacherGradeStatisticController implements Initializable {
     private void loadData() {
         gradeList.clear();
         ArrayList<Exam> exams = new ArrayList<>();
-        if (currentTeacher != null) exams = currentTeacher.getExams();
+        List<Course> courses = currentTeacher.getCourses();
+        if (courses != null) {
+            for (Course course : courses) {
+                exams.addAll(course.getExams());
+            }
+        }
         /*
          add grades from teachers
          */

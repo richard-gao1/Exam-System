@@ -1,5 +1,7 @@
 package comp3111.examsystem;
 
+import com.google.gson.Gson;
+
 import java.util.Objects;
 
 /**
@@ -141,5 +143,10 @@ public abstract class User extends Account {
                 Objects.equals(this.gender, ((User) other).getGender()) &&
                 (this.age == ((User) other).getAge()) &&
                 Objects.equals(this.department, ((User) other).getDepartment());
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

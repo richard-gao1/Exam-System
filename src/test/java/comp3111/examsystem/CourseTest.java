@@ -10,21 +10,21 @@ class CourseTest {
 
     @Test
     void getName() {
-        Course c = new Course("software engineering","COMP3111","COMP");
+        Course c = new Course("COMP3111","software engineering","COMP");
         assertEquals(c.getCourseName(), "software engineering");
     }
 
     @Test
     void getCourseID() {
-        Course c = new Course("software engineering","COMP3111","COMP");
+        Course c = new Course("COMP3111", "software engineering","COMP");
         assertEquals(c.getCourseID(), "COMP3111");
     }
 
     @Test
     void setName() {
-        Course c = new Course("software engineering","COMP3111","COMP");
+        Course c = new Course("COMP3111", "software engineering","COMP");
         c.setName("Software Engineering");
-        assertEquals(c.getCourseID(), "Software Engineering");
+        assertEquals(c.getCourseName(), "Software Engineering");
     }
 
     @Test

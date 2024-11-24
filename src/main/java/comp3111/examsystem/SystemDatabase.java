@@ -569,6 +569,7 @@ public class SystemDatabase {
      * @param old_courseID The original course ID of the course to be modified.
      */
     public static void modifyCourse(Course newCourse, String old_courseID) {
+        if (getCourse(old_courseID) == null) return;
         changeCourseID(newCourse, old_courseID);
         writeCourseFile(newCourse);
     }
@@ -628,7 +629,9 @@ public class SystemDatabase {
         }
         List<Student> students = oldCourse.getStudents();
         for (Student student : students) {
-            student.dropCourse(oldCourse);
+            try {
+                student.dropCourse(oldCourse);
+            } catch (Exception e) {}
             if (newCourse != null) student.addCourse(newCourse);
         }
         removeCourse(old_courseID);

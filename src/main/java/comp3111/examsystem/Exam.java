@@ -142,9 +142,6 @@ public class Exam {
         this.examName = examName;
     }
 
-
-
-
     /**
      * Checks if the exam is published.
      *
@@ -224,7 +221,11 @@ public class Exam {
                 }
             }
             this.courseID = course.getCourseID(); // Change: Store courseID
-            course.addExam(this);
+            boolean haveExam = false;
+            for (Exam e : course.getExams()) {
+                haveExam = haveExam | Objects.equals(e.getExamName(), this.getExamName());
+            }
+            if (!haveExam) course.addExam(this);
         }
     }
 
@@ -255,13 +256,11 @@ public class Exam {
      * @throws IllegalArgumentException If the question already exists in the exam.
      */
     public void addQuestion(Question question) {
-        if (this.questions == null) {
-            this.questions = new ArrayList<>();
-        }
-        if (this.questions.contains(question)) {
+        if (!questions.contains(question)) {
+            questions.add(question);
+        } else {
             throw new IllegalArgumentException("Question already exists in the exam");
         }
-        this.questions.add(question);
     }
 
     /**

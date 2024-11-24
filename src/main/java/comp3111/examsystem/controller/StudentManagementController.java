@@ -19,6 +19,14 @@ import java.util.ResourceBundle;
  */
 public class StudentManagementController implements Initializable {
     @FXML
+    private Button addBtn;
+    @FXML
+    private Button updateBtn;
+    @FXML
+    private Button refreshBtn;
+    @FXML
+    private Button deleteBtn;
+    @FXML
     private ChoiceBox genderSet;
     @FXML
     private TextField departmentSet;
@@ -249,14 +257,18 @@ public class StudentManagementController implements Initializable {
      */
     public void selected(MouseEvent mouseEvent) {
         Student selectedItem = (Student) accountTable.getSelectionModel().getSelectedItem();
-        if (selectedItem != null && selectedItem != updating) {
+        if (selectedItem != updating) {
             updating = selectedItem;
-            usernameSet.setText(updating.getUsername());
-            nameSet.setText(updating.getName());
-            genderSet.getSelectionModel().select(updating.getGender());
-            ageSet.setText(String.valueOf(updating.getAge()));
-            departmentSet.setText(updating.getDepartment());
-            passwordSet.setText(updating.getPassword());
+            if (updating != null) {
+                usernameSet.setText(updating.getUsername());
+                nameSet.setText(updating.getName());
+                genderSet.getSelectionModel().select(updating.getGender());
+                ageSet.setText(String.valueOf(updating.getAge()));
+                departmentSet.setText(updating.getDepartment());
+                passwordSet.setText(updating.getPassword());
+            } else {
+                resetSetFields();
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 package comp3111.examsystem;
 
+import com.google.gson.Gson;
+
 /**
  * A class representing a student, which extends the User class.
  */
@@ -24,5 +26,10 @@ public class Manager extends Account {
     @Override
     public boolean equals(Object other) {
         return super.equals(other);
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

@@ -1,5 +1,6 @@
 package comp3111.examsystem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -227,12 +228,12 @@ public class Course {
         if (this.teacherUsername != null) {
             Teacher existingTeacher = SystemDatabase.getTeacher(this.teacherUsername);
             if (existingTeacher != null) {
-                existingTeacher.dropCourse(courseID);
+                existingTeacher.dropCourse(this);
             }
         }
         if (teacher != null) {
             this.teacherUsername = teacher.getUsername();
-            teacher.addCourse(courseID);
+            teacher.addCourse(this);
         } else {
             this.teacherUsername = null;
         }
@@ -263,7 +264,7 @@ public class Course {
             throw new IllegalArgumentException("Exam is not in this course");
         }
         for (Exam e : exams) {
-            if (Objects.equals(e.getExamName(), exam.getExamName())) {
+            if (e.getExamName().equals(exam.getExamName())) {
                 throw new IllegalArgumentException("Already have this exam");
             }
         }
@@ -275,10 +276,14 @@ public class Course {
     }
 
     /**
-     * Updates an existing exam within the course. If the new Exam object is provided,
-     * it replaces the old one with the same name and may change the associated course.
+     * Updates an existing exam with the specified details.
      *
-     * @param examName The name of the exam to be updated.
+     * @param oldExamName The current name of the exam to be updated.
+     * @param examName The new name for the exam.
+     * @param course The course associated with the exam.
+     * @param isPublished A boolean indicating whether the exam is published or not.
+     * @param duration The duration of the exam in minutes.
+     * @param questions An ArrayList containing the questions for the exam.
      */
     public void updateExam(String oldExamName, String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         for (Exam exam : exams) {
@@ -302,6 +307,7 @@ public class Course {
                 }
             }
         }
+        dropExam(examName); // Drop original
     }
 
     /**
@@ -391,4 +397,37 @@ public class Course {
         return Objects.hash(getCourseID(), name, getDepartment());
     }
 
+
+    /**
+     * Adds multiple students to the course if they are not already enrolled,
+     * establishes bidirectional relationship, initializes their grades,
+     * and updates the database.
+     *
+     * @param studentList The list of Student objects to be added.
+     * @throws IllegalArgumentException If the student is already enrolled in the course.
+     */
+    public void addStudents(List<Student> studentList) {
+        for (Student student : studentList) {
+            try {
+                addStudent(student);
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    /**
+     * Update the student grading of the course
+     *
+     * @param exam the exam grade to update
+     */
+    public void updateGrade(Exam exam) {
+        for (int i=0;i<exams.size();i++) {
+            Exam e = exams.get(i);
+            if (Objects.equals(e.getExamName(), exam.getExamName())) {
+                exams.set(i, exam);
+            }
+        }
+        SystemDatabase.modifyCourse(this, courseID);
+    }
 }
