@@ -421,9 +421,8 @@ public class QuestionBankController implements Initializable {
         return true; // All fields are valid
     }
 
-    /**
-     * Clears the input fields.
-     */
+
+
     private void clearInputFields() {
         questionInput.clear();
         aInput.clear();

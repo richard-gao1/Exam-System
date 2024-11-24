@@ -226,6 +226,7 @@ public class ExamManagementController implements Initializable {
         updateQuestionLists(selectedExam);
         refreshQuestion();
     }
+    // TODO: After filtering, add question to an exam will cause the question disappear, but still can add the course.
 
     /**
      * Applies question filters and updates the question tables accordingly.
@@ -330,10 +331,6 @@ public class ExamManagementController implements Initializable {
         refreshExam();
     }
 
-    /**
-     * Updates an existing exam with the provided inputs.
-     * This function checks for validation, duplication, and updates the selected exam in the examList and currentTeacher.
-     */
     @FXML
     private void onUpdate() {
         // Handle updating an existing exam
@@ -370,15 +367,15 @@ public class ExamManagementController implements Initializable {
         }
         refresh();
     }
-    /* 
+    /* Select question logic
+     * If no exam is selected, questionList should load the full list of the teacher's question bank.
+     * If an exam is selected, examList will display the question it has
+     * while the questionList will display the question not in the examList
      *
      *
      */
 
 
-    /**
-     * Removes a selected question from the examQuestionTable and adds it to the questionTable.
-     */
     @FXML
     private void onUnselectQuestion() {
         // Remove question from left table
@@ -395,14 +392,6 @@ public class ExamManagementController implements Initializable {
         }
     }
 
-    /**
-     * Adds a selected question from the questionTable to the examQuestionTable.
-     *
-     * Select question logic
-     * If no exam is selected, questionList should load the full list of the teacher's question bank.
-     * If an exam is selected, examList will display the question it has
-     * while the questionList will display the question not in the examList
-     */
     @FXML
     private void onSelectQuestion() {
         // Add question to left table
