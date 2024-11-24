@@ -76,8 +76,8 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     @Test
     void query1() {
         String usernameFilter = "whwma";
-        String nameFilter = "";
-        String departmentFilter = "";
+        String nameFilter = null;
+        String departmentFilter = null;
         Teacher[] expected = SystemDatabase.getTeacherList(usernameFilter, nameFilter, departmentFilter).toArray(Teacher[]::new);
 
         writeTextField("#usernameFilter", usernameFilter);
@@ -99,7 +99,7 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     }
 
     void writeTextField(String id, String content) {
-        if (content.isEmpty()) return;
+        if (content == null) return;
         TextField textField = find(id);
         textField.clear();
         clickOn(textField).write(content);
@@ -205,7 +205,7 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
         original.remove(0);
         original.add(newTeacher);
 
-        update("kwtleung12", "", "", -1, "", "",-1);
+        update("kwtleung12", null, null, -1, null, null,-1);
 
         Teacher[] expected = original.toArray(Teacher[]::new);
         Teacher[] output = accountTable.getItems().toArray(Teacher[]::new);
@@ -216,7 +216,7 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     void update_invalid1() {
         refresh();
 
-        update("kwtleung12", "", "", -1, "18a", "",-1);
+        update("kwtleung12", null, null, -1, "18a", null,-1);
 
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");
@@ -227,7 +227,7 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     void update_invalid2() {
         refresh();
 
-        update("", "", "", -1, "18a", "",-1);
+        update(null, null, null, -1, "18a", null,-1);
 
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");

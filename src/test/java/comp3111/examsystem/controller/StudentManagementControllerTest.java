@@ -26,6 +26,7 @@ import static org.testfx.api.FxAssert.verifyThat;
 class StudentManagementControllerTest extends ApplicationTest implements FxRobotInterface {
     Student student1;
     Student student2;
+    Student student3;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -48,8 +49,10 @@ class StudentManagementControllerTest extends ApplicationTest implements FxRobot
         new SystemDatabase();
         student1 = new Student("whwma", "comp3111", "Ma Wai Him Wesley", Gender.list[0], 21, "econ");
         student2 = new Student("wktangaf", "comp3511", "Tang Wai Kin", Gender.list[0], 22, "fina");
+        student3 = new Student("rdgao", "comp3311", "GAO, Richard Daniel", "Male", 21, "cse");
         SystemDatabase.registerStudent(student1);
         SystemDatabase.registerStudent(student2);
+        SystemDatabase.registerStudent(student3);
     }
 
     @Test
@@ -99,7 +102,7 @@ class StudentManagementControllerTest extends ApplicationTest implements FxRobot
     }
 
     void writeTextField(String id, String content) {
-        if (content.isEmpty()) return;
+        if (content == null) return;
         TextField textField = find(id);
         textField.clear();
         clickOn(textField).write(content);
@@ -195,7 +198,7 @@ class StudentManagementControllerTest extends ApplicationTest implements FxRobot
         original.remove(0);
         original.add(newStudent);
 
-        update("kwtleung12", "", "", -1, "", "");
+        update("kwtleung12", null, null, -1, null, null);
 
         Student[] expected = original.toArray(Student[]::new);
         Student[] output = accountTable.getItems().toArray(Student[]::new);
@@ -206,7 +209,7 @@ class StudentManagementControllerTest extends ApplicationTest implements FxRobot
     void update_invalid2() {
         refresh();
 
-        update("", "", "", -1, "18a", "");
+        update(null, null, null, -1, "18a", null);
 
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");

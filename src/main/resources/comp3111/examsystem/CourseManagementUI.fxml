@@ -44,7 +44,7 @@
     <left>
         <VBox prefHeight="720.0" prefWidth="924.0" BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="accountTable" prefHeight="649.0" prefWidth="924.0" onMouseClicked="#selected">
+                <TableView fx:id="courseTable" prefHeight="649.0" prefWidth="924.0" onMouseClicked="#selected">
                     <columns>
                         <TableColumn fx:id="courseIDColumn" prefWidth="308.0" text="Course ID" />
                         <TableColumn fx:id="courseNameColumn" prefWidth="308.0" text="Course Name" />
@@ -148,7 +148,7 @@
                         </TableView>
                         <HBox prefHeight="70.0" prefWidth="180.0">
                             <children>
-                                <Button fx:id="addStduentBtn" mnemonicParsing="false" onAction="#addStudent" text="^ Add">
+                                <Button fx:id="addStudentBtn" mnemonicParsing="false" onAction="#addStudent" text="^ Add">
                                     <HBox.margin>
                                         <Insets left="10.0" top="10.0" right="10.0" />
                                     </HBox.margin>
@@ -174,12 +174,12 @@
                 </VBox>
                 <HBox alignment="CENTER_LEFT" prefHeight="71.0" prefWidth="980.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#add" text="Add">
+                        <Button fx:id="addBtn" mnemonicParsing="false" onAction="#add" text="Add">
                             <HBox.margin>
                                 <Insets left="20.0" />
                             </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#modify" text="Modify">
+                        <Button fx:id="modifyBtn" mnemonicParsing="false" onAction="#modify" text="Modify">
                             <HBox.margin>
                                 <Insets left="20.0" />
                             </HBox.margin>

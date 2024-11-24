@@ -6,10 +6,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.testfx.api.FxAssert.verifyThat;
 
 class CourseManagementControllerTest extends ApplicationTest implements FxRobotInterface {
-    Student student1;
-    Student student2;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -42,26 +38,37 @@ class CourseManagementControllerTest extends ApplicationTest implements FxRobotI
         return lookup(query).query();
     }
 
-    @Test
+    @BeforeEach
     void initialize() {
         SystemDatabase.removeAll();
         new SystemDatabase();
         Course course1 = new Course("COMP3111", "Software Engineering", "cse");
         Course course2 = new Course("COMP3511", "Operating Systems", "cse");
         Course course3 = new Course("COMP3711", "Design and Analysis of Algorithms", "cse");
-
         SystemDatabase.createCourse(course1);
         SystemDatabase.createCourse(course2);
         SystemDatabase.createCourse(course3);
+
+        Student student1 = new Student("whwma", "comp3111", "Ma Wai Him Wesley", Gender.list[0], 21, "econ");
+        Student student2 = new Student("wktangaf", "comp3511", "Tang Wai Kin", Gender.list[0], 22, "fina");
+        Student student3 = new Student("rdgao", "comp3311", "GAO, Richard Daniel", Gender.list[0], 21, "cse");
+        SystemDatabase.registerStudent(student1);
+        SystemDatabase.registerStudent(student2);
+        SystemDatabase.registerStudent(student3);
+
+        Teacher teacher1 = new Teacher("whwma", "comp3111", "Ma Wai Him Wesley", Gender.list[0], 21, "econ", Position.list[1]);
+        Teacher teacher2 = new Teacher("wktangaf", "comp3511", "Tang Wai Kin", Gender.list[0], 22, "fina", Position.list[0]);
+        SystemDatabase.registerTeacher(teacher1);
+        SystemDatabase.registerTeacher(teacher2);
     }
 
     @Test
     void refresh() {
         Button refreshBtn = find("#refreshBtn");
         clickOn(refreshBtn);
-        TableView<Student> accountTable = find("#accountTable");
-        Student[] output = accountTable.getItems().toArray(Student[]::new);
-        Student[] expected = SystemDatabase.getStudentList("", "", "").toArray(Student[]::new);
+        TableView<Course> courseTable = find("#courseTable");
+        Course[] output = courseTable.getItems().toArray(Course[]::new);
+        Course[] expected = SystemDatabase.getCourseList("", "", "").toArray(Course[]::new);
         assertArrayEquals(expected, output);
     }
 
@@ -69,30 +76,30 @@ class CourseManagementControllerTest extends ApplicationTest implements FxRobotI
     @Test
     void reset() {
         Button resetBtn = find("#resetBtn");
-        TableView<Student> accountTable = find("#accountTable");
+        TableView<Course> courseTable = find("#courseTable");
         clickOn(resetBtn);
-        Student[] output = accountTable.getItems().toArray(Student[]::new);
-        Student[] expected = SystemDatabase.getStudentList("", "", "").toArray(Student[]::new);
+        Course[] output = courseTable.getItems().toArray(Course[]::new);
+        Course[] expected = SystemDatabase.getCourseList("", "", "").toArray(Course[]::new);
         assertArrayEquals(output, expected);
     }
 
     @Test
     void query1() {
-        String usernameFilter = "whwma";
-        String nameFilter = "";
+        String courseIDFilter = "COMP3111";
+        String courseNameFilter = "";
         String departmentFilter = "";
-        Student[] expected = SystemDatabase.getStudentList(usernameFilter, nameFilter, departmentFilter).toArray(Student[]::new);
+        Course[] expected = SystemDatabase.getCourseList(courseIDFilter, courseNameFilter, departmentFilter).toArray(Course[]::new);
 
-        writeTextField("#usernameFilter", usernameFilter);
-        writeTextField("#nameFilter", nameFilter);
+        writeTextField("#courseIDFilter", courseIDFilter);
+        writeTextField("#courseNameFilter", courseNameFilter);
         writeTextField("#departmentFilter", departmentFilter);
 
         Button filterBtn = find("#filterBtn");
         clickOn(filterBtn);
 
-        TableView<Student> accountTable = find("#accountTable");
+        TableView<Course> courseTable = find("#courseTable");
 
-        Student[] output = accountTable.getItems().toArray(Student[]::new);
+        Course[] output = courseTable.getItems().toArray(Course[]::new);
         assertArrayEquals(expected, output);
     }
 
@@ -102,151 +109,116 @@ class CourseManagementControllerTest extends ApplicationTest implements FxRobotI
     }
 
     void writeTextField(String id, String content) {
-        if (content.isEmpty()) return;
+        if (content == null) return;
         TextField textField = find(id);
         textField.clear();
         clickOn(textField).write(content);
     }
 
-    void chooseChoiceBox(String id, int index) {
-        if (index < 0) return;
-        ChoiceBox choiceBox = find(id);
-        clickOn(choiceBox);
-        for (int i=0;i<index;i++) {
-            type(KeyCode.DOWN);
-        }
-        type(KeyCode.ENTER);
-    }
-
     @Test
-    void addStudent_valid1() {
+    void addCourse_valid1() {
+        TableView<Course> courseTable = find("#courseTable");
+        ArrayList<Course> original = new ArrayList<>(courseTable.getItems());
+
+        add("ECON3113", "Microeconomics Theory I", "econ");
+        Course newCourse = new Course("ECON3113", "Microeconomics Theory I", "econ");
+
         refresh();
-        TableView<Student> studentTable = find("#accountTable");
-        ArrayList<Student> original = new ArrayList<>(studentTable.getItems());
-
-        String gender = Gender.list[0];
-
-        add("kwtleung", "comp2711", "Kenneth Leung", 0, "18", "cse");
-        Student newStudent = new Student("kwtleung", "comp2711", "Kenneth Leung", gender, 18, "cse");
-
-        Student[] output = studentTable.getItems().toArray(Student[]::new);
-        original.add(newStudent);
-        Student[] expected = original.toArray(Student[]::new);
+        Course[] output = courseTable.getItems().toArray(Course[]::new);
+        original.add(newCourse);
+        Course[] expected = original.toArray(Course[]::new);
         assertArrayEquals(expected, output);
         checkSetFieldEmpty();
     }
 
     void checkSetFieldEmpty() {
-        checkTextField("#usernameSet", "");
-        checkTextField("#nameSet", "");
-        checkTextField("#ageSet", "");
+        checkTextField("#courseIDSet", "");
+        checkTextField("#courseNameSet", "");
         checkTextField("#departmentSet", "");
-        checkTextField("#passwordSet", "");
     }
 
     @Test
-    void addStudent_invalid1() {
-        add("student", "comp2711", "Kenneth Leung", 0, "18a", "cse");
+    void addCourse_invalid1() {
+        add("COMP3111", "Software Engineering", "cse");
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");
         clickOn(ok);
     }
 
-    @Test
-    void addStudent_invalid2() {
-        add("student", "comp2711", "Kenneth Leung", -1, "18", "cse");
-        verifyThat("OK", NodeMatchers.isVisible());
-        Button ok = find("OK");
-        clickOn(ok);
-    }
-
-    @Test
-    void addStudent_invalid3() {
-        add("whwma", "comp3111", "Ma Wai Him Wesley", 0, "21", "econ");
-        verifyThat("OK", NodeMatchers.isVisible());
-        Button ok = find("OK");
-        clickOn(ok);
-    }
-
-    void writeSetFields(String username, String password, String name, int genderIndex, String age, String department) {
-        writeTextField("#usernameSet", username);
-        writeTextField("#nameSet", name);
-        chooseChoiceBox("#genderSet", genderIndex);
-        writeTextField("#ageSet", age);
+    void writeSetFields(String courseID, String courseName, String department) {
+        writeTextField("#courseIDSet", courseID);
+        writeTextField("#courseNameSet", courseName);
         writeTextField("#departmentSet", department);
-        writeTextField("#passwordSet", password);
     }
 
-    void add(String username, String password, String name, int genderIndex, String ageText, String department) {
-        writeSetFields(username, password, name, genderIndex, ageText, department);
+    void add(String courseID, String courseName, String department) {
+        writeSetFields(courseID, courseName, department);
 
         Button addBtn = find("#addBtn");
         clickOn(addBtn);
     }
 
     @Test
-    void update_valid() {
+    void modify_valid() {
         refresh();
-        TableView<Student> accountTable = find("#accountTable");
-        accountTable.getSelectionModel().select(0);
-        Node node = lookup("#usernameColumn").nth(0).query();
+        TableView<Course> courseTable = find("#courseTable");
+        courseTable.getSelectionModel().select(0);
+        Node node = lookup("#courseIDColumn").nth(0).query();
         clickOn(node);
 
-        ArrayList<Student> original = new ArrayList<>(accountTable.getItems());
-        Student student = accountTable.getSelectionModel().getSelectedItem();
-        Student newStudent = new Student("kwtleung12", student.getPassword(), student.getName(), student.getGender(), student.getAge(), student.getDepartment());
+        ArrayList<Course> original = new ArrayList<>(courseTable.getItems());
+        Course course = courseTable.getSelectionModel().getSelectedItem();
+        Course newCourse = new Course("COMP5111", course.getCourseName(), course.getDepartment());
         original.remove(0);
-        original.add(newStudent);
+        original.add(newCourse);
 
-        update("kwtleung12", "", "", -1, "", "");
+        modify("COMP5111", null, null);
 
-        Student[] expected = original.toArray(Student[]::new);
-        Student[] output = accountTable.getItems().toArray(Student[]::new);
+        Course[] expected = original.toArray(Course[]::new);
+        Course[] output = courseTable.getItems().toArray(Course[]::new);
         assertArrayEquals(expected, output);
     }
 
     @Test
-    void update_invalid2() {
+    void modify_invalid() {
         refresh();
 
-        update("", "", "", -1, "18a", "");
+        modify("COMP5111", null, null);
 
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");
         clickOn(ok);
     }
 
-    void update(String username, String password, String name, int genderIndex, String ageText, String department) {
-        writeSetFields(username, password, name, genderIndex, ageText, department);
+    void modify(String courseID, String courseName, String department) {
+        writeSetFields(courseID, courseName, department);
 
-        Button updateBtn = find("#updateBtn");
-        clickOn(updateBtn);
+        Button modifyBtn = find("#modifyBtn");
+        clickOn(modifyBtn);
     }
 
     @Test
     void delete_valid1() {
         refresh();
-        TableView<Student> accountTable = find("#accountTable");
-        accountTable.getSelectionModel().select(0);
-        Node node = lookup("#usernameColumn").nth(0).query();
+        TableView<Course> courseTable = find("#courseTable");
+        courseTable.getSelectionModel().select(0);
+        Node node = lookup("#courseIDColumn").nth(0).query();
         clickOn(node);
 
-        ArrayList<Student> original = new ArrayList<>(accountTable.getItems());
+        ArrayList<Course> original = new ArrayList<>(courseTable.getItems());
         original.remove(0);
 
         delete();
 
-        Student[] expected = original.toArray(Student[]::new);
-        Student[] output = accountTable.getItems().toArray(Student[]::new);
+        Course[] expected = original.toArray(Course[]::new);
+        Course[] output = courseTable.getItems().toArray(Course[]::new);
         assertArrayEquals(expected, output);
     }
 
     @Test
     void delete_invalid1() {
         refresh();
-
         delete();
-
         verifyThat("OK", NodeMatchers.isVisible());
         Button ok = find("OK");
         clickOn(ok);
@@ -257,4 +229,161 @@ class CourseManagementControllerTest extends ApplicationTest implements FxRobotI
         clickOn(deleteBtn);
     }
 
+    @Test
+    void addStudent_valid() {
+        SystemDatabase.createCourse(new Course("COMP3111", "Software Engineering", "cse"));
+
+        Button refreshBtn = find("#refreshBtn");
+        clickOn(refreshBtn);
+
+        TableView<Course> courseTable = find("#courseTable");
+        courseTable.getSelectionModel().select(0);
+        Node node = lookup("#courseIDColumn").nth(0).query();
+        clickOn(node);
+
+        TableView<Student> notEnrollTable = find("#notEnrollTable");
+        TableView<Student> enrollTable = find("#enrollTable");
+
+        notEnrollTable.getSelectionModel().select(0);
+        node = lookup("#notEnrollStudentUsername").nth(0).query();
+        clickOn(node);
+
+        Student selected = notEnrollTable.getSelectionModel().getSelectedItem();
+        ArrayList<Student> originalNotEnroll = new ArrayList<Student>(notEnrollTable.getItems());
+        ArrayList<Student> originalEnroll = new ArrayList<Student>(enrollTable.getItems());
+        originalNotEnroll.remove(selected);
+        originalEnroll.add(selected);
+
+        Button addStudentBtn = find("#addStudentBtn");
+        clickOn(addStudentBtn);
+
+        Student[] expectEnroll = originalEnroll.toArray(Student[]::new);
+        Student[] expectNotEnroll = originalNotEnroll.toArray(Student[]::new);
+
+        Student[] outputEnroll = enrollTable.getItems().toArray(Student[]::new);
+        Student[] outputNotEnroll = notEnrollTable.getItems().toArray(Student[]::new);
+
+        assertArrayEquals(expectEnroll, outputEnroll);
+        assertArrayEquals(expectNotEnroll, outputNotEnroll);
+    }
+
+    @Test
+    void removeStudent_valid() {
+        refresh();
+
+        Course comp3111 = SystemDatabase.getCourse("COMP3111");
+        assertNotNull(comp3111);
+        comp3111.addStudent(SystemDatabase.getStudent("whwma"));
+
+        Button refreshBtn = find("#refreshBtn");
+        clickOn(refreshBtn);
+
+        TableView<Course> courseTable = find("#courseTable");
+        courseTable.getSelectionModel().select(0);
+        Node node = lookup("#courseIDColumn").nth(0).query();
+        clickOn(node);
+
+        TableView<Student> notEnrollTable = find("#notEnrollTable");
+        TableView<Student> enrollTable = find("#enrollTable");
+
+        enrollTable.getSelectionModel().select(0);
+        node = lookup("#enrollStudentUsername").nth(0).query();
+        clickOn(node);
+
+        Student selected = enrollTable.getSelectionModel().getSelectedItem();
+        ArrayList<Student> originalNotEnroll = new ArrayList<Student>(notEnrollTable.getItems());
+        ArrayList<Student> originalEnroll = new ArrayList<Student>(enrollTable.getItems());
+        originalNotEnroll.add(selected);
+        originalEnroll.remove(selected);
+
+        Button removeStudentBtn = find("#removeStudentBtn");
+        clickOn(removeStudentBtn);
+
+        Student[] expectEnroll = originalEnroll.toArray(Student[]::new);
+        Student[] expectNotEnroll = originalNotEnroll.toArray(Student[]::new);
+
+        Student[] outputEnroll = enrollTable.getItems().toArray(Student[]::new);
+        Student[] outputNotEnroll = notEnrollTable.getItems().toArray(Student[]::new);
+
+        assertArrayEquals(expectEnroll, outputEnroll);
+        assertArrayEquals(expectNotEnroll, outputNotEnroll);
+    }
+
+    @Test
+    void addStudent_invalid() {
+        refresh();
+
+        Button addStudentBtn = find("#addStudentBtn");
+        clickOn(addStudentBtn);
+
+        verifyThat("OK", NodeMatchers.isVisible());
+        Button ok = find("OK");
+        clickOn(ok);
+    }
+
+    @Test
+    void removeStudent_invalid() {
+        refresh();
+
+        Button removeStudentBtn = find("#removeStudentBtn");
+        clickOn(removeStudentBtn);
+
+        verifyThat("OK", NodeMatchers.isVisible());
+        Button ok = find("OK");
+        clickOn(ok);
+    }
+
+    @Test
+    void addTeacher() {
+        refresh();
+
+        Button refreshBtn = find("#refreshBtn");
+        clickOn(refreshBtn);
+
+        TableView<Course> courseTable = find("#courseTable");
+        courseTable.getSelectionModel().select(0);
+        Node node = lookup("#courseIDColumn").nth(0).query();
+        clickOn(node);
+
+        String courseID = courseTable.getSelectionModel().getSelectedItem().getCourseID();
+
+        TableView<Teacher> teacherTable = find("#teacherTable");
+        teacherTable.getSelectionModel().select(0);
+        node = lookup("#teacherUsername").nth(0).query();
+        clickOn(node);
+
+        Teacher selected = teacherTable.getSelectionModel().getSelectedItem();
+
+        Button modifyBtn = find("#modifyBtn");
+        clickOn(modifyBtn);
+
+        Course course = SystemDatabase.getCourse(courseID);
+        assertEquals(selected, course.getTeacher());
+    }
+
+    @Test
+    void removeTeacher() {
+        refresh();
+
+        Course comp3111 = SystemDatabase.getCourse("comp3111");
+        assertNotNull(comp3111);
+        comp3111.setTeacher(SystemDatabase.getTeacher("whwma"));
+
+        Button refreshBtn = find("#refreshBtn");
+        clickOn(refreshBtn);
+
+        TableView<Course> courseTable = find("#courseTable");
+        courseTable.getSelectionModel().select(0);
+        Node node = lookup("#courseIDColumn").nth(0).query();
+        clickOn(node);
+
+        Button removeTeacher = find("#removeTeacher");
+        clickOn(removeTeacher);
+
+        Button modifyBtn = find("#modifyBtn");
+        clickOn(modifyBtn);
+
+        comp3111 = SystemDatabase.getCourse("comp3111");
+        assertNull(comp3111.getTeacher());
+    }
 }

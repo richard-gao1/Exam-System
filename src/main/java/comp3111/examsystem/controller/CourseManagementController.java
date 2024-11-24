@@ -22,6 +22,12 @@ import java.util.stream.Collectors;
  */
 public class CourseManagementController implements Initializable {
     @FXML
+    private Button addStudentBtn;
+    @FXML
+    private Button modifyBtn;
+    @FXML
+    private Button addBtn;
+    @FXML
     private Button deleteBtn;
     @FXML
     private Button refreshBtn;
@@ -29,8 +35,6 @@ public class CourseManagementController implements Initializable {
     private Button filterBtn;
     @FXML
     private Button resetBtn;
-    @FXML
-    private Button addStduentBtn;
     @FXML
     private Button removeStudentBtn;
     @FXML
@@ -58,7 +62,7 @@ public class CourseManagementController implements Initializable {
     @FXML
     private TextField departmentSet;
     @FXML
-    private TableView accountTable;
+    private TableView courseTable;
     @FXML
     private TableColumn courseIDColumn;
     @FXML
@@ -71,7 +75,7 @@ public class CourseManagementController implements Initializable {
     private TextField courseNameFilter;
     @FXML
     private TextField departmentFilter;
-    private Course updating;
+    private Course updating = null;
     private boolean filtering = false;
 
     private ObservableList<Course> courseList = FXCollections.observableArrayList();
@@ -83,7 +87,7 @@ public class CourseManagementController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         refresh();
-        accountTable.setItems(courseList);
+        courseTable.setItems(courseList);
         courseIDColumn.setCellValueFactory(new PropertyValueFactory<>("courseID"));
         courseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         departmentColumn.setCellValueFactory(new PropertyValueFactory<>("department"));
@@ -180,7 +184,7 @@ public class CourseManagementController implements Initializable {
         String department = departmentSet.getText();
         Course course = (existing) ?
                 updating.update(courseID, name, department) :
-                new Course(courseID, name, department, new ArrayList<>(), new ArrayList<>());
+                new Course(courseID, name, department);
         Teacher teacher = (Teacher) teacherTable.getSelectionModel().getSelectedItem();
         course.setTeacher(teacher);
         course.addStudents(enrollList);
@@ -237,8 +241,9 @@ public class CourseManagementController implements Initializable {
         if (updating == null) {
             // no course is selected
             Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
-            alert.setTitle("Update Error");
+            alert.setTitle("Delete Error");
             alert.setHeaderText("No course is selected.");
+            alert.show();
         } else {
             String courseID = updating.getCourseID();
             SystemDatabase.modifyCourse(null, courseID);
@@ -253,23 +258,25 @@ public class CourseManagementController implements Initializable {
      * @param mouseEvent The MouseEvent associated with the selection action.
      */
     public void selected(MouseEvent mouseEvent) {
-        Course selectedItem = (Course) accountTable.getSelectionModel().getSelectedItem();
-        if (selectedItem != null && selectedItem != updating) {
+        Course selectedItem = (Course) courseTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != updating) {
             updating = selectedItem;
-            courseIDSet.setText(updating.getCourseID());
-            courseNameSet.setText(updating.getCourseName());
-            departmentSet.setText(updating.getDepartment());
-            Teacher teacher = updating.getTeacher();
-            if (teacherList.contains(teacher)) {
-                teacherTable.getSelectionModel().select(teacher);
+            if (updating != null) {
+                courseIDSet.setText(updating.getCourseID());
+                courseNameSet.setText(updating.getCourseName());
+                departmentSet.setText(updating.getDepartment());
+                Teacher teacher = updating.getTeacher();
+                if (teacherList.contains(teacher)) {
+                    teacherTable.getSelectionModel().select(teacher);
+                }
+                enrollList.clear();
+                enrollList.addAll(updating.getStudents());
+                notEnrollList.removeAll(updating.getStudents());
+            } else {
+                resetSetFields();
+                resetStudentList();
             }
-            enrollList.clear();
-            enrollList.addAll(updating.getStudents());
-            notEnrollList.removeAll(updating.getStudents());
-        } 
-        if (selectedItem == null) {
-            resetSetFields();
-            resetStudentList();
+
         }
     }
 
@@ -332,8 +339,12 @@ public class CourseManagementController implements Initializable {
      */
     public void addStudent(ActionEvent actionEvent) {
         Student student = (Student) notEnrollTable.getSelectionModel().getSelectedItem();
-        if (student == null) return;
-        enrollList.add(student);
+        if (student == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Add Student Error");
+            alert.setHeaderText("No student is selected.");
+            alert.show();
+        }        enrollList.add(student);
         notEnrollList.remove(student);
     }
 
@@ -344,7 +355,12 @@ public class CourseManagementController implements Initializable {
      */
     public void removeStudent(ActionEvent actionEvent) {
         Student student = (Student) enrollTable.getSelectionModel().getSelectedItem();
-        if (student == null) return;
+        if (student == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);
+            alert.setTitle("Remove Student Error");
+            alert.setHeaderText("No student is selected.");
+            alert.show();
+        }
         notEnrollList.add(student);
         enrollList.remove(student);
     }
