@@ -276,12 +276,14 @@ public class Course {
     }
 
     /**
-     * Updates an existing exam within the course. If the new Exam object is provided,
-     * it replaces the old one with the same name and may change the associated course.
+     * Updates an existing exam with the specified details.
      *
-     * @param examName The name of the exam to be updated.
-     * @param exam     The new Exam object that will replace the existing one, or null if updating
-    without a new instance.
+     * @param oldExamName The current name of the exam to be updated.
+     * @param examName The new name for the exam.
+     * @param course The course associated with the exam.
+     * @param isPublished A boolean indicating whether the exam is published or not.
+     * @param duration The duration of the exam in minutes.
+     * @param questions An ArrayList containing the questions for the exam.
      */
     public void updateExam(String oldExamName, String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         for (Exam exam : exams) {
@@ -306,7 +308,6 @@ public class Course {
             }
         }
         dropExam(examName); // Drop original
-        exam.getCourse().addExam(exam); // Can change the course bound to the exam
     }
 
     /**
@@ -413,5 +414,20 @@ public class Course {
 
             }
         }
+    }
+
+    /**
+     * Update the student grading of the course
+     *
+     * @param exam the exam grade to update
+     */
+    public void updateGrade(Exam exam) {
+        for (int i=0;i<exams.size();i++) {
+            Exam e = exams.get(i);
+            if (Objects.equals(e.getExamName(), exam.getExamName())) {
+                exams.set(i, exam);
+            }
+        }
+        SystemDatabase.modifyCourse(this, courseID);
     }
 }

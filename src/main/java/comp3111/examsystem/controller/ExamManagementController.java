@@ -397,7 +397,7 @@ public class ExamManagementController implements Initializable {
 
     /**
      * Adds a selected question from the questionTable to the examQuestionTable.
-     * 
+     *
      * Select question logic
      * If no exam is selected, questionList should load the full list of the teacher's question bank.
      * If an exam is selected, examList will display the question it has
@@ -483,21 +483,20 @@ public class ExamManagementController implements Initializable {
 
     private void updateQuestionLists(Exam selectedExam) {
         questionList.setAll(currentTeacher.getQuestionBank());
-        if (selectedExam != null){
+        if (selectedExam != null) {
             // Update examQuestionTable with questions in the selected exam
             examQuestionList.setAll(selectedExam.getQuestions());
             // Update questionTable to exclude questions already in the selected exam
             tempQuestionList.setAll(currentTeacher.getQuestionBank());
             questionList.setAll(tempQuestionList.filtered(question -> {
                 for (Question q : examQuestionList) {
-                    if (question.equals(q)){
+                    if (question.equals(q)) {
                         return false;
                     }
                 }
                 return true;
             }));
-        }
-        else{
+        } else {
             examQuestionList.clear();
         }
     }

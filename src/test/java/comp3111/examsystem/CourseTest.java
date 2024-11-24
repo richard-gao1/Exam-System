@@ -24,7 +24,7 @@ class CourseTest {
     void setName() {
         Course c = new Course("COMP3111", "software engineering","COMP");
         c.setName("Software Engineering");
-        assertEquals(c.getCourseID(), "Software Engineering");
+        assertEquals(c.getCourseName(), "Software Engineering");
     }
 
     @Test

@@ -221,7 +221,11 @@ public class Exam {
                 }
             }
             this.courseID = course.getCourseID(); // Change: Store courseID
-            course.addExam(this);
+            boolean haveExam = false;
+            for (Exam e : course.getExams()) {
+                haveExam = haveExam | Objects.equals(e.getExamName(), this.getExamName());
+            }
+            if (!haveExam) course.addExam(this);
         }
     }
 

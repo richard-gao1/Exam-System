@@ -44,7 +44,7 @@ class TeacherTest {
 
     @Test
     void testAddCourse() {
-        Course newCourse = new Course("DBMS","COMP3311", "CSE");
+        Course newCourse = new Course("COMP3311","DBMS", "CSE");
         teacher.addCourse(newCourse);
 
         assertTrue(teacher.getCourses().contains(newCourse), "The course should be added to the teacher's course list.");

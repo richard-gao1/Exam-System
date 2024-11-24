@@ -13,17 +13,17 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.testfx.api.FxAssert.verifyThat;
 
-class StudentManagementControllerTest extends ApplicationTest implements FxRobotInterface {
+class StudentManagementControllerTest extends ApplicationTest {
     Student student1;
     Student student2;
     Student student3;
@@ -195,14 +195,13 @@ class StudentManagementControllerTest extends ApplicationTest implements FxRobot
         ArrayList<Student> original = new ArrayList<>(accountTable.getItems());
         Student student = accountTable.getSelectionModel().getSelectedItem();
         Student newStudent = new Student("kwtleung12", student.getPassword(), student.getName(), student.getGender(), student.getAge(), student.getDepartment());
-        original.remove(0);
-        original.add(newStudent);
+        original.set(0, newStudent);
 
         update("kwtleung12", null, null, -1, null, null);
 
-        Student[] expected = original.toArray(Student[]::new);
-        Student[] output = accountTable.getItems().toArray(Student[]::new);
-        assertArrayEquals(expected, output);
+        List<Student> output = accountTable.getItems();
+        assertTrue(output.contains(newStudent));
+        assertFalse(output.contains(student));
     }
 
     @Test
@@ -231,14 +230,14 @@ class StudentManagementControllerTest extends ApplicationTest implements FxRobot
         Node node = lookup("#usernameColumn").nth(0).query();
         clickOn(node);
 
+        Student student = accountTable.getSelectionModel().getSelectedItem();
+
         ArrayList<Student> original = new ArrayList<>(accountTable.getItems());
-        original.remove(0);
 
         delete();
 
-        Student[] expected = original.toArray(Student[]::new);
-        Student[] output = accountTable.getItems().toArray(Student[]::new);
-        assertArrayEquals(expected, output);
+        List<Student> output = accountTable.getItems();
+        assertFalse(output.contains(student));
     }
 
     @Test

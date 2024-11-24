@@ -76,8 +76,8 @@ class TeacherManagementControllerTest extends ApplicationTest implements FxRobot
     @Test
     void query1() {
         String usernameFilter = "whwma";
-        String nameFilter = null;
-        String departmentFilter = null;
+        String nameFilter = "";
+        String departmentFilter = "";
         Teacher[] expected = SystemDatabase.getTeacherList(usernameFilter, nameFilter, departmentFilter).toArray(Teacher[]::new);
 
         writeTextField("#usernameFilter", usernameFilter);
