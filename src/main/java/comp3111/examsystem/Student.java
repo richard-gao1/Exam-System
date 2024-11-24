@@ -66,6 +66,17 @@ public class Student extends User {
         }
     }
 
+    public ArrayList<Exam> getExams(){
+        ArrayList<Exam> examArrayList = new ArrayList<>();
+        for (String courseID : courseIDs){
+            Course course = SystemDatabase.getCourse(courseID);
+            if (course != null){
+                examArrayList.addAll(course.getExams());
+            }
+        }
+        return examArrayList;
+    }
+
     @Override
     public boolean equals(Object other) {
         return super.equals(other);
