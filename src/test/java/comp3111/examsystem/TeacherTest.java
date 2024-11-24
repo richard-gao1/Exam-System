@@ -47,7 +47,7 @@ class TeacherTest {
         Course newCourse = new Course("COMP3311","DBMS", "CSE");
         teacher.addCourse(newCourse);
 
-        assertTrue(teacher.getCourses().contains(newCourse), "The course should be added to the teacher's course list.");
+        assertTrue(teacher.getCourses().contains(SystemDatabase.getCourse("COMP3111")), "The course should be added to the teacher's course list.");
     }
 
     @Test
@@ -64,9 +64,27 @@ class TeacherTest {
     }
 
     @Test
+    void testCreatenullExam(){
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, ()->teacher.createExam("midterm","COMP3311",false,10,new ArrayList<>()));
+        assertEquals(thrown.getMessage(),"No such course");
+    }
+
+    @Test
+    void testCreateExamNotAuth(){
+        Course c = new Course("COMP3311","DBMS","CSE");
+        SystemDatabase.createCourse(c);
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, ()->teacher.createExam("midterm","COMP3311",false,10,new ArrayList<>()));
+        assertEquals(thrown.getMessage(),"You are not permitted to manage this course. Please contact administrator.");
+    }
+
+
+    @Test
     void testUpdateExam() {
-
-
+        Course c = new Course("COMP3311","DBMS","CSE",teacher);
+        SystemDatabase.createCourse(c);
+        teacher.updateExam("Midterm",course,"Final","COMP3311",true,1000,exam.getQuestions());
+        assertTrue(course.getExams().isEmpty());
+        assertFalse(SystemDatabase.getCourse("COMP3311").getExams().isEmpty());
     }
 
     @Test
@@ -113,8 +131,14 @@ class TeacherTest {
     }
 
 
+
     @Test
     void update() {
+        teacher.update("wktangaf","1234","Kenny",Gender.list[0],18,"CSE","TA");
+        assertEquals(teacher.getUsername(),"wktangaf");
+        assertEquals(teacher.getDepartment(),"CSE");
+        assertTrue(teacher.getCourses().contains(SystemDatabase.getCourse("COMP3111")));
+        assertTrue(teacher.getCourseID().contains("COMP3111"));
     }
 
     @Test
@@ -148,11 +172,37 @@ class TeacherTest {
 
     @Test
     void addExam() {
+        Exam e = new Exam("Final",(Course) null,true,10);
+        teacher.addExam(e,"COMP3111");
+        assertTrue(SystemDatabase.getCourse("COMP3111").getExams().contains(e));
+    }
+
+    @Test
+    void adddupExam() {
+        Exam e = new Exam("Midterm",(Course) null,true,10);
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, ()->teacher.addExam(e,"COMP3111"));
+        assertEquals(thrown.getMessage(), "Already have an exam with the same name.");
     }
 
     @Test
     void deleteExam() {
+        teacher.deleteExam(exam,course);
+        assertTrue(course.getExams().isEmpty());
     }
+
+    @Test
+    void deletenoneExam() {
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, ()->teacher.deleteExam(exam,null));
+        assertEquals(thrown.getMessage(), "No such course");
+    }
+
+    @Test
+    void deleteExamNotAuth() {
+        Course c = new Course("COMP3311","DBMS","CSE");
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, ()->teacher.deleteExam(exam,c));
+        assertEquals(thrown.getMessage(), "You are not permitted to manage this course. Please contact administrator.");
+    }
+
 
     @Test
     void updateExam() {
@@ -172,6 +222,14 @@ class TeacherTest {
 
     @Test
     void createQuestion() {
+        teacher.createQuestion("tes", new String[]{"a","b","c","f"},"AC",10,1);
+        assertTrue(teacher.getQuestionBank().size()==2);
+    }
+
+    @Test
+    void createExistingQuestion() {
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, ()->teacher.createQuestion(question));
+        assertEquals(thrown.getMessage(), "This question already existed.");
     }
 
 
@@ -184,23 +242,45 @@ class TeacherTest {
     }
 
     @Test
-    void getQuestionBank() {
-    }
-
-    @Test
-    void viewStudent() {
-    }
-
-    @Test
-    void viewStudentAnswer() {
-    }
-
-    @Test
-    void gradeStudentAnswer() {
-    }
-
-    @Test
     void updateQuestion() {
+        for (Question q: teacher.getCourses().getFirst().getExams().getFirst().getQuestions()){
+            System.out.println(q.toString());
+        }
+        //assertTrue(teacher.getCourses().getFirst().getExams().getFirst().getQuestions().contains(question), "teacher.getCourses().getFirst().getExams().getFirst().getQuestions().getFirst().getContent()");
+        teacher.updateQuestion(question, "What is 2+3?", new String[]{"1", "2", "3", "5"}, "D", 0, 0);
+        assertEquals(question.getContent(),"What is 2+3?" );
+        for (Question q: teacher.getCourses().getFirst().getExams().getFirst().getQuestions()){
+            System.out.println(q.toString());
+        }
+        assertFalse(teacher.getQuestionBank().getFirst().getContent().equals("What is 2+2?"), "The old question should be removed from the teacher's question bank.");
+
+        assertTrue(teacher.getCourses().getFirst().getExams().getFirst().getQuestions().contains(question), teacher.getCourses().getFirst().getExams().getFirst().getQuestions().getFirst().getContent());
+    }
+
+    @Test
+    void updateQuestionfail() {
+        for (Question q: teacher.getCourses().getFirst().getExams().getFirst().getQuestions()){
+            System.out.println(q.toString());
+        }
+        //assertTrue(teacher.getCourses().getFirst().getExams().getFirst().getQuestions().contains(question), "teacher.getCourses().getFirst().getExams().getFirst().getQuestions().getFirst().getContent()");
+        assertThrows(IllegalArgumentException.class,()->teacher.updateQuestion(question, "What is 2+3?", new String[]{"1", "2", "3", "5"}, "AD", 0, 0));
+
+    }
+
+    @Test
+    void updateQuestionMultiple() {
+        for (Question q: teacher.getCourses().getFirst().getExams().getFirst().getQuestions()){
+            System.out.println(q.toString());
+        }
+        //assertTrue(teacher.getCourses().getFirst().getExams().getFirst().getQuestions().contains(question), "teacher.getCourses().getFirst().getExams().getFirst().getQuestions().getFirst().getContent()");
+        teacher.updateQuestion(question, "What is 2+3?", new String[]{"1", "2", "3", "5"}, "AD", 0, 1);
+        assertEquals(question.getContent(),"What is 2+3?" );
+        for (Question q: teacher.getCourses().getFirst().getExams().getFirst().getQuestions()){
+            System.out.println(q.toString());
+        }
+        assertFalse(teacher.getQuestionBank().getFirst().getContent().equals("What is 2+2?"), "The old question should be removed from the teacher's question bank.");
+
+        assertTrue(teacher.getCourses().getFirst().getExams().getFirst().getQuestions().contains(question), teacher.getCourses().getFirst().getExams().getFirst().getQuestions().getFirst().getContent());
     }
 
 }

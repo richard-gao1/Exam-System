@@ -1,5 +1,6 @@
 package comp3111.examsystem.controller;
 
+import comp3111.examsystem.Position;
 import comp3111.examsystem.Student;
 import comp3111.examsystem.Teacher;
 import comp3111.examsystem.SystemDatabase;
@@ -64,7 +65,7 @@ public class RegisterController implements Initializable {
         positionRow.setPrefHeight(30);
         positionLabel.setVisible(true);
         positionChoice.setVisible(true);
-        positionChoice.getItems().addAll("Chair Professor","Professor", "Associate Professor", "Assistant Professor","Senior Lecturer","Lecturer");
+        positionChoice.getItems().addAll(Position.list);
         isTeacher = true;
     }
 

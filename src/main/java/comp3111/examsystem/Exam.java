@@ -69,7 +69,7 @@ public class Exam {
      * @param questions  An ArrayList containing the Question objects included in this exam.
      */
     public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
-        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
+        this(examName, (Course) SystemDatabase.getCourse(courseID), isPublished, duration);
         if (questions != null) {
             this.questions.addAll(questions);
         }
@@ -85,7 +85,7 @@ public class Exam {
      * @param duration   The duration of the exam in minutes.
      */
     public Exam(String examName, String courseID, boolean isPublished, int duration) {
-        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
+        this(examName, (Course) SystemDatabase.getCourse(courseID), isPublished, duration);
     }
 
     /**
@@ -226,6 +226,7 @@ public class Exam {
                 haveExam = haveExam | Objects.equals(e.getExamName(), this.getExamName());
             }
             if (!haveExam) course.addExam(this);
+            else throw new IllegalArgumentException("Already have an exam with the same name.");
         }
     }
 
@@ -284,10 +285,11 @@ public class Exam {
         if (questions.contains(question)){
             Question q = questions.get(questions.indexOf(question));
             q.setScore(score);
+            q.setTypeChoice(type);
             q.setAnswer(answer);
             q.setOptions(options);
             q.setContent(content);
-            q.setTypeChoice(type);
+
             return true;
         }
         return false;
