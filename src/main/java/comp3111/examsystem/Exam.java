@@ -69,8 +69,9 @@ public class Exam {
      * @param questions  An ArrayList containing the Question objects included in this exam.
      */
     public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
-        this(examName, (Course) SystemDatabase.getCourse(courseID), isPublished, duration);
+        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
         if (questions != null) {
+            System.out.println(questions.toString());
             this.questions.addAll(questions);
         }
     }
