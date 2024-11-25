@@ -3,6 +3,8 @@ package comp3111.examsystem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExamTest {
@@ -131,6 +133,10 @@ class ExamTest {
 
     @Test
     void grade() {
+        ArrayList<Integer> ans = new ArrayList<>();
+        ans.add(8);
+        int mark = exam.grade(ans);
+        assertEquals(mark,exam.getQuestions().getFirst().getScore());
     }
 
     @Test

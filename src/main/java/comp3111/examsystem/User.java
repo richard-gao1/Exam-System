@@ -67,7 +67,7 @@ public abstract class User extends Account {
      * @param name The new name to set for the user.
      */
     public void setName(String name) {
-        if (name.isEmpty()) {
+        if (!name.isEmpty()) {
             this.name = name;
         } else {
             throw new IllegalArgumentException("Name cannot be empty");
