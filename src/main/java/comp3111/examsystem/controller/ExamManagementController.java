@@ -261,6 +261,7 @@ public class ExamManagementController implements Initializable {
         updateQuestionLists(selectedExam);
         refreshQuestion();
     }
+    // TODO: After filtering, add question to an exam will cause the question disappear, but still can add the course.
 
     /**
      * Applies question filters and updates the question tables accordingly.

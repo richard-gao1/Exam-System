@@ -208,10 +208,11 @@ public class Exam {
     }
 
     /**
-     * Sets a new course for the exam. If there was an existing course associated with
-     * this exam, it removes the exam from that course before setting the new one.
+     * Sets a new course for this teacher and updates the related exams.
      *
-     * @param course The new Course object to be set for the exam.
+     * @param course The Course object to be set for the teacher.
+     * @throws IllegalArgumentException If the course already has an exam with the same name
+    as this teacher's exam.
      */
     public void setCourse(Course course) {
         if (course != null) {

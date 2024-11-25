@@ -36,7 +36,7 @@ public class StudentGradeStatisticController implements Initializable {
     private TableColumn<Grade, String> courseColumn;
 
     @FXML
-    private ChoiceBox<String> courseCombox;
+    private ChoiceBox<?> courseCombox;
 
     @FXML
     private TableColumn<Grade, String> examColumn;
@@ -96,9 +96,16 @@ public class StudentGradeStatisticController implements Initializable {
         categoryAxisBar.setLabel("Exam");
         numberAxisBar.setLabel("Score");
 
-        gradeTable.setItems(displayGradeList);
-        courseCombox.setItems(courseList);
-
+//        gradeList.add(new Grade(
+//                "student",
+//                "comp3111",
+//                "final",
+//                100,
+//                100,
+//                60
+//        ));
+        gradeTable.setItems(gradeList);
+//        studentColumn.setCellValueFactory(new PropertyValueFactory<>("studentName"));
         courseColumn.setCellValueFactory(new PropertyValueFactory<>("courseNum"));
         examColumn.setCellValueFactory(new PropertyValueFactory<>("examName"));
         scoreColumn.setCellValueFactory(new PropertyValueFactory<>("score"));
@@ -109,9 +116,21 @@ public class StudentGradeStatisticController implements Initializable {
         loadChart();
     }
 
+    /**
+     * Refreshes the UI components and data displayed in the student grade statistic view.
+     */
+    @FXML
+    public void refresh() {
+    }
+
+    /**
+     * Loads the chart data and updates the bar chart with student grades.
+     */
     private void loadChart() {
+        XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();
+
+        seriesBar.getData().clear();
         barChart.getData().clear();
-        barChart.setAnimated(false);
         barChart.getData().add(seriesBar);
 
     }
@@ -122,11 +141,11 @@ public class StudentGradeStatisticController implements Initializable {
     private void loadChoices() {
         courseList.clear();
         courseList.add("");
-        Set<String> courseIDs = new HashSet<>(student.getCourseIDs());
+        Set<String> courseIDs = by_course.keySet();
         for (String courseID : courseIDs) {
             Course course = SystemDatabase.getCourse(courseID);
             if (course == null) courseList.add(courseID);
-            else courseList.add(course.getCourseID() + ": " + course.getCourseName());
+            else courseList.add(course.getCourseID() + " " + course.getCourseName());
         }
 
         examList.clear();
@@ -139,23 +158,46 @@ public class StudentGradeStatisticController implements Initializable {
      */
     private void loadData() {
         gradeList.clear();
+        /*
+        gradeList.add(new Grade(
+                "student",
+                "comp3111",
+                "final",
+                100,
+                100,
+                60
+        ));
+        gradeList.add(new Grade(
+                "student2",
+                "comp3211",
+                "midterm",
+                70,
+                100,
+                60
+        ));
+         */
         ArrayList<Exam> exams = new ArrayList<>();
         if (student != null) exams = student.getExams();
+        System.out.println(exams);
         for (Exam exam : exams) {
-            Grade grade = exam.getStudentGrades().get(this.student.getUsername());
-            if (grade != null) {
-                gradeList.add(grade);
-            }
+            gradeList.add(exam.getStudentGrades().get(student));
         }
+        System.out.println(gradeList);
 
-        updateHashMaps();
+        updateHashMaps(false);
     }
 
-    private void updateHashMaps() {
+    /**
+     * Updates the hash maps with student grades data, either filtered or from the full list.
+     *
+     * @param filtered Indicates whether to use the filtered grade list or the full grade
+    list.
+     */
+    private void updateHashMaps(boolean filtered) {
         by_course.clear();
         by_exam.clear();
 
-        if (hasFilter) {
+        if (filtered) {
             displayGradeList.forEach((grade) -> {
                 by_course.put(grade.getCourseNum(), grade.getScore());
                 by_exam.put(grade.getExamName(), grade.getScore());
@@ -167,34 +209,36 @@ public class StudentGradeStatisticController implements Initializable {
             });
         }
     }
+
     /**
      * Updates the filtered list of grades based on selected course filter.
      */
-    private void updateFilter(String courseFilter) {
+    private void updateFilter() {
         displayGradeList.clear();
         if (!hasFilter) {
-            this.courseFilter = "";
             displayGradeList.addAll(gradeList);
             return;
         }
-        this.courseFilter = courseFilter;
+        courseFilter = removeNull((String)courseCombox.getSelectionModel().getSelectedItem());
 
         ArrayList<Grade> filteredGradeList = gradeList.stream().filter(
                 g -> ((courseFilter.isEmpty() || Objects.equals(courseFilter, g.getCourseNum())))
         ).collect(Collectors.toCollection(ArrayList::new));
 
         displayGradeList.addAll(filteredGradeList);
-        updateHashMaps();
+        updateHashMaps(true);
     }
 
     /**
      * Updates the bar chart with data from the `by_course` hash map.
      */
     private void updateChart() {
+        XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();
+
         seriesBar.getData().clear();
 
-        by_exam.forEach((exam, score) -> {
-            seriesBar.getData().add(new XYChart.Data<>(exam, score));
+        by_course.forEach((course, score) -> {
+            seriesBar.getData().add(new XYChart.Data<>(course, score));
         });
     }
 
@@ -205,9 +249,7 @@ public class StudentGradeStatisticController implements Initializable {
      */
     @FXML
     void query(ActionEvent event) {
-        hasFilter = true;
-        updateFilter(removeNull((String)courseCombox.getSelectionModel().getSelectedItem()).split(":")[0]);
-        updateChart();
+
     }
 
     /**
@@ -217,10 +259,10 @@ public class StudentGradeStatisticController implements Initializable {
      * @param event The action event that triggered this method.
      */
     @FXML
-    void refresh() { //ActionEvent event) {
+    void refresh(ActionEvent event) {
         loadData();
         loadChoices();
-        updateFilter(courseFilter);
+        updateFilter();
         updateChart();
     }
 
@@ -231,8 +273,7 @@ public class StudentGradeStatisticController implements Initializable {
      */
     @FXML
     void reset(ActionEvent event) {
-        hasFilter = false;
-        refresh();
+
     }
 
 }

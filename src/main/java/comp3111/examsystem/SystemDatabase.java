@@ -510,22 +510,11 @@ public class SystemDatabase {
      *
      * @param course The Course object containing the information to be written.
      */
-    private static void  writeCourseFile(Course course) {
+    private static void writeCourseFile(Course course) {
         if (course == null) return;
         String courseID = course.getCourseID();
         String filepath = "data/course/" + courseID + data_filetype;
         String text = new Gson().toJson(course);
-        File file = new File(filepath);
-        if(file.delete()){
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }else{
-            //throw an exception indicating that the file could not be cleared
-        }
-
         writeJson(filepath, text);
         ArrayList<String> courseID_array = getCourseIDArray();
         courseID_array = addToList(courseID, courseID_array);
@@ -539,7 +528,6 @@ public class SystemDatabase {
      * @param old_username The original username of the student to be updated.
      */
     public static void updateStudent(Student newStudent, String old_username) {
-        if (getStudent(old_username) == null) return;
         changeStudentUsername(newStudent, old_username);
         writeStudentFile(newStudent);
     }
@@ -560,7 +548,6 @@ public class SystemDatabase {
      * @param old_username The original username of the teacher to be updated.
      */
     public static void updateTeacher(Teacher newTeacher, String old_username) {
-        if (getTeacher(old_username) == null) return;
         changeTeacherUsername(newTeacher, old_username);
         writeTeacherFile(newTeacher);
     }
@@ -782,10 +769,11 @@ public class SystemDatabase {
     public static String createCourse(Course course) {
         String courseID = course.getCourseID();
         if (getCourse(courseID) != null) {
-            // course with this course ID already exists
             return "Course ID " + courseID + " already exist";
         }
         writeCourseFile(course);
         return "";
     }
+
+
 }

@@ -238,7 +238,10 @@ public class Teacher extends User {
     public void updateExam(String oldExamName, Course oldCourse, String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
         if (course != null) {
             if (course.getTeacher().equals(this)) {
+                // Case 1: course is the same
+                //if (course.getCourseID().equals(oldCourse.getCourseID()))
                     oldCourse.updateExam(oldExamName,  examName,  course,  isPublished,  duration, questions);
+                // Case 2: need to update the course as well
             } else {
                 throw new IllegalArgumentException("Not allowed to access this course");
             }
