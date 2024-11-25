@@ -366,9 +366,39 @@ public class Teacher extends User {
         return questionBank;
     }
 
+    public void viewStudent() {
+        // TODO: implement
+    }
 
+    public void viewStudentAnswer() {
+        // TODO: implement
+    }
+
+    public void gradeStudentAnswer() {
+        // TODO: implement
+    }
+
+    /**
+     * Updates the details of an existing question in the teacher's question bank.
+     *
+     * @param question The Question object to be updated.
+     * @param content  The new content for the question.
+     * @param options  An array of strings representing the new answer choices.
+     * @param answer   The new correct answer to the question.
+     * @param score    The new score assigned to this question.
+     * @param type     The new type of the question as integer (0 - Single, 1 - Multiple).
+     */
     public void updateQuestion(Question question, String content, String[] options, String answer, int score, int type) {
-        updateQuestion( question,  content,  options,  answer,  score,  (type==0 ?"Single":"Multiple"));
+        ArrayList<Exam> examList = new ArrayList<>();
+        for (Course course: getCourses()){
+            course.updateExamQuestions(question,  content,  options,  answer,  score,  (type ==0?"Single":"Multiple"));
+        }
+        question.setContent(content);
+        question.setOptions(options);
+        question.setTypeChoice(type);
+        question.setAnswer(answer);
+        question.setScore(score);
+        SystemDatabase.updateTeacher(this);
     }
 
     /**
