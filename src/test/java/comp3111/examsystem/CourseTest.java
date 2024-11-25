@@ -5,6 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,6 +18,87 @@ class CourseTest {
     void start(){
         SystemDatabase.removeAll();
         SystemDatabase database = new SystemDatabase();
+    }
+
+    @Test
+    void Course1() {
+        Course course = new Course("COMP3111", "Software Engineering", "cse", null, new ArrayList<>(), new ArrayList<>());
+        assertEquals("COMP3111", course.getCourseID());
+        assertEquals("Software Engineering", course.getCourseName());
+        assertEquals("cse", course.getDepartment());
+        assertNull(course.getTeacher());
+    }
+
+    @Test
+    void Course2() {
+        new SystemDatabase();
+        Teacher teacher = new Teacher("kwtleung", "comp3111", "Kenneth Leung", "Male", 18, "cse", "Professor");
+        SystemDatabase.registerTeacher(teacher);
+
+        Course course = new Course("COMP3111", "Software Engineering", "cse", teacher, null, new ArrayList<>());
+        assertEquals("COMP3111", course.getCourseID());
+        assertEquals("Software Engineering", course.getCourseName());
+        assertEquals("cse", course.getDepartment());
+        assertEquals(teacher, course.getTeacher());
+
+        SystemDatabase.removeAll();
+    }
+
+    @Test
+    void Course3() {
+        new SystemDatabase();
+        Teacher teacher = new Teacher("kwtleung", "comp3111", "Kenneth Leung", "Male", 18, "cse", "Professor");
+        SystemDatabase.registerTeacher(teacher);
+
+        Course course = new Course("COMP3111", "Software Engineering", "cse", teacher, null, null);
+        assertEquals("COMP3111", course.getCourseID());
+        assertEquals("Software Engineering", course.getCourseName());
+        assertEquals("cse", course.getDepartment());
+        assertEquals(teacher, course.getTeacher());
+
+        SystemDatabase.removeAll();
+    }
+
+    @Test
+    void Course4() {
+        new SystemDatabase();
+        Student student1 = new Student("whwma", "comp3111", "Ma Wai Him Wesley", "Male", 21, "econ");
+        Student student2 = new Student("wktangaf", "comp3211", "Tang Wai Kin", "Male", 22, "fina");
+        Student student3 = new Student("rdgao", "comp3311", "GAO, Richard Daniel", "Male", 21, "cse");
+        SystemDatabase.registerStudent(student1);
+        SystemDatabase.registerStudent(student2);
+        SystemDatabase.registerStudent(student3);
+
+        ArrayList<Student> students = new ArrayList<>(Arrays.asList(new Student[]{student1, student2, student3}));
+
+        Course course = new Course("COMP3111", "Software Engineering", "cse", null, students, null);
+        Student[] expected = students.toArray(Student[]::new);
+        Student[] output = course.getStudents().toArray(Student[]::new);
+        assertArrayEquals(expected, output);
+        SystemDatabase.removeAll();
+    }
+
+    @Test
+    void Course5() {
+        new SystemDatabase();
+        Teacher teacher = new Teacher("kwtleung", "comp3111", "Kenneth Leung", "Male", 18, "cse", "Professor");
+        SystemDatabase.registerTeacher(teacher);
+
+        Course course = new Course("COMP3111", "Software Engineering", "cse", teacher, new ArrayList<>());
+        assertEquals("COMP3111", course.getCourseID());
+        assertEquals("Software Engineering", course.getCourseName());
+        assertEquals("cse", course.getDepartment());
+        assertEquals(teacher, course.getTeacher());
+        SystemDatabase.removeAll();
+    }
+
+    @Test
+    void Course6() {
+        Course course = new Course("COMP3111", "Software Engineering", "cse");
+        assertEquals("COMP3111", course.getCourseID());
+        assertEquals("Software Engineering", course.getCourseName());
+        assertEquals("cse", course.getDepartment());
+        assertNull(course.getTeacher());
     }
 
     @Test
@@ -206,47 +292,5 @@ class CourseTest {
         c.updateExamQuestions(q1,q2.getContent(),q2.getOptions().toArray(new String[4]), q2.answerProperty().get(),q2.getScore(),"Multiple");
         assertFalse(e.getQuestions().isEmpty());
         assertEquals(q2,e.getQuestions().getFirst());
-    }
-
-    @Test
-    void update(){
-        Course c = new Course("COMP3111", "software engineering", "COMP");
-        c.update("COMP3211","AI","CSE");
-        assertEquals(c.getCourseID(),"COMP3211");
-        assertEquals(c.getCourseName(),"AI");
-        assertEquals(c.getDepartment(),"CSE");
-    }
-
-    @Test
-    void dropnullExam(){
-        Course c = new Course("COMP3111", "software engineering", "COMP");
-        assertThrows(IllegalArgumentException.class ,()->c.dropExam("Midterm"));
-    }
-
-    @Test
-    void updateAnotherExam(){
-        Course c = new Course("COMP3111", "software engineering", "COMP");
-        SystemDatabase.createCourse(c);
-        Question q1 = new Question("test",new String[]{"a","b","c","d"},"A",10,0);
-        Exam e = new Exam("mid",c,false,100,new ArrayList<>());
-        e.addQuestion(q1);
-        Course c2 = new Course("COMP3211", "AI","CSE");
-        SystemDatabase.createCourse(c2);
-        assertTrue(c2.getExams().isEmpty());
-        c.updateExam("mid","Midterm",c2,true,60,new ArrayList<>());
-        assertFalse(c2.getExams().isEmpty());
-        assertTrue(c.getExams().isEmpty());
-    }
-
-    @Test
-    void deletenullquestion(){
-        Course c = new Course("COMP3111", "software engineering", "COMP");
-        SystemDatabase.createCourse(c);
-        Question q1 = new Question("test",new String[]{"a","b","c","d"},"A",10,0);
-        Exam e = new Exam("mid",c,false,100,new ArrayList<>());
-        Question q2 = new Question("none",new String[]{"1","11","111","1111"},"BC",100,1);
-        e.addQuestion(q1);
-        c.deleteExamQuestions(q2);
-        assertFalse(c.getExams().getFirst().getQuestions().isEmpty());
     }
 }

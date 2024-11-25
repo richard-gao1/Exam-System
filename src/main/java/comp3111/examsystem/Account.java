@@ -38,7 +38,7 @@ public abstract class Account {
      */
     public void setUsername(String username) {
         // check if valid username (will need to verify with database eventually)
-        if (username.isEmpty()) {
+        if (!username.isEmpty()) {
             this.username = username;
         } else {
             throw new IllegalArgumentException("Username cannot be empty");
