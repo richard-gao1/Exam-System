@@ -122,15 +122,15 @@ public class Teacher extends User {
                                         or if there is no such course.
      */
     public void createExam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
-        if (courseIDs.contains(courseID)){
-            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
-            if (course != null) {
+        Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID
+        if (course != null) {
+            if (courseIDs.contains(courseID)){
                 Exam exam = new Exam(examName, course, isPublished, duration, questions);
                 return;
             }
-            throw new IllegalArgumentException("No such course");
+            throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
         }
-        throw new IllegalArgumentException("You are not permitted to manage this course. Please contact administrator.");
+        throw new IllegalArgumentException("No such course");
     }
 
     /**
@@ -402,11 +402,15 @@ public class Teacher extends User {
      * @param type     The new type of the question as integer (0 - Single, 1 - Multiple).
      */
     public void updateQuestion(Question question, String content, String[] options, String answer, int score, int type) {
+        ArrayList<Exam> examList = new ArrayList<>();
+        for (Course course: getCourses()){
+            course.updateExamQuestions(question,  content,  options,  answer,  score,  (type ==0?"Single":"Multiple"));
+        }
         question.setContent(content);
         question.setOptions(options);
+        question.setTypeChoice(type);
         question.setAnswer(answer);
         question.setScore(score);
-        question.setTypeChoice(type);
         SystemDatabase.updateTeacher(this);
     }
 
@@ -427,9 +431,9 @@ public class Teacher extends User {
         }
         question.setContent(content);
         question.setOptions(options);
+        question.setTypeChoice(type.equals("Multiple") ? 1 : 0);
         question.setAnswer(answer);
         question.setScore(score);
-        question.setTypeChoice(type.equals("Multiple") ? 1 : 0);
         SystemDatabase.updateTeacher(this);
 
     }
