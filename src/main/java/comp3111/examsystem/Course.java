@@ -302,7 +302,8 @@ public class Course {
                 }
                 else{
                     dropExam(oldExamName); // Drop original
-                    new Exam(examName,course,isPublished,duration,questions);
+                    new Exam(examName,course,isPublished,duration,questions); // Create Exam
+                    SystemDatabase.modifyCourse(course,course.getCourseID()); // Synchronise the exam to database (particularly question)
                     return;
                 }
             }

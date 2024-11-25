@@ -71,6 +71,7 @@ public class Exam {
     public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
         this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
         if (questions != null) {
+            System.out.println(questions.toString());
             this.questions.addAll(questions);
         }
     }
