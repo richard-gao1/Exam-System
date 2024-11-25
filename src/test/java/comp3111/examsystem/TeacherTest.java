@@ -18,6 +18,7 @@ class TeacherTest {
         SystemDatabase.removeAll();
         SystemDatabase database = new SystemDatabase();
         teacher = new Teacher("kwleung","1234","kenneth","male",30,"CSE","Assistant Professor");
+        SystemDatabase.registerTeacher(teacher);
         course = new Course("COMP3111", "Software Engineering","CSE",teacher);
         SystemDatabase.createCourse(course);
 

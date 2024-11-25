@@ -172,9 +172,10 @@ class CourseTest {
 
     @Test
     void setTeacher() {
+        new SystemDatabase();
         Course c = new Course("COMP3111", "software engineering", "COMP");
         Teacher t = new Teacher("t12345", "password", "Prof. Smith", "F", 40, "COMP","TA");
-
+        SystemDatabase.registerTeacher(t);
         c.setTeacher(t);
 
         assertEquals("Prof. Smith", c.getTeacher().getName());
@@ -184,7 +185,9 @@ class CourseTest {
 
     @Test
     void getTeacher() {
+        new SystemDatabase();
         Teacher t = new Teacher("t12345", "password", "Prof. Smith", "F", 40, "COMP","TA");
+        SystemDatabase.registerTeacher(t);
         Course c = new Course("COMP3111", "software engineering", "COMP",t);
 
         Teacher assignedTeacher = c.getTeacher();
