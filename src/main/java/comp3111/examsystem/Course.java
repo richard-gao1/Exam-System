@@ -225,6 +225,7 @@ public class Course {
      * @param teacher The Teacher object to be assigned, or null if no teacher should be assigned.
      */
     public void setTeacher(Teacher teacher) {
+        if (Objects.equals(teacher.getUsername(), this.teacherUsername)) return;
         if (this.teacherUsername != null) {
             Teacher existingTeacher = SystemDatabase.getTeacher(this.teacherUsername);
             if (existingTeacher != null) {
