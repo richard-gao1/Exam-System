@@ -3,9 +3,11 @@ package comp3111.examsystem.controller;
 import java.io.IOException;
 
 import comp3111.examsystem.Main;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 /**
@@ -18,7 +20,7 @@ public class SelectLoginController {
      * Opens the student login page.
      */
     @FXML
-    public void studentLogin() {
+    public void studentLogin(ActionEvent e) {
         try {
             Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("StudentLoginUI.fxml"));
@@ -26,8 +28,9 @@ public class SelectLoginController {
             stage.setTitle("Student Login");
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+            ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
     }
 
@@ -35,7 +38,7 @@ public class SelectLoginController {
      * Opens the teacher login page.
      */
     @FXML
-    public void teacherLogin() {
+    public void teacherLogin(ActionEvent e) {
         try {
             Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("TeacherLoginUI.fxml"));
@@ -43,15 +46,16 @@ public class SelectLoginController {
             stage.setTitle("Teacher Login");
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+            ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
     }
 
     /**
      * Opens the manager login page.
      */
-    public void managerLogin() {
+    public void managerLogin(ActionEvent e) {
         try {
             Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("ManagerLoginUI.fxml"));
@@ -59,8 +63,9 @@ public class SelectLoginController {
             stage.setTitle("Manager Login");
             stage.setScene(scene);
             stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+            ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
     }
 }
