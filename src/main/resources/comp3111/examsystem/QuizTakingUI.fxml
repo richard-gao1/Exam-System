@@ -124,7 +124,8 @@
                               <CheckBox fx:id="sataFour" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" text="CheckBox" />
                            </children>
                         </VBox>
-                        <Text fx:id="timer" layoutX="356.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                        <Text fx:id="timer" layoutX="308.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                        <Text fx:id="totalTimeTxt" layoutX="319.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </AnchorPane>
               </items>
