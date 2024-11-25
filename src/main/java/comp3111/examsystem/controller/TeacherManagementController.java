@@ -277,6 +277,7 @@ public class TeacherManagementController implements Initializable {
     public void selected(MouseEvent mouseEvent) {
         Teacher selectedItem = (Teacher) accountTable.getSelectionModel().getSelectedItem();
         if (selectedItem != updating) {
+            resetSetFields();
             updating = selectedItem;
             if (updating != null) {
                 usernameSet.setText(updating.getUsername());
@@ -286,8 +287,6 @@ public class TeacherManagementController implements Initializable {
                 positionSet.getSelectionModel().select(updating.getPosition());
                 departmentSet.setText(updating.getDepartment());
                 passwordSet.setText(updating.getPassword());
-            } else {
-                resetSetFields();
             }
         }
     }

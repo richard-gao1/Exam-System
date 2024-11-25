@@ -258,6 +258,7 @@ public class StudentManagementController implements Initializable {
     public void selected(MouseEvent mouseEvent) {
         Student selectedItem = (Student) accountTable.getSelectionModel().getSelectedItem();
         if (selectedItem != updating) {
+            resetSetFields();
             updating = selectedItem;
             if (updating != null) {
                 usernameSet.setText(updating.getUsername());
@@ -266,8 +267,6 @@ public class StudentManagementController implements Initializable {
                 ageSet.setText(String.valueOf(updating.getAge()));
                 departmentSet.setText(updating.getDepartment());
                 passwordSet.setText(updating.getPassword());
-            } else {
-                resetSetFields();
             }
         }
     }

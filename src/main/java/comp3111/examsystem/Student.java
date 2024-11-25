@@ -59,6 +59,7 @@ public class Student extends User {
         // Only call this method via Course class
         if (!this.courseIDs.contains(course.getCourseID())) {
             this.courseIDs.add(course.getCourseID());
+            SystemDatabase.updateStudent(this);
         } else {
             throw new IllegalArgumentException("Already enrolled in this course");
         }
@@ -78,6 +79,12 @@ public class Student extends User {
         }
     }
 
+    /**
+     * Retrieves a list of all exams associated with the courses taught by this teacher.
+     *
+     * @return An ArrayList containing Exam objects for each exam in the courses taught by the
+    teacher.
+     */
     public ArrayList<Exam> getExams(){
         ArrayList<Exam> examArrayList = new ArrayList<>();
         for (String courseID : courseIDs){

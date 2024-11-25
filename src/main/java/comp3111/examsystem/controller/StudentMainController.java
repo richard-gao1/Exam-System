@@ -133,6 +133,9 @@ public class StudentMainController implements Initializable {
         }
     }
 
+    /**
+     * Opens the Grade Statistics UI.
+     */
     @FXML
     public void openGradeStatistic(ActionEvent e) {
         FXMLLoader gradeLoader = new FXMLLoader();

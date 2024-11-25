@@ -28,18 +28,33 @@ public class Exam {
      * @param course     The Course object associated with this exam.
      * @param isPublished A boolean indicating whether the exam has been published.
      * @param duration   The duration of the exam in minutes.
-     * @param questions  An ArrayList containing the Question objects included in this exam.
      */
-    public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
+    public Exam(String examName, Course course, boolean isPublished, int duration) {
         setExamName(examName);
         this.courseID = course != null ? course.getCourseID() : null; // Change: Store courseID
         this.isPublished = isPublished;
         this.duration = duration;
-        if (questions != null) {
-            this.questions.addAll(questions);
-        }
         if (course != null) {
             course.addExam(this);
+        }
+    }
+
+    /**
+     * Constructs a new Exam object with the specified exam name, associated course,
+     * publication status, duration, and a list of questions. If the course is not
+     * null, this exam will be added to the course's list of exams.
+     *
+     * @param examName   The name of the exam.
+     * @param course     The Course object associated with this exam.
+     * @param isPublished A boolean indicating whether the exam has been published.
+     * @param duration   The duration of the exam in minutes.
+     * @param questions  An ArrayList containing the Question objects included in this exam.
+     */
+
+    public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList<Question> questions) {
+        this(examName, course, isPublished, duration);
+        if (questions != null) {
+            this.questions.addAll(questions);
         }
     }
 
@@ -54,7 +69,11 @@ public class Exam {
      * @param questions  An ArrayList containing the Question objects included in this exam.
      */
     public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList<Question> questions) {
-        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration, questions);
+        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
+        if (questions != null) {
+            System.out.println(questions.toString());
+            this.questions.addAll(questions);
+        }
     }
 
     /**
@@ -67,7 +86,7 @@ public class Exam {
      * @param duration   The duration of the exam in minutes.
      */
     public Exam(String examName, String courseID, boolean isPublished, int duration) {
-        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration, null);
+        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
     }
 
     /**
@@ -189,10 +208,11 @@ public class Exam {
     }
 
     /**
-     * Sets a new course for the exam. If there was an existing course associated with
-     * this exam, it removes the exam from that course before setting the new one.
+     * Sets a new course for this teacher and updates the related exams.
      *
-     * @param course The new Course object to be set for the exam.
+     * @param course The Course object to be set for the teacher.
+     * @throws IllegalArgumentException If the course already has an exam with the same name
+    as this teacher's exam.
      */
     public void setCourse(Course course) {
         if (course != null) {
@@ -269,10 +289,10 @@ public class Exam {
         if (questions.contains(question)){
             Question q = questions.get(questions.indexOf(question));
             q.setScore(score);
+            q.setTypeChoice(type);
             q.setAnswer(answer);
             q.setOptions(options);
             q.setContent(content);
-            q.setTypeChoice(type);
             return true;
         }
         return false;
