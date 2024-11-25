@@ -203,7 +203,7 @@ public class QuestionBankController implements Initializable {
         // Add TextFormatter
         setTextFormatter(scoreInput,scoreHint,"[0-9]*","Score must be a number",false);
         setTextFormatter(scoreFilter,scoreFilterHint,"[0-9]*","Score must be a number",false);
-        setTextFormatter(answerInput,answerHint,"[a-dA-D]*","Answer must be in &quot;ABCD&quot;",true);
+        setTextFormatter(answerInput,answerHint,"[a-dA-D]*","Answer must be in  \"ABCD\"",true);
     }
 
     /**
