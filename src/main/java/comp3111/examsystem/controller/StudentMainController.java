@@ -48,9 +48,10 @@ public class StudentMainController implements Initializable {
      */
     public void initialize(URL location, ResourceBundle resources) {
         this.student = (Student) SystemDatabase.currentUser;
-        System.out.println(student);
+        System.out.println("Student before any course registration: " + student);
 
-        // manually make a new course and add the student to it
+        // manually make a new course and add the student to it (reset course)
+        SystemDatabase.removeCourse("CourseID");
         ArrayList<Student> students = new ArrayList<>();
         students.add(this.student);
         ArrayList<Exam> initExams = new ArrayList<>();
@@ -65,10 +66,10 @@ public class StudentMainController implements Initializable {
         questions.add(q3);
         questions.add(q4);
         Course testCourse = new Course("CourseID","testCourse", "dept", null, students, initExams);
-        Exam testExam = new Exam("exam", testCourse, false, 30, questions);
-        initExams.add(testExam);
-        // put it in the database
+        System.out.println("Student after course initialized: " + student);
         SystemDatabase.createCourse(testCourse);
+        Exam testExamUnpub = new Exam("examUnpublished", "CourseID", false, 30, questions);
+        Exam testExamPub = new Exam("examPublished", "CourseID", true, 30, questions);
 
         // add exam options to the dropdown
         ArrayList<Course> courses = student.getCourses();
@@ -78,7 +79,9 @@ public class StudentMainController implements Initializable {
             exams.addAll(course.getExams());
         }
         for (Exam exam : exams) {
-            examPairs.put(exam.getExamName(), exam);
+            if (exam.getIsPublished()) {
+                examPairs.put(exam.getExamName(), exam);
+            }
         }
         examCombox.getItems().removeAll(examCombox.getItems());
         examCombox.getItems().addAll(examPairs.keySet());
@@ -105,7 +108,8 @@ public class StudentMainController implements Initializable {
                 quizController.setExam(examPairs.get(examName));
                 stage.setScene(new Scene(root));
                 stage.show();
-                ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+                // don't close the main window
+//                ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING, "Select Exam", ButtonType.OK);
                 alert.setTitle("Exam selection error");
@@ -132,7 +136,8 @@ public class StudentMainController implements Initializable {
         }
 
         stage.show();
-        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
+        // don't close main page
+//        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
     }
 
     /**

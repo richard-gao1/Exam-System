@@ -510,7 +510,7 @@ public class SystemDatabase {
      *
      * @param course The Course object containing the information to be written.
      */
-    private static void writeCourseFile(Course course) {
+    private static void  writeCourseFile(Course course) {
         if (course == null) return;
         String courseID = course.getCourseID();
         String filepath = "data/course/" + courseID + data_filetype;
