@@ -429,7 +429,5 @@ public class Course {
             }
         }
         SystemDatabase.modifyCourse(this, courseID);
-        Course course = SystemDatabase.getCourse(courseID);
-        System.out.println(course);
     }
 }

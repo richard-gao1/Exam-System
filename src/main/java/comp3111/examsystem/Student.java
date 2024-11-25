@@ -26,6 +26,15 @@ public class Student extends User {
     }
 
     /**
+     * Retrieves the list of courseIDs of courses that the student is currently enrolled in.
+     *
+     * @return An ArrayList containing all the courseIDs of the courses the student is enrolled in.
+     */
+    public ArrayList<String> getCourseIDs() {
+        return courseIDs;
+    }
+
+    /**
      * Retrieves a list of Course objects that the student is currently enrolled in.
      *
      * @return An ArrayList containing all the courses the student is enrolled in.

@@ -51,7 +51,8 @@ public class StudentMainController implements Initializable {
         System.out.println("Student before any course registration: " + student);
 
         // manually make a new course and add the student to it (reset course)
-        SystemDatabase.removeCourse("CourseID");
+        SystemDatabase.removeCourse("CourseID0");
+        SystemDatabase.removeCourse("CourseID1");
         ArrayList<Student> students = new ArrayList<>();
         students.add(this.student);
         ArrayList<Exam> initExams = new ArrayList<>();
@@ -65,11 +66,22 @@ public class StudentMainController implements Initializable {
         questions.add(q2);
         questions.add(q3);
         questions.add(q4);
-        Course testCourse = new Course("CourseID","testCourse", "dept", null, students, initExams);
+        Course course0 = new Course("CourseID0","Course0", "dept", null, students, initExams);
+        Course course1 = new Course("CourseID1","Course1", "dept", null, students, initExams);
+
         System.out.println("Student after course initialized: " + student);
-        SystemDatabase.createCourse(testCourse);
-        Exam testExamUnpub = new Exam("examUnpublished", "CourseID", false, 30, questions);
-        Exam testExamPub = new Exam("examPublished", "CourseID", true, 30, questions);
+        SystemDatabase.createCourse(course0);
+        SystemDatabase.createCourse(course1);
+        Exam testExamUnpubC0 = new Exam("C0 examUnpublished", "CourseID0", true, 30, questions);
+        Exam testExamPubC0 = new Exam("C0 examPublished", "CourseID0", true, 30, questions);
+        Exam testExamUnpubC1 = new Exam("C1 examUnpublished", "CourseID1", true, 30, questions);
+        Exam testExamPubC1 = new Exam("C1 examPublished", "CourseID1", true, 30, questions);
+
+        // add test grades
+        testExamPubC0.gradeStudent((Student) SystemDatabase.currentUser, 10, 12);
+        testExamUnpubC0.gradeStudent((Student) SystemDatabase.currentUser, 15, 7);
+        testExamPubC1.gradeStudent((Student) SystemDatabase.currentUser, 20, 19);
+        testExamUnpubC1.gradeStudent((Student) SystemDatabase.currentUser, 5, 27);
 
         // add exam options to the dropdown
         ArrayList<Course> courses = student.getCourses();
