@@ -515,17 +515,6 @@ public class SystemDatabase {
         String courseID = course.getCourseID();
         String filepath = "data/course/" + courseID + data_filetype;
         String text = new Gson().toJson(course);
-        File file = new File(filepath);
-        if(file.delete()){
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }else{
-            //throw an exception indicating that the file could not be cleared
-        }
-
         writeJson(filepath, text);
         ArrayList<String> courseID_array = getCourseIDArray();
         courseID_array = addToList(courseID, courseID_array);
@@ -780,8 +769,7 @@ public class SystemDatabase {
     public static String createCourse(Course course) {
         String courseID = course.getCourseID();
         if (getCourse(courseID) != null) {
-            writeCourseFile(course);
-            return "Course ID " + courseID + " updated";
+            return "Course ID " + courseID + " already exist";
         }
         writeCourseFile(course);
         return "";
