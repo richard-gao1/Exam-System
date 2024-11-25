@@ -1,0 +1,311 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RegisterController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: RegisterController (comp3111.examsystem.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RegisterController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/73)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem.controller;
+&nbsp;
+&nbsp;import comp3111.examsystem.Position;
+&nbsp;import comp3111.examsystem.Student;
+&nbsp;import comp3111.examsystem.Teacher;
+&nbsp;import comp3111.examsystem.SystemDatabase;
+&nbsp;import javafx.event.ActionEvent;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.*;
+&nbsp;import javafx.scene.layout.RowConstraints;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;/**
+&nbsp; * The RegisterController class manages the registration process for both students and
+&nbsp; teachers.
+&nbsp; */
+<b class="nc">&nbsp;public class RegisterController implements Initializable {</b>
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private TextField ageTxt;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private TextField departmentTxt;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private ChoiceBox&lt;String&gt; genderChoice;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private TextField nameTxt;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private PasswordField passwordConfirmTxt;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private PasswordField passwordTxt;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private TextField usernameTxt;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private ChoiceBox&lt;String&gt; positionChoice;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private RowConstraints positionRow;
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private Label positionLabel;
+&nbsp;
+<b class="nc">&nbsp;    private boolean isTeacher = false;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initializes the UI components.
+&nbsp;     *
+&nbsp;     * @param location  The location of the FXML file.
+&nbsp;     * @param resources The resource bundle containing locale-specific objects.
+&nbsp;     */
+&nbsp;    public void initialize(URL location, ResourceBundle resources) {
+<b class="nc">&nbsp;        positionRow.setMinHeight(0);</b>
+<b class="nc">&nbsp;        positionRow.setPrefHeight(0);</b>
+<b class="nc">&nbsp;        positionRow.setMaxHeight(0);</b>
+<b class="nc">&nbsp;        positionLabel.setVisible(false);</b>
+<b class="nc">&nbsp;        positionChoice.setVisible(false);</b>
+&nbsp;
+<b class="nc">&nbsp;        genderChoice.getItems().removeAll(genderChoice.getItems());</b>
+<b class="nc">&nbsp;        genderChoice.getItems().addAll(&quot;Male&quot;, &quot;Female&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Configures the UI for teacher-specific settings.
+&nbsp;     */
+&nbsp;    public void teacherSet(){
+<b class="nc">&nbsp;        positionRow.setMinHeight(10);</b>
+<b class="nc">&nbsp;        positionRow.setMaxHeight(30);</b>
+<b class="nc">&nbsp;        positionRow.setPrefHeight(30);</b>
+<b class="nc">&nbsp;        positionLabel.setVisible(true);</b>
+<b class="nc">&nbsp;        positionChoice.setVisible(true);</b>
+<b class="nc">&nbsp;        positionChoice.getItems().addAll(Position.list);</b>
+<b class="nc">&nbsp;        isTeacher = true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles the registration action.
+&nbsp;     *
+&nbsp;     * @param e The action event triggered by the register button.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void onRegister(ActionEvent e) {
+&nbsp;        try {
+<b class="nc">&nbsp;            String gender = genderChoice.getValue();</b>
+<b class="nc">&nbsp;            String username = usernameTxt.getText();</b>
+<b class="nc">&nbsp;            String password = passwordTxt.getText();</b>
+<b class="nc">&nbsp;            String name = nameTxt.getText();</b>
+<b class="nc">&nbsp;            String dept = departmentTxt.getText();</b>
+<b class="nc">&nbsp;            int age = Integer.parseInt(ageTxt.getText());</b>
+<b class="nc">&nbsp;            String pos = positionChoice.getValue();</b>
+<b class="nc">&nbsp;            if (validate(username,name,gender,age,pos,dept,password,passwordConfirmTxt.getText())) {</b>
+<b class="nc">&nbsp;                String registered = (isTeacher)</b>
+<b class="nc">&nbsp;                        ? SystemDatabase.registerTeacher(new Teacher(username, password, name, gender, age, dept, pos))</b>
+<b class="nc">&nbsp;                        : SystemDatabase.registerStudent(new Student(username, password, name, gender, age, dept));</b>
+&nbsp;
+<b class="nc">&nbsp;                if (registered.isEmpty()) {</b>
+<b class="nc">&nbsp;                    if (showAlert(Alert.AlertType.INFORMATION,null, &quot;Registration successful.&quot;).get()==ButtonType.OK){</b>
+<b class="nc">&nbsp;                        genderChoice.setValue(null);</b>
+<b class="nc">&nbsp;                        usernameTxt.clear();</b>
+<b class="nc">&nbsp;                        passwordTxt.clear();</b>
+<b class="nc">&nbsp;                        passwordConfirmTxt.clear();</b>
+<b class="nc">&nbsp;                        nameTxt.clear();</b>
+<b class="nc">&nbsp;                        departmentTxt.clear();</b>
+<b class="nc">&nbsp;                        ageTxt.clear();</b>
+<b class="nc">&nbsp;                        positionChoice.setValue(null);</b>
+&nbsp;                    }
+&nbsp;                } else {
+<b class="nc">&nbsp;                    showAlert(Alert.AlertType.ERROR,&quot;Duplicate User&quot;,registered);</b>
+&nbsp;                }
+&nbsp;            } else {
+<b class="nc">&nbsp;                showAlert(Alert.AlertType.ERROR,&quot;Registration Failed&quot;,&quot;Did not register.&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (NumberFormatException ne) {</b>
+<b class="nc">&nbsp;            showAlert(Alert.AlertType.ERROR, &quot;Invalid age&quot;, &quot;Age must be a positive integer.&quot;);</b>
+<b class="nc">&nbsp;        } catch (IllegalArgumentException ie){</b>
+<b class="nc">&nbsp;            showAlert(Alert.AlertType.ERROR, &quot;Invalid input&quot;, ie.getMessage());</b>
+<b class="nc">&nbsp;        } catch (Exception ex){</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Shows an alert dialog with the specified type, title, and message.
+&nbsp;     *
+&nbsp;     * @param alertType The type of alert (e.g., INFORMATION, ERROR).
+&nbsp;     * @param title     The title of the alert dialog.
+&nbsp;     * @param message   The message to display in the alert dialog.
+&nbsp;     * @return An Optional containing the button type clicked by the user.
+&nbsp;     */
+&nbsp;    private Optional&lt;ButtonType&gt; showAlert(Alert.AlertType alertType, String title, String message){
+<b class="nc">&nbsp;        Alert alert = new Alert(alertType);</b>
+<b class="nc">&nbsp;        alert.setTitle(title);</b>
+<b class="nc">&nbsp;        alert.setContentText(message);</b>
+<b class="nc">&nbsp;        return alert.showAndWait();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Validates the input data for user registration.
+&nbsp;     *
+&nbsp;     * @param userName   The username provided by the user.
+&nbsp;     * @param name       The full name provided by the user.
+&nbsp;     * @param gender     The gender selected by the user.
+&nbsp;     * @param age        The age provided by the user.
+&nbsp;     * @param position   The position selected by the teacher (if applicable).
+&nbsp;     * @param department The department provided by the user.
+&nbsp;     * @param pwd        The password provided by the user.
+&nbsp;     * @param confirmPwd The confirmation password provided by the user.
+&nbsp;     * @return True if all inputs are valid, false otherwise.
+&nbsp;     * @throws IllegalArgumentException If any input is invalid.
+&nbsp;     */
+&nbsp;    private boolean validate(String userName, String name, String gender, int age, String position,String department,String pwd, String confirmPwd){
+<b class="nc">&nbsp;        if (userName==null || userName.trim().isEmpty()){</b>
+<b class="nc">&nbsp;            usernameTxt.requestFocus();</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Username cannot be empty or null.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (name == null || name.trim().isEmpty()){</b>
+<b class="nc">&nbsp;            nameTxt.requestFocus();</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Name cannot be empty or null.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (gender == null || gender.equals(&quot;Gender&quot;)){</b>
+<b class="nc">&nbsp;            genderChoice.requestFocus();</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Please select a gender.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (age &lt;= 0 || age &gt;= 1000){</b>
+<b class="nc">&nbsp;            ageTxt.requestFocus();</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Are you serious?&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (isTeacher &amp;&amp;(position == null || position.equals(&quot;Position&quot;))){</b>
+<b class="nc">&nbsp;            positionChoice.requestFocus();</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Please select a position.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (department == null || department.trim().isEmpty()){</b>
+<b class="nc">&nbsp;            departmentTxt.requestFocus();</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Department cannot be empty or null.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (pwd == null){</b>
+<b class="nc">&nbsp;            passwordTxt.requestFocus();</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Password cannot be empty.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (!confirmPwd.equals(pwd)){</b>
+<b class="nc">&nbsp;            passwordConfirmTxt.requestFocus();</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Passwords do not match.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

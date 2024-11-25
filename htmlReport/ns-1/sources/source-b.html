@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Student</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem</a>
+</div>
+
+<h1>Coverage Summary for Class: Student (comp3111.examsystem)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Student</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (3/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    52%
+  </span>
+  <span class="absValue">
+    (13/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem;
+&nbsp;
+&nbsp;import com.google.gson.Gson;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;
+&nbsp;/**
+&nbsp; * A class representing a student, which extends the User class.
+&nbsp; */
+&nbsp;public class Student extends User {
+&nbsp;    private ArrayList&lt;String&gt; courseIDs; // = new ArrayList&lt;&gt;(); // Stores the IDs of the courses the student is enrolled in
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Student object with the provided details.
+&nbsp;     *
+&nbsp;     * @param username The username for the student&#39;s account.
+&nbsp;     * @param password The password for the student&#39;s account.
+&nbsp;     * @param name The name of the student.
+&nbsp;     * @param gender The gender of the student.
+&nbsp;     * @param age The age of the student.
+&nbsp;     * @param department The department associated with the student.
+&nbsp;     */
+&nbsp;    public Student(String username, String password, String name, String gender, int age, String department) {
+<b class="fc">&nbsp;        super(username, password, name, gender, age, department);</b>
+<b class="fc">&nbsp;        this.courseIDs = new ArrayList&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the list of courseIDs of courses that the student is currently enrolled in.
+&nbsp;     *
+&nbsp;     * @return An ArrayList containing all the courseIDs of the courses the student is enrolled in.
+&nbsp;     */
+&nbsp;    public ArrayList&lt;String&gt; getCourseIDs() {
+<b class="fc">&nbsp;        return courseIDs;</b>
+<b class="pc">&nbsp;    }</b>
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    /**</b>
+<b class="nc">&nbsp;     * Retrieves a list of Course objects that the student is currently enrolled in.</b>
+&nbsp;     *
+&nbsp;     * @return An ArrayList containing all the courses the student is enrolled in.
+<b class="fc">&nbsp;     */</b>
+&nbsp;    public ArrayList&lt;Course&gt; getCourses() {
+&nbsp;        ArrayList&lt;Course&gt; courses = new ArrayList&lt;&gt;();
+&nbsp;        for (String courseID : courseIDs) {
+&nbsp;            Course course = SystemDatabase.getCourse(courseID);
+&nbsp;            if (course != null) {
+&nbsp;                courses.add(course);
+&nbsp;            }
+&nbsp;        }
+&nbsp;        return courses;
+<b class="pc">&nbsp;    }</b>
+<b class="fc">&nbsp;</b>
+<b class="fc">&nbsp;    /**</b>
+&nbsp;     * Adds a course to the student&#39;s list of enrolled courses.
+<b class="nc">&nbsp;     *</b>
+&nbsp;     * @param course The Course object to be added.
+&nbsp;     */
+&nbsp;    public void addCourse(Course course) {
+&nbsp;        // Only call this method via Course class
+&nbsp;        if (!this.courseIDs.contains(course.getCourseID())) {
+&nbsp;            this.courseIDs.add(course.getCourseID());
+&nbsp;            SystemDatabase.updateStudent(this);
+&nbsp;        } else {
+&nbsp;            throw new IllegalArgumentException(&quot;Already enrolled in this course&quot;);
+&nbsp;        }
+<b class="pc">&nbsp;    }</b>
+<b class="fc">&nbsp;</b>
+&nbsp;    /**
+<b class="nc">&nbsp;     * Removes a course from the student&#39;s list of enrolled courses.</b>
+&nbsp;     *
+&nbsp;     * @param course The Course object to be removed.
+&nbsp;     */
+&nbsp;    public void dropCourse(Course course) {
+&nbsp;        // Only call this method via Course class
+&nbsp;        if (courseIDs.contains(course.getCourseID())) {
+&nbsp;            courseIDs.remove(course.getCourseID());
+&nbsp;        } else {
+&nbsp;            throw new IllegalArgumentException(&quot;No such course&quot;);
+&nbsp;        }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    /**</b>
+<b class="nc">&nbsp;     * Retrieves a list of all exams associated with the courses taught by this teacher.</b>
+<b class="nc">&nbsp;     *</b>
+&nbsp;     * @return An ArrayList containing Exam objects for each exam in the courses taught by the
+&nbsp;    teacher.
+<b class="nc">&nbsp;     */</b>
+&nbsp;    public ArrayList&lt;Exam&gt; getExams(){
+&nbsp;        ArrayList&lt;Exam&gt; examArrayList = new ArrayList&lt;&gt;();
+&nbsp;        for (String courseID : courseIDs){
+&nbsp;            Course course = SystemDatabase.getCourse(courseID);
+<b class="fc">&nbsp;            if (course != null){</b>
+&nbsp;                examArrayList.addAll(course.getExams());
+&nbsp;            }
+&nbsp;        }
+&nbsp;        return examArrayList;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object other) {
+&nbsp;        return super.equals(other);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the details of a Student account.
+&nbsp;     *
+<b class="fc">&nbsp;     * @param username   The new username to set.</b>
+<b class="fc">&nbsp;     * @param password   The new password to set.</b>
+&nbsp;     * @param name       The new name to set.
+&nbsp;     * @param gender     The new gender to set.
+&nbsp;     * @param age        The new age to set.
+&nbsp;     * @param department The new department to set.
+<b class="nc">&nbsp;     * @return This Student instance after updating the details.</b>
+&nbsp;     */
+&nbsp;    public Student update(String username, String password, String name, String gender, int age, String department) {
+&nbsp;        super.update(username, password, name, gender, age, department);
+&nbsp;        return this;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+&nbsp;        return new Gson().toJson(this);
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

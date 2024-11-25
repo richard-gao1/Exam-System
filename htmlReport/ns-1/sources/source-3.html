@@ -1,0 +1,551 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Course</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem</a>
+</div>
+
+<h1>Coverage Summary for Class: Course (comp3111.examsystem)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Course</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96.4%
+  </span>
+  <span class="absValue">
+    (27/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    68.1%
+  </span>
+  <span class="absValue">
+    (49/72)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.4%
+  </span>
+  <span class="absValue">
+    (104/119)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem;
+&nbsp;
+&nbsp;import java.io.Serializable;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a Course which has an ID, name, department, a list of students,
+&nbsp; * and exams. The class manages relationships between courses, teachers, and students.
+&nbsp; * @author WaiKinTANG
+&nbsp; */
+&nbsp;public class Course {
+&nbsp;    private String courseID;
+&nbsp;    private String name;
+&nbsp;    private String department;
+&nbsp;
+&nbsp;    // Store teacher&#39;s username instead of Teacher object
+&nbsp;    private String teacherUsername;
+&nbsp;
+&nbsp;    // Store student usernames instead of Student objects
+<b class="fc">&nbsp;    private ArrayList&lt;String&gt; studentUsernames = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;    private HashMap&lt;String, HashMap&lt;String, Integer&gt;&gt; studentToGrade = new HashMap&lt;&gt;();</b>
+&nbsp;    private ArrayList&lt;Exam&gt; exams;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a Course with all attributes including teacher.
+&nbsp;     *
+&nbsp;     * @param courseID The ID of the course.
+&nbsp;     * @param name The name of the course.
+&nbsp;     * @param department The department offering the course.
+&nbsp;     * @param teacher A Teacher object representing the instructor of the course.
+&nbsp;     * @param students A list of Student objects enrolled in the course.
+&nbsp;     * @param exams A list of Exam objects associated with the course.
+&nbsp;     */
+<b class="fc">&nbsp;    public Course(String courseID, String name, String department, Teacher teacher, ArrayList&lt;Student&gt; students, ArrayList&lt;Exam&gt; exams) {</b>
+<b class="fc">&nbsp;        this.courseID = courseID.replace(&quot; &quot;, &quot;&quot;).trim().toUpperCase();</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        this.department = department;</b>
+&nbsp;
+&nbsp;        // Store student usernames
+<b class="fc">&nbsp;        if (students != null) {</b>
+<b class="fc">&nbsp;            for (Student student : students) {</b>
+<b class="fc">&nbsp;                this.studentUsernames.add(student.getUsername());</b>
+<b class="fc">&nbsp;                student.addCourse(this);</b>
+<b class="fc">&nbsp;                studentToGrade.put(student.getUsername(), new HashMap&lt;&gt;());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        this.exams = exams == null ? new ArrayList&lt;&gt;() : exams;</b>
+<b class="fc">&nbsp;        if (teacher != null) {</b>
+<b class="fc">&nbsp;            this.teacherUsername = teacher.getUsername();</b>
+<b class="fc">&nbsp;            teacher.addCourse(this);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            this.teacherUsername = null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a Course with ID, name, department, students.
+&nbsp;     *
+&nbsp;     * @param courseID The ID of the course.
+&nbsp;     * @param name The name of the course.
+&nbsp;     * @param department The department offering the course.
+&nbsp;     * @param students A list of Student objects enrolled in the course.
+&nbsp;     * @param exams A list of Exam objects associated with the course.
+&nbsp;     */
+&nbsp;    public Course(String courseID, String name, String department, ArrayList&lt;Student&gt; students, ArrayList&lt;Exam&gt; exams) {
+<b class="nc">&nbsp;        this(courseID, name, department, null, students, exams);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Constructs a Course with ID, name, department, teacher, and students.
+&nbsp;     *
+&nbsp;     * @param courseID The ID of the course.
+&nbsp;     * @param name The name of the course.
+&nbsp;     * @param department The department offering the course.
+&nbsp;     * @param teacher A Teacher object representing the instructor of the course.
+&nbsp;     * @param students A list of Student objects enrolled in the course.
+&nbsp;     */
+&nbsp;    public Course(String courseID, String name, String department, Teacher teacher, ArrayList&lt;Student&gt; students) {
+<b class="fc">&nbsp;        this(courseID, name, department, teacher, students, null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Course(String courseID, String name, String department, ArrayList&lt;Student&gt; students) {
+<b class="fc">&nbsp;        this(courseID, name, department, null, students, null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Course(String courseID, String name, String department, Teacher teacher) {
+<b class="fc">&nbsp;        this(courseID, name, department, teacher, null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the name of the course.
+&nbsp;     *
+&nbsp;     * @return The name of the course.
+&nbsp;     */
+&nbsp;    public String getCourseName() {
+<b class="fc">&nbsp;        return name;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the ID of the course.
+&nbsp;     *
+&nbsp;     * @return The ID of the course.
+&nbsp;     */
+&nbsp;    public String getCourseID() {
+<b class="fc">&nbsp;        return courseID;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the department offering the course.
+&nbsp;     *
+&nbsp;     * @return The department offering the course.
+&nbsp;     */
+&nbsp;    public String getDepartment() {
+<b class="fc">&nbsp;        return department;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the department of the course and notifies the database.
+&nbsp;     *
+&nbsp;     * @param department The new department for the course.
+&nbsp;     */
+&nbsp;    public void setDepartment(String department) {
+<b class="fc">&nbsp;        this.department = department;</b>
+<b class="fc">&nbsp;        SystemDatabase.modifyCourse(this, courseID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the name of the course and notifies the database.
+&nbsp;     *
+&nbsp;     * @param name The new name for the course.
+&nbsp;     */
+&nbsp;    public void setName(String name) {
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        SystemDatabase.modifyCourse(this, courseID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a student to the course if they are not already enrolled,
+&nbsp;     * establishes bidirectional relationship, initializes their grades,
+&nbsp;     * and updates the database.
+&nbsp;     *
+&nbsp;     * @param student The Student object to be added.
+&nbsp;     * @throws IllegalArgumentException If the student is already enrolled in the course.
+&nbsp;     */
+&nbsp;    public void addStudent(Student student) {
+&nbsp;        // Check for existing enrollment
+<b class="pc">&nbsp;        if (studentUsernames.contains(student.getUsername())) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Already have this student&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Add student&#39;s username to list
+<b class="fc">&nbsp;        studentUsernames.add(student.getUsername());</b>
+&nbsp;
+&nbsp;        // Establish bidirectional relationship with the Student object
+<b class="fc">&nbsp;        student.addCourse(this);</b>
+&nbsp;
+&nbsp;        // Initialize grades for the newly added student
+<b class="fc">&nbsp;        studentToGrade.put(student.getUsername(), new HashMap&lt;&gt;());</b>
+&nbsp;
+&nbsp;        // Notify database of modification
+<b class="fc">&nbsp;        SystemDatabase.modifyCourse(this, courseID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void deleteExamQuestions(Question question){
+<b class="fc">&nbsp;        for (Exam e: exams){</b>
+<b class="pc">&nbsp;            if (e.removeQuestion(question)){</b>
+<b class="fc">&nbsp;                SystemDatabase.modifyCourse(this, courseID);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void updateExamQuestions(Question question, String content, String[] options, String answer, int score, String type){
+<b class="fc">&nbsp;        for (Exam e: exams){</b>
+<b class="pc">&nbsp;            if (e.updateQuestion(question,  content,  options,  answer,  score,  type)){</b>
+<b class="fc">&nbsp;                SystemDatabase.modifyCourse(this, courseID);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a list of all students enrolled in the course.
+&nbsp;     *
+&nbsp;     * @return A List containing Student objects representing all students currently enrolled in
+&nbsp;    the course.
+&nbsp;     */
+&nbsp;    public List&lt;Student&gt; getStudents() {
+<b class="fc">&nbsp;        List&lt;Student&gt; students = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (String username : studentUsernames) {</b>
+<b class="fc">&nbsp;            Student student = SystemDatabase.getStudent(username);</b>
+<b class="pc">&nbsp;            if (student != null) {</b>
+<b class="fc">&nbsp;                students.add(student);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return students;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a student from the course if they are enrolled,
+&nbsp;     * breaks the bidirectional relationship with the Student object,
+&nbsp;     * removes their grades, and updates the database.
+&nbsp;     *
+&nbsp;     * @param student The Student object to be removed.
+&nbsp;     * @throws IllegalArgumentException If no such student is found in the course.
+&nbsp;     */
+&nbsp;    public void dropStudent(Student student) {
+<b class="pc">&nbsp;        if (studentUsernames.contains(student.getUsername())) {</b>
+<b class="fc">&nbsp;            studentUsernames.remove(student.getUsername());</b>
+<b class="fc">&nbsp;            student.dropCourse(this);</b>
+<b class="fc">&nbsp;            studentToGrade.remove(student.getUsername());</b>
+<b class="fc">&nbsp;            SystemDatabase.modifyCourse(this, courseID);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;No such student&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Assigns a teacher to the course. If an existing teacher is already assigned,
+&nbsp;     * they are removed from this course before assigning the new one.
+&nbsp;     * Updates the database after any changes.
+&nbsp;     *
+&nbsp;     * @param teacher The Teacher object to be assigned, or null if no teacher should be assigned.
+&nbsp;     */
+&nbsp;    public void setTeacher(Teacher teacher) {
+<b class="pc">&nbsp;        if (Objects.equals(teacher.getUsername(), this.teacherUsername)) return;</b>
+<b class="nc">&nbsp;        if (this.teacherUsername != null) {</b>
+<b class="nc">&nbsp;            Teacher existingTeacher = SystemDatabase.getTeacher(this.teacherUsername);</b>
+<b class="nc">&nbsp;            if (existingTeacher != null) {</b>
+&nbsp;                existingTeacher.dropCourse(this);
+&nbsp;            }
+<b class="pc">&nbsp;        }</b>
+<b class="fc">&nbsp;        if (teacher != null) {</b>
+<b class="fc">&nbsp;            this.teacherUsername = teacher.getUsername();</b>
+&nbsp;            teacher.addCourse(this);
+<b class="nc">&nbsp;        } else {</b>
+&nbsp;            this.teacherUsername = null;
+<b class="fc">&nbsp;        }</b>
+&nbsp;        SystemDatabase.modifyCourse(this, courseID);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the Teacher assigned to the course.
+&nbsp;     *
+&nbsp;     * @return The Teacher object if a teacher is assigned; otherwise, null.
+&nbsp;     */
+<b class="fc">&nbsp;    public Teacher getTeacher() {</b>
+&nbsp;        return teacherUsername != null ? SystemDatabase.getTeacher(teacherUsername) : null;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds an Exam to the course. Ensures that the exam belongs to this course,
+&nbsp;     * and that no other exam with the same name exists in this course.
+&nbsp;     * Initializes grades for all students related to this new exam.
+&nbsp;     * Updates the database after adding the exam.
+&nbsp;     *
+&nbsp;     * @param exam The Exam object to be added.
+&nbsp;     * @throws IllegalArgumentException If the exam does not belong to this course
+&nbsp;     *                                  or if an exam with the same name already exists.
+&nbsp;     */
+<b class="pc">&nbsp;    public void addExam(Exam exam) {</b>
+<b class="fc">&nbsp;        if ((exam.getCourse() == null) ||(!exam.getCourse().getCourseID().equals(this.courseID))) {</b>
+&nbsp;            throw new IllegalArgumentException(&quot;Exam is not in this course&quot;);
+<b class="fc">&nbsp;        }</b>
+<b class="pc">&nbsp;        for (Exam e : exams) {</b>
+<b class="nc">&nbsp;            if (e.getExamName().equals(exam.getExamName())) {</b>
+&nbsp;                throw new IllegalArgumentException(&quot;Already have this exam&quot;);
+&nbsp;            }
+<b class="fc">&nbsp;        }</b>
+<b class="pc">&nbsp;        exams.add(exam);</b>
+<b class="nc">&nbsp;        for (String studentUsername : studentUsernames) {</b>
+&nbsp;            studentToGrade.get(studentUsername).put(exam.getExamName(), null);
+<b class="fc">&nbsp;        }</b>
+&nbsp;        SystemDatabase.modifyCourse(this, courseID);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates an existing exam with the specified details.
+&nbsp;     *
+&nbsp;     * @param oldExamName The current name of the exam to be updated.
+&nbsp;     * @param examName The new name for the exam.
+&nbsp;     * @param course The course associated with the exam.
+&nbsp;     * @param isPublished A boolean indicating whether the exam is published or not.
+&nbsp;     * @param duration The duration of the exam in minutes.
+&nbsp;     * @param questions An ArrayList containing the questions for the exam.
+&nbsp;     */
+<b class="pc">&nbsp;    public void updateExam(String oldExamName, String examName, Course course, boolean isPublished, int duration, ArrayList&lt;Question&gt; questions) {</b>
+<b class="pc">&nbsp;        for (Exam exam : exams) {</b>
+<b class="fc">&nbsp;            if (exam.getExamName().equals(oldExamName)) {</b>
+<b class="fc">&nbsp;                if (courseID.equals(course.getCourseID())){</b>
+<b class="fc">&nbsp;                    exam.setExamName(examName);</b>
+<b class="fc">&nbsp;                    exam.setDuration(duration);</b>
+<b class="fc">&nbsp;                    exam.setPublished(isPublished);</b>
+<b class="pc">&nbsp;                    exam.setQuestions(questions);</b>
+<b class="nc">&nbsp;                    for (String studentUsername : studentUsernames) {</b>
+<b class="nc">&nbsp;                        studentToGrade.get(studentUsername).remove(examName);</b>
+&nbsp;                        studentToGrade.get(studentUsername).put(examName, null);
+<b class="fc">&nbsp;                    }</b>
+&nbsp;                    SystemDatabase.modifyCourse(this, courseID);
+&nbsp;                    return;
+&nbsp;                }
+<b class="fc">&nbsp;                else{</b>
+<b class="fc">&nbsp;                    dropExam(oldExamName); // Drop original</b>
+<b class="fc">&nbsp;                    new Exam(examName,course,isPublished,duration,questions); // Create Exam</b>
+&nbsp;                    SystemDatabase.modifyCourse(course,course.getCourseID()); // Synchronise the exam to database (particularly question)
+&nbsp;                    return;
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;        dropExam(examName); // Drop original
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Drops an exam from the course by Exam object.
+&nbsp;     *
+&nbsp;     * @param exam The Exam object to be removed.
+&nbsp;     */
+<b class="fc">&nbsp;    public void dropExam(Exam exam) {</b>
+&nbsp;        dropExam(exam.getExamName());
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes an Exam from the course by its name.
+&nbsp;     * Deletes the associated grades for all students in this course,
+&nbsp;     * and updates the database after removal.
+&nbsp;     *
+&nbsp;     * @param examName The name of the Exam to be removed.
+&nbsp;     * @throws IllegalArgumentException If no such exam exists within the course.
+&nbsp;     */
+<b class="pc">&nbsp;    public void dropExam(String examName) {</b>
+<b class="pc">&nbsp;        for (Exam exam : exams) {</b>
+<b class="fc">&nbsp;            if (exam.getExamName().equals(examName)) {</b>
+<b class="pc">&nbsp;                exams.remove(exam);</b>
+<b class="nc">&nbsp;                for (String studentUsername : studentUsernames) {</b>
+&nbsp;                    studentToGrade.get(studentUsername).remove(examName);
+<b class="fc">&nbsp;                }</b>
+&nbsp;                SystemDatabase.modifyCourse(this, courseID);
+&nbsp;                return;
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;        throw new IllegalArgumentException(&quot;No such exam&quot;);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Course object with the specified ID, name, and department.
+&nbsp;     * Initializes lists to hold student usernames and exams associated with this course.
+&nbsp;     *
+&nbsp;     * @param courseID   The unique identifier for the course.
+&nbsp;     * @param name       The name of the course.
+&nbsp;     * @param department The department offering the course.
+<b class="fc">&nbsp;     */</b>
+<b class="fc">&nbsp;    public Course(String courseID, String name, String department) {</b>
+<b class="fc">&nbsp;        this.courseID = courseID;</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        this.department = department;</b>
+<b class="fc">&nbsp;        this.studentUsernames = new ArrayList&lt;&gt;();</b>
+&nbsp;        this.exams = new ArrayList&lt;&gt;();
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves all exams associated with this course.
+&nbsp;     *
+&nbsp;     * @return An ArrayList of Exam objects representing the exams in this course.
+&nbsp;     */
+<b class="fc">&nbsp;    public ArrayList&lt;Exam&gt; getExams() {</b>
+&nbsp;        return exams;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the details of the course, such as its ID, name, and department,
+&nbsp;     * and returns the updated Course object for method chaining if necessary.
+&nbsp;     *
+&nbsp;     * @param courseID   The new unique identifier for the course.
+&nbsp;     * @param name       The new name of the course.
+&nbsp;     * @param department The new department offering the course.
+&nbsp;     * @return This Course object after updating its details.
+&nbsp;     */
+<b class="fc">&nbsp;    public Course update(String courseID, String name, String department) {</b>
+<b class="fc">&nbsp;        this.courseID = courseID;</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        this.department = department;</b>
+&nbsp;        return this;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+<b class="pc">&nbsp;    public boolean equals(Object o) {</b>
+<b class="pc">&nbsp;        if (this == o) return true;</b>
+<b class="fc">&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="pc">&nbsp;        Course course = (Course) o;</b>
+<b class="pc">&nbsp;        return Objects.equals(getCourseID(), course.getCourseID())</b>
+<b class="fc">&nbsp;                &amp;&amp; Objects.equals(name, course.name)</b>
+&nbsp;                &amp;&amp; Objects.equals(getDepartment(), course.getDepartment());
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+<b class="fc">&nbsp;    public int hashCode() {</b>
+&nbsp;        return Objects.hash(getCourseID(), name, getDepartment());
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds multiple students to the course if they are not already enrolled,
+&nbsp;     * establishes bidirectional relationship, initializes their grades,
+&nbsp;     * and updates the database.
+&nbsp;     *
+&nbsp;     * @param studentList The list of Student objects to be added.
+&nbsp;     * @throws IllegalArgumentException If the student is already enrolled in the course.
+&nbsp;     */
+<b class="fc">&nbsp;    public void addStudents(List&lt;Student&gt; studentList) {</b>
+&nbsp;        for (Student student : studentList) {
+<b class="fc">&nbsp;            try {</b>
+<b class="nc">&nbsp;                addStudent(student);</b>
+&nbsp;            } catch (Exception e) {
+&nbsp;
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Update the student grading of the course
+&nbsp;     *
+&nbsp;     * @param exam the exam grade to update
+&nbsp;     */
+<b class="fc">&nbsp;    public void updateGrade(Exam exam) {</b>
+<b class="fc">&nbsp;        for (int i=0;i&lt;exams.size();i++) {</b>
+<b class="fc">&nbsp;            Exam e = exams.get(i);</b>
+<b class="fc">&nbsp;            if (Objects.equals(e.getExamName(), exam.getExamName())) {</b>
+&nbsp;                exams.set(i, exam);
+&nbsp;            }
+<b class="fc">&nbsp;        }</b>
+&nbsp;        SystemDatabase.modifyCourse(this, courseID);
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

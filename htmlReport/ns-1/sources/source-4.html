@@ -1,0 +1,475 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Exam</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem</a>
+</div>
+
+<h1>Coverage Summary for Class: Exam (comp3111.examsystem)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Exam</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.3%
+  </span>
+  <span class="absValue">
+    (23/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64%
+  </span>
+  <span class="absValue">
+    (32/50)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    69.2%
+  </span>
+  <span class="absValue">
+    (63/91)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem;
+&nbsp;
+&nbsp;import javafx.beans.property.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents an Exam, storing the name of the exam, list of questions and student grades
+&nbsp; */
+&nbsp;public class Exam {
+&nbsp;    private String examName;        // The name of the exam
+&nbsp;    private boolean isPublished;    // Stores whether the exam has been published
+&nbsp;    private int duration;           // Duration in minutes
+<b class="fc">&nbsp;    private ArrayList&lt;Question&gt; questions = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;    private String courseID;
+<b class="fc">&nbsp;    private HashMap&lt;String, Grade&gt; studentToGrades = new HashMap&lt;&gt;(); // Maps student ID to their grade</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Exam object with the specified exam name, associated course,
+&nbsp;     * publication status, duration, and a list of questions. If the course is not
+&nbsp;     * null, this exam will be added to the course&#39;s list of exams.
+&nbsp;     *
+&nbsp;     * @param examName   The name of the exam.
+&nbsp;     * @param course     The Course object associated with this exam.
+&nbsp;     * @param isPublished A boolean indicating whether the exam has been published.
+&nbsp;     * @param duration   The duration of the exam in minutes.
+&nbsp;     * @param questions  An ArrayList containing the Question objects included in this exam.
+<b class="fc">&nbsp;     */</b>
+<b class="fc">&nbsp;    public Exam(String examName, Course course, boolean isPublished, int duration, ArrayList&lt;Question&gt; questions) {</b>
+<b class="fc">&nbsp;        setExamName(examName);</b>
+<b class="fc">&nbsp;        this.courseID = course != null ? course.getCourseID() : null; // Change: Store courseID</b>
+<b class="fc">&nbsp;        this.isPublished = isPublished;</b>
+<b class="fc">&nbsp;        this.duration = duration;</b>
+<b class="fc">&nbsp;        if (questions != null) {</b>
+&nbsp;            this.questions.addAll(questions);
+&nbsp;        }
+&nbsp;        if (course != null) {
+&nbsp;            course.addExam(this);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Exam object with the specified exam name, course ID,
+&nbsp;     * publication status, duration, and a list of questions.
+&nbsp;     *
+&nbsp;     * @param examName   The name of the exam.
+&nbsp;     * @param courseID   The identifier for the Course associated with this exam.
+&nbsp;     * @param isPublished A boolean indicating whether the exam has been published.
+&nbsp;     * @param duration   The duration of the exam in minutes.
+&nbsp;     * @param questions  An ArrayList containing the Question objects included in this exam.
+<b class="fc">&nbsp;     */</b>
+<b class="fc">&nbsp;    public Exam(String examName, String courseID, boolean isPublished, int duration, ArrayList&lt;Question&gt; questions) {</b>
+<b class="fc">&nbsp;        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration, questions);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Exam object with the specified exam name, course ID,
+&nbsp;     * publication status, and duration.
+&nbsp;     *
+&nbsp;     * @param examName   The name of the exam.
+&nbsp;     * @param courseID   The identifier for the Course associated with this exam.
+&nbsp;     * @param isPublished A boolean indicating whether the exam has been published.
+&nbsp;     * @param duration   The duration of the exam in minutes.
+&nbsp;     */
+&nbsp;    public Exam(String examName, String courseID, boolean isPublished, int duration) {
+&nbsp;        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration, null);
+&nbsp;    }
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    /**</b>
+<b class="nc">&nbsp;     * Returns a StringProperty representation of the exam name.</b>
+<b class="nc">&nbsp;     *</b>
+&nbsp;     * @return A SimpleStringProperty containing the exam name.
+&nbsp;     */
+&nbsp;    public StringProperty examNameProperty() {
+&nbsp;        return new SimpleStringProperty(this.examName);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns a BooleanProperty indicating whether the exam is published.
+&nbsp;     *
+&nbsp;     * @return A SimpleBooleanProperty representing the publication status of the exam.
+&nbsp;     */
+&nbsp;    public BooleanProperty isPublishedProperty() {
+&nbsp;        return new SimpleBooleanProperty(this.isPublished);
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns an IntegerProperty representing the duration of the exam in minutes.
+&nbsp;     *
+&nbsp;     * @return A SimpleIntegerProperty containing the exam duration.
+&nbsp;     */
+&nbsp;    public IntegerProperty durationProperty() {
+&nbsp;        return new SimpleIntegerProperty(this.duration);
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns a StringProperty representation of the course ID associated with this exam.
+&nbsp;     *
+&nbsp;     * @return A SimpleStringProperty containing the course ID.
+&nbsp;     */
+&nbsp;    public StringProperty courseIDProperty() {
+&nbsp;        return new SimpleStringProperty(this.courseID);
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the name of the exam.
+&nbsp;     *
+&nbsp;     * @return The name of the exam as a String.
+&nbsp;     */
+&nbsp;    public String getExamName() {
+&nbsp;        return examName;
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets a new name for the exam.
+&nbsp;     *
+&nbsp;     * @param examName The new name to be set for the exam.
+&nbsp;     */
+&nbsp;    public void setExamName(String examName) {
+&nbsp;        this.examName = examName;
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Checks if the exam is published.
+&nbsp;     *
+&nbsp;     * @return True if the exam is published, false otherwise.
+&nbsp;     */
+&nbsp;    public boolean getIsPublished() {
+&nbsp;        return isPublished;
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the publication status of the exam.
+&nbsp;     *
+&nbsp;     * @param isPublished The new publication status to be set for the exam.
+&nbsp;     */
+&nbsp;    public void setPublished(boolean isPublished) {
+&nbsp;        this.isPublished = isPublished;
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the duration of the exam in minutes.
+&nbsp;     *
+&nbsp;     * @return The duration of the exam as an int.
+&nbsp;     */
+&nbsp;    public int getDuration() {
+&nbsp;        return duration;
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets a new duration for the exam.
+&nbsp;     *
+&nbsp;     * @param duration The new duration to be set for the exam in minutes.
+&nbsp;     */
+&nbsp;    public void setDuration(int duration) {
+&nbsp;        this.duration = duration;
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the list of questions associated with the exam.
+&nbsp;     *
+&nbsp;     * @return An ArrayList containing all Question objects included in this exam.
+&nbsp;     */
+&nbsp;    public ArrayList&lt;Question&gt; getQuestions() {
+&nbsp;        return questions;
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets a new list of questions for the exam.
+&nbsp;     *
+&nbsp;     * @param questions The new ArrayList of Question objects to be set for the exam.
+&nbsp;     */
+&nbsp;    public void setQuestions(ArrayList&lt;Question&gt; questions) {
+&nbsp;        this.questions = questions;
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the Course object associated with this exam.
+&nbsp;     *
+&nbsp;     * @return The Course object if courseID is not null, otherwise returns null.
+&nbsp;     */
+&nbsp;    public Course getCourse() {
+&nbsp;        // Change: Dynamically retrieve the Course object using courseID
+<b class="fc">&nbsp;        return courseID != null ? SystemDatabase.getCourse(courseID) : null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets a new course for the exam. If there was an existing course associated with
+&nbsp;     * this exam, it removes the exam from that course before setting the new one.
+&nbsp;     *
+&nbsp;     * @param course The new Course object to be set for the exam.
+&nbsp;     */
+<b class="fc">&nbsp;    public void setCourse(Course course) {</b>
+&nbsp;        if (course != null) {
+&nbsp;            if (this.courseID != null) {
+&nbsp;                Course existingCourse = SystemDatabase.getCourse(this.courseID); // Fetch the current course
+&nbsp;                if (existingCourse != null) {
+&nbsp;                    existingCourse.dropExam(this);
+&nbsp;                }
+&nbsp;            }
+&nbsp;            this.courseID = course.getCourseID(); // Change: Store courseID
+&nbsp;            boolean haveExam = false;
+<b class="fc">&nbsp;            for (Exam e : course.getExams()) {</b>
+&nbsp;                haveExam = haveExam | Objects.equals(e.getExamName(), this.getExamName());
+&nbsp;            }
+&nbsp;            if (!haveExam) course.addExam(this);
+&nbsp;            else throw new IllegalArgumentException(&quot;Already have an exam with the same name.&quot;);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the HashMap of student grades associated with this exam.
+&nbsp;     *
+<b class="fc">&nbsp;     * @return A HashMap where keys are student IDs (String) and values are their corresponding</b>
+<b class="fc">&nbsp;    Grades.</b>
+<b class="fc">&nbsp;     */</b>
+<b class="pc">&nbsp;    public HashMap&lt;String, Grade&gt; getStudentGrades() {</b>
+<b class="fc">&nbsp;        return studentToGrades;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    /**</b>
+<b class="fc">&nbsp;     * Sets a new HashMap of student grades for the exam.</b>
+<b class="fc">&nbsp;     *</b>
+<b class="fc">&nbsp;     * @param studentToGrades The new HashMap to be set for student grades in this exam.</b>
+&nbsp;     */
+<b class="fc">&nbsp;    public void setStudentGrades(HashMap&lt;String, Grade&gt; studentToGrades) {</b>
+<b class="fc">&nbsp;        this.studentToGrades = studentToGrades;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a question to the list of questions for the exam. Throws an exception
+&nbsp;     * if the question already exists in the exam.
+&nbsp;     *
+&nbsp;     * @param question The new Question object to be added to the exam.
+&nbsp;     * @throws IllegalArgumentException If the question already exists in the exam.
+&nbsp;     */
+&nbsp;    public void addQuestion(Question question) {
+<b class="nc">&nbsp;        if (this.questions == null) {</b>
+&nbsp;            this.questions = new ArrayList&lt;&gt;();
+&nbsp;        }
+&nbsp;        if (this.questions.contains(question)) {
+&nbsp;            throw new IllegalArgumentException(&quot;Question already exists in the exam&quot;);
+&nbsp;        }
+&nbsp;        this.questions.add(question);
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    /**</b>
+&nbsp;     * Removes a question from the list of questions for the exam. Throws an exception
+&nbsp;     * if the question does not exist in the exam.
+&nbsp;     *
+&nbsp;     * @param question The Question object to be removed from the exam.
+&nbsp;     * @throws IllegalArgumentException If the question does not exist in the exam.
+&nbsp;     */
+&nbsp;    public boolean removeQuestion(Question question) {
+&nbsp;        for (Question q: questions){
+&nbsp;            if (q.equals(question)){
+&nbsp;                questions.remove(q);
+<b class="pc">&nbsp;                return true;</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+<b class="pc">&nbsp;        return false;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+<b class="fc">&nbsp;    public boolean updateQuestion(Question question, String content, String[] options, String answer, int score, String type){</b>
+&nbsp;        if (questions.contains(question)){
+&nbsp;            Question q = questions.get(questions.indexOf(question));
+&nbsp;            q.setScore(score);
+&nbsp;            q.setAnswer(answer);
+&nbsp;            q.setOptions(options);
+&nbsp;            q.setContent(content);
+&nbsp;            q.setTypeChoice(type);
+&nbsp;            return true;
+&nbsp;        }
+&nbsp;        return false;
+<b class="pc">&nbsp;    }</b>
+<b class="pc">&nbsp;</b>
+<b class="fc">&nbsp;    /**</b>
+<b class="fc">&nbsp;     * Calculates and returns the total score of all questions in the exam.</b>
+&nbsp;     *
+&nbsp;     * @return The sum of scores of all questions in the exam.
+<b class="nc">&nbsp;     */</b>
+&nbsp;    public int getFullScore() {
+&nbsp;        int score = 0;
+&nbsp;        for (Question q : questions) score += q.getScore();
+<b class="pc">&nbsp;        return score;</b>
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;</b>
+<b class="fc">&nbsp;    /**</b>
+<b class="fc">&nbsp;     * Parses a string answer by sorting its characters.</b>
+<b class="fc">&nbsp;     *</b>
+<b class="fc">&nbsp;     * @param answer The answer to be parsed.</b>
+<b class="fc">&nbsp;     * @return A new string with sorted characters from the original answer.</b>
+&nbsp;     */
+<b class="nc">&nbsp;    public String parseAnswer(String answer) {</b>
+&nbsp;        char[] chars = answer.toCharArray();
+&nbsp;        Arrays.sort(chars);
+&nbsp;        return new String(chars);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Grades an exam based on a list of student answers. The grading logic differs
+&nbsp;     * depending on whether each question is multiple-choice or single-choice.
+<b class="fc">&nbsp;     *</b>
+<b class="fc">&nbsp;     * @param answers An ArrayList containing the student&#39;s answers for each question.</b>
+<b class="fc">&nbsp;     * @return The total score obtained by the student in this exam.</b>
+&nbsp;     */
+&nbsp;    public Integer grade(ArrayList&lt;Integer&gt; answers) {
+&nbsp;        int score = 0;
+&nbsp;        for (int i = 0; i &lt; questions.size(); i++) {
+&nbsp;            Question question = questions.get(i);
+&nbsp;            int a = answers.get(i);
+&nbsp;            if (question.getTypeChoice() == 0) {
+&nbsp;                if (question.getAnswer() == a) {
+&nbsp;                    score += question.getScore();
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;                score += Math.max(0,</b>
+&nbsp;                        question.getScore()
+&nbsp;                                * (Integer.bitCount(a &amp; question.getAnswer())
+&nbsp;                                - Integer.bitCount(a &amp; ~question.getAnswer() &amp; 15))
+&nbsp;                                / Integer.bitCount(question.getAnswer()));
+&nbsp;            }
+&nbsp;        }
+&nbsp;        return score;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+<b class="nc">&nbsp;     * Records a student&#39;s grade for this exam. The time spent by the student</b>
+<b class="nc">&nbsp;     * is capped at the duration of the exam.</b>
+<b class="nc">&nbsp;     *</b>
+<b class="nc">&nbsp;     * @param student The Student object whose grade is to be recorded.</b>
+<b class="nc">&nbsp;     * @param examScore The score obtained by the student in this exam.</b>
+<b class="nc">&nbsp;     * @param timeSpend The time (in minutes) taken by the student to complete the exam.</b>
+<b class="nc">&nbsp;     */</b>
+&nbsp;    public void gradeStudent(Student student, Integer examScore, int timeSpend) {
+&nbsp;        studentToGrades.put(student.getUsername(), new Grade(student.getName(), getCourse().getCourseID(), getExamName(), examScore, getFullScore(), Math.min(timeSpend, duration)));
+<b class="nc">&nbsp;        SystemDatabase.getCourse(courseID).updateGrade(this);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    @Override</b>
+<b class="nc">&nbsp;    public boolean equals(Object o) {</b>
+&nbsp;        if (this == o) return true;
+&nbsp;        if (o == null || getClass() != o.getClass()) return false;
+<b class="nc">&nbsp;        Exam exam = (Exam) o;</b>
+&nbsp;        return Objects.equals(getExamName(), exam.getExamName())
+&nbsp;                &amp;&amp; getQuestions().containsAll(exam.getQuestions())
+&nbsp;                &amp;&amp; exam.getQuestions().containsAll(getQuestions())
+&nbsp;                &amp;&amp; Objects.equals(getCourse().getCourseID(), exam.getCourse().getCourseID());
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+&nbsp;        return Objects.hash(getExamName(), isPublished, getDuration(), getQuestions(), getCourse(), studentToGrades);
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

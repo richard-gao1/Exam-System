@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Account</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem</a>
+</div>
+
+<h1>Coverage Summary for Class: Account (comp3111.examsystem)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Account</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94.4%
+  </span>
+  <span class="absValue">
+    (17/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem;
+&nbsp;
+&nbsp;import com.google.gson.Gson;
+&nbsp;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * An abstract class representing an account
+&nbsp; */
+&nbsp;public abstract class Account {
+&nbsp;    private String username;
+&nbsp;    private String password;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Account instance with the specified username and password.
+&nbsp;     *
+&nbsp;     * @param username The unique identifier for the account.
+&nbsp;     * @param password The password for the account.
+&nbsp;     */
+<b class="fc">&nbsp;    public Account(String username, String password) {</b>
+<b class="fc">&nbsp;        this.username = username;</b>
+<b class="fc">&nbsp;        this.password = password;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the username of the account.
+&nbsp;     *
+&nbsp;     * @return The username as a string.
+&nbsp;     */
+&nbsp;    public String getUsername() {
+<b class="fc">&nbsp;        return this.username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the username of the account.
+&nbsp;     *
+&nbsp;     * @param username The new username to set.
+&nbsp;     */
+&nbsp;    public void setUsername(String username) {
+&nbsp;        // check if valid username (will need to verify with database eventually)
+<b class="fc">&nbsp;        if (!username.isEmpty()) {</b>
+<b class="fc">&nbsp;            this.username = username;</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Username cannot be empty&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates both the username and password of the account.
+&nbsp;     *
+&nbsp;     * @param username The new username to set.
+&nbsp;     * @param password The new password to set.
+&nbsp;     */
+&nbsp;    public void update(String username, String password) {
+<b class="fc">&nbsp;        this.username = username;</b>
+<b class="fc">&nbsp;        this.password = password;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Authenticates the account with a provided password.
+&nbsp;     *
+&nbsp;     * @param password The password to authenticate against.
+&nbsp;     * @return true if the password matches, false otherwise.
+&nbsp;     */
+&nbsp;    public boolean login(String password) {
+<b class="fc">&nbsp;        return Objects.equals(this.password, password);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the password of the account.
+&nbsp;     *
+&nbsp;     * @return The password as a string.
+&nbsp;     */
+&nbsp;    public String getPassword() {
+<b class="fc">&nbsp;        return this.password;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the password of the account.
+&nbsp;     *
+&nbsp;     * @param password The new password to set.
+&nbsp;     */
+&nbsp;    public void setPassword(String password) {
+&nbsp;        // can add password requirements here
+<b class="fc">&nbsp;        if (!password.isEmpty()) {</b>
+<b class="fc">&nbsp;            this.password = password;</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Password cannot be empty&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object other) {
+<b class="fc">&nbsp;        Account account = (Account) other;</b>
+<b class="pc">&nbsp;        if (other == null) return false;</b>
+<b class="pc">&nbsp;        return (Objects.equals(this.username, account.username)) &amp;&amp; (Objects.equals(this.password, account.password));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        return new Gson().toJson(this);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

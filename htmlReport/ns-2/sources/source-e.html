@@ -1,0 +1,459 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TeacherGradeStatisticController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: TeacherGradeStatisticController (comp3111.examsystem.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TeacherGradeStatisticController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/110)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TeacherGradeStatisticController$AvgScore</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/117)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem.controller;
+&nbsp;
+&nbsp;import comp3111.examsystem.*;
+&nbsp;import javafx.collections.FXCollections;
+&nbsp;import javafx.collections.ObservableList;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.chart.*;
+&nbsp;import javafx.scene.control.ChoiceBox;
+&nbsp;import javafx.scene.control.TableColumn;
+&nbsp;import javafx.scene.control.TableView;
+&nbsp;import javafx.scene.control.cell.PropertyValueFactory;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * Controller for Teacher Grade Statistics UI
+&nbsp; */
+<b class="nc">&nbsp;public class TeacherGradeStatisticController implements Initializable {</b>
+&nbsp;    private Teacher currentTeacher;
+<b class="nc">&nbsp;    private boolean hasFilter = false;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * A class to calculate and store the average score
+&nbsp;     */
+&nbsp;    private class AvgScore {
+<b class="nc">&nbsp;        private int count = 0; // Number of score added</b>
+<b class="nc">&nbsp;        private int score = 0; // Total score</b>
+<b class="nc">&nbsp;        AvgScore() {}</b>
+&nbsp;
+&nbsp;        /**
+&nbsp;         * Adds a new score to the average calculation.
+&nbsp;         *
+&nbsp;         * @param score The score to be added.
+&nbsp;         */
+&nbsp;        public void add(int score) {
+<b class="nc">&nbsp;            count++;</b>
+<b class="nc">&nbsp;            this.score += score;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        /**
+&nbsp;         * Calculates and returns the average score.
+&nbsp;         *
+&nbsp;         * @return The average score as a double. Returns 0.0 if no scores have been added.
+&nbsp;         */
+&nbsp;        public double getValue() {
+<b class="nc">&nbsp;            if (count == 0) return 0.0;</b>
+<b class="nc">&nbsp;            return ((double) score) / ((double) count);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @FXML
+&nbsp;    private ChoiceBox&lt;String&gt; courseCombox;
+&nbsp;    @FXML
+&nbsp;    private ChoiceBox&lt;String&gt; examCombox;
+&nbsp;    @FXML
+&nbsp;    private ChoiceBox&lt;String&gt; studentCombox;
+&nbsp;    @FXML
+&nbsp;    private TableView&lt;Grade&gt; gradeTable;
+&nbsp;    @FXML
+&nbsp;    private TableColumn&lt;Grade, String&gt; studentColumn;
+&nbsp;    @FXML
+&nbsp;    private TableColumn&lt;Grade, String&gt; courseColumn;
+&nbsp;    @FXML
+&nbsp;    private TableColumn&lt;Grade, String&gt; examColumn;
+&nbsp;    @FXML
+&nbsp;    private TableColumn&lt;Grade, String&gt; scoreColumn;
+&nbsp;    @FXML
+&nbsp;    private TableColumn&lt;Grade, String&gt; fullScoreColumn;
+&nbsp;    @FXML
+&nbsp;    private TableColumn&lt;Grade, String&gt; timeSpendColumn;
+&nbsp;    @FXML
+&nbsp;    BarChart&lt;String, Number&gt; barChart;
+&nbsp;    @FXML
+&nbsp;    CategoryAxis categoryAxisBar;
+&nbsp;    @FXML
+&nbsp;    NumberAxis numberAxisBar;
+&nbsp;    @FXML
+&nbsp;    LineChart&lt;String, Number&gt; lineChart;
+&nbsp;    @FXML
+&nbsp;    CategoryAxis categoryAxisLine;
+&nbsp;    @FXML
+&nbsp;    NumberAxis numberAxisLine;
+&nbsp;    @FXML
+&nbsp;    PieChart pieChart;
+<b class="nc">&nbsp;    private String courseFilter = &quot;&quot;;</b>
+<b class="nc">&nbsp;    private String examFilter = &quot;&quot;;</b>
+<b class="nc">&nbsp;    private String studentFilter = &quot;&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;    private final ObservableList&lt;String&gt; courseList = FXCollections.observableArrayList();</b>
+<b class="nc">&nbsp;    private final ObservableList&lt;String&gt; examList = FXCollections.observableArrayList();</b>
+<b class="nc">&nbsp;    private final ObservableList&lt;String&gt; studentList = FXCollections.observableArrayList();</b>
+&nbsp;
+<b class="nc">&nbsp;    private final HashMap&lt;String, AvgScore&gt; by_course = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    private final HashMap&lt;String, AvgScore&gt; by_student = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    private final HashMap&lt;String, AvgScore&gt; by_exam = new HashMap&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;    private final XYChart.Series&lt;String, Number&gt; seriesBar = new XYChart.Series&lt;&gt;();;</b>
+<b class="nc">&nbsp;    private final XYChart.Series&lt;String, Number&gt; seriesLine = new XYChart.Series&lt;&gt;();;</b>
+&nbsp;
+<b class="nc">&nbsp;    private ArrayList&lt;Grade&gt; gradeList = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    private final ObservableList&lt;Grade&gt; displayGradeList = FXCollections.observableArrayList();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a null value from a string, replacing it with an empty string if necessary.
+&nbsp;     *
+&nbsp;     * @param input The input string that may be null.
+&nbsp;     * @return An empty string if the input is null, otherwise returns the original string.
+&nbsp;     */
+<b class="nc">&nbsp;    private String removeNull(String input) { return (input == null) ? &quot;&quot; : input; }</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void initialize(URL url, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;        barChart.setLegendVisible(false);</b>
+<b class="nc">&nbsp;        categoryAxisBar.setLabel(&quot;Course&quot;);</b>
+<b class="nc">&nbsp;        numberAxisBar.setLabel(&quot;Avg. Score&quot;);</b>
+<b class="nc">&nbsp;        pieChart.setLegendVisible(false);</b>
+<b class="nc">&nbsp;        pieChart.setTitle(&quot;Student Scores&quot;);</b>
+<b class="nc">&nbsp;        lineChart.setLegendVisible(false);</b>
+<b class="nc">&nbsp;        categoryAxisLine.setLabel(&quot;Exam&quot;);</b>
+<b class="nc">&nbsp;        numberAxisLine.setLabel(&quot;Avg. Score&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        gradeTable.setItems(displayGradeList);</b>
+<b class="nc">&nbsp;        studentColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;studentName&quot;));</b>
+<b class="nc">&nbsp;        courseColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;courseNum&quot;));</b>
+<b class="nc">&nbsp;        examColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;examName&quot;));</b>
+<b class="nc">&nbsp;        scoreColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;score&quot;));</b>
+<b class="nc">&nbsp;        fullScoreColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;fullScore&quot;));</b>
+<b class="nc">&nbsp;        timeSpendColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;timeSpend&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        courseCombox.setItems(courseList);</b>
+<b class="nc">&nbsp;        examCombox.setItems(examList);</b>
+<b class="nc">&nbsp;        studentCombox.setItems(studentList);</b>
+&nbsp;
+<b class="nc">&nbsp;        currentTeacher = (Teacher) SystemDatabase.currentUser;</b>
+&nbsp;
+<b class="nc">&nbsp;        refresh();</b>
+<b class="nc">&nbsp;        loadChart();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Loads data into the grade list based on the current teacher&#39;s exams.
+&nbsp;     */
+&nbsp;    private void loadData() {
+<b class="nc">&nbsp;        gradeList.clear();</b>
+<b class="nc">&nbsp;        ArrayList&lt;Exam&gt; exams = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        List&lt;Course&gt; courses = currentTeacher.getCourses();</b>
+<b class="nc">&nbsp;        if (courses != null) {</b>
+<b class="nc">&nbsp;            for (Course course : courses) {</b>
+<b class="nc">&nbsp;                exams.addAll(course.getExams());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        /*
+&nbsp;         add grades from teachers
+&nbsp;         */
+<b class="nc">&nbsp;        for (Exam exam : exams) {</b>
+<b class="nc">&nbsp;            HashMap&lt;String, Grade&gt; studentGrade = exam.getStudentGrades();</b>
+<b class="nc">&nbsp;            gradeList.addAll(studentGrade.values());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        updateHashMaps(false);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Refreshes the UI components by loading data, updating choices, filtering grades, and
+&nbsp;     updating charts.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void refresh() {
+<b class="nc">&nbsp;        loadData();</b>
+<b class="nc">&nbsp;        loadChoices();</b>
+<b class="nc">&nbsp;        updateFilter();</b>
+<b class="nc">&nbsp;        updateChart();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates hash maps that group grades by course, exam, and student.
+&nbsp;     *
+&nbsp;     * @param filtered A flag indicating whether to update with filtered or full grade list.
+&nbsp;     */
+&nbsp;    private void updateHashMaps(boolean filtered) {
+<b class="nc">&nbsp;        by_course.clear();</b>
+<b class="nc">&nbsp;        by_student.clear();</b>
+<b class="nc">&nbsp;        by_exam.clear();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (filtered) {</b>
+<b class="nc">&nbsp;            displayGradeList.forEach((grade) -&gt; {</b>
+<b class="nc">&nbsp;                by_course.computeIfAbsent(grade.getCourseNum(), k -&gt; new AvgScore()).add(grade.getScore());</b>
+<b class="nc">&nbsp;                by_exam.computeIfAbsent(grade.getExamName(), k -&gt; new AvgScore()).add(grade.getScore());</b>
+<b class="nc">&nbsp;                by_student.computeIfAbsent(grade.getStudentName(), k -&gt; new AvgScore()).add(grade.getScore());</b>
+&nbsp;            });
+&nbsp;        } else {
+<b class="nc">&nbsp;            gradeList.forEach((grade) -&gt; {</b>
+<b class="nc">&nbsp;                by_course.computeIfAbsent(grade.getCourseNum(), k -&gt; new AvgScore()).add(grade.getScore());</b>
+<b class="nc">&nbsp;                by_exam.computeIfAbsent(grade.getExamName(), k -&gt; new AvgScore()).add(grade.getScore());</b>
+<b class="nc">&nbsp;                by_student.computeIfAbsent(grade.getStudentName(), k -&gt; new AvgScore()).add(grade.getScore());</b>
+&nbsp;            });
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Loads available choices for courses, exams, and students into respective UI components.
+&nbsp;     */
+&nbsp;    private void loadChoices() {
+<b class="nc">&nbsp;        courseList.clear();</b>
+<b class="nc">&nbsp;        courseList.add(&quot;&quot;);</b>
+<b class="nc">&nbsp;        Set&lt;String&gt; courseIDs = by_course.keySet();</b>
+<b class="nc">&nbsp;        for (String courseID : courseIDs) {</b>
+<b class="nc">&nbsp;            Course course = SystemDatabase.getCourse(courseID);</b>
+<b class="nc">&nbsp;            if (course == null) courseList.add(courseID);</b>
+<b class="nc">&nbsp;            else courseList.add(course.getCourseID() + &quot; &quot; + course.getCourseName());</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        examList.clear();</b>
+<b class="nc">&nbsp;        examList.add(&quot;&quot;);</b>
+<b class="nc">&nbsp;        examList.addAll(by_exam.keySet());</b>
+&nbsp;
+<b class="nc">&nbsp;        studentList.clear();</b>
+<b class="nc">&nbsp;        studentList.add(&quot;&quot;);</b>
+<b class="nc">&nbsp;        studentList.addAll(by_student.keySet());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the bar, line, and pie charts with current data from hash maps.
+&nbsp;     */
+&nbsp;    private void updateChart() {
+<b class="nc">&nbsp;        seriesBar.getData().clear();</b>
+<b class="nc">&nbsp;        pieChart.getData().clear();</b>
+<b class="nc">&nbsp;        seriesLine.getData().clear();</b>
+&nbsp;
+<b class="nc">&nbsp;        by_course.forEach((course, score) -&gt; {</b>
+<b class="nc">&nbsp;            seriesBar.getData().add(new XYChart.Data&lt;&gt;(course, score.getValue()));</b>
+&nbsp;        });
+<b class="nc">&nbsp;        by_exam.forEach((exam, score) -&gt; {</b>
+<b class="nc">&nbsp;            seriesLine.getData().add(new XYChart.Data&lt;&gt;(exam, score.getValue()));</b>
+&nbsp;        });
+<b class="nc">&nbsp;        by_student.forEach((student, score) -&gt; {</b>
+<b class="nc">&nbsp;            pieChart.getData().add(new PieChart.Data(student, score.getValue()));</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initializes or clears the chart components in preparation for data updates.
+&nbsp;     */
+&nbsp;    private void loadChart() {
+<b class="nc">&nbsp;        barChart.getData().clear();</b>
+<b class="nc">&nbsp;        barChart.setAnimated(false);</b>
+<b class="nc">&nbsp;        lineChart.getData().clear();</b>
+<b class="nc">&nbsp;        lineChart.setAnimated(false);</b>
+&nbsp;
+<b class="nc">&nbsp;        barChart.getData().add(seriesBar);</b>
+&nbsp;
+<b class="nc">&nbsp;        lineChart.getData().add(seriesLine);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Applies filters to the grade list based on selected course, exam, and student choices.
+&nbsp;     */
+&nbsp;    private void updateFilter() {
+<b class="nc">&nbsp;        displayGradeList.clear();</b>
+<b class="nc">&nbsp;        if (!hasFilter) {</b>
+<b class="nc">&nbsp;            displayGradeList.addAll(gradeList);</b>
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        courseFilter = removeNull(courseCombox.getSelectionModel().getSelectedItem());</b>
+<b class="nc">&nbsp;        examFilter = removeNull(examCombox.getSelectionModel().getSelectedItem());</b>
+<b class="nc">&nbsp;        studentFilter = removeNull(studentCombox.getSelectionModel().getSelectedItem());</b>
+&nbsp;
+<b class="nc">&nbsp;        ArrayList&lt;Grade&gt; filteredGradeList = gradeList.stream().filter(</b>
+<b class="nc">&nbsp;                g -&gt; ((courseFilter.isEmpty() || Objects.equals(courseFilter, g.getCourseNum())) &amp;&amp;</b>
+<b class="nc">&nbsp;                        (examFilter.isEmpty() || Objects.equals(examFilter, g.getExamName())) &amp;&amp;</b>
+<b class="nc">&nbsp;                        (studentFilter.isEmpty() || Objects.equals(studentFilter, g.getStudentName()))</b>
+&nbsp;                )
+<b class="nc">&nbsp;        ).collect(Collectors.toCollection(ArrayList::new));</b>
+&nbsp;
+<b class="nc">&nbsp;        displayGradeList.addAll(filteredGradeList);</b>
+<b class="nc">&nbsp;        updateHashMaps(true);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Resets the filter settings and refreshes the displayed grades and charts.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void reset() {
+<b class="nc">&nbsp;        hasFilter = false;</b>
+<b class="nc">&nbsp;        updateFilter();</b>
+<b class="nc">&nbsp;        updateChart();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the filter settings based on current selections and updates the displayed grades and
+&nbsp;     charts.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void query() {
+<b class="nc">&nbsp;        hasFilter = true;</b>
+<b class="nc">&nbsp;        updateFilter();</b>
+<b class="nc">&nbsp;        updateChart();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

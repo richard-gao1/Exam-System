@@ -1,0 +1,492 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CourseManagementController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: CourseManagementController (comp3111.examsystem.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CourseManagementController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/131)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem.controller;
+&nbsp;
+&nbsp;import comp3111.examsystem.*;
+&nbsp;import javafx.collections.FXCollections;
+&nbsp;import javafx.collections.ObservableList;
+&nbsp;import javafx.event.ActionEvent;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.*;
+&nbsp;import javafx.scene.control.cell.PropertyValueFactory;
+&nbsp;import javafx.scene.input.MouseEvent;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * Controller for Course Management UI
+&nbsp; */
+<b class="nc">&nbsp;public class CourseManagementController implements Initializable {</b>
+&nbsp;    @FXML
+&nbsp;    private Button addStudentBtn;
+&nbsp;    @FXML
+&nbsp;    private Button modifyBtn;
+&nbsp;    @FXML
+&nbsp;    private Button addBtn;
+&nbsp;    @FXML
+&nbsp;    private Button deleteBtn;
+&nbsp;    @FXML
+&nbsp;    private Button refreshBtn;
+&nbsp;    @FXML
+&nbsp;    private Button filterBtn;
+&nbsp;    @FXML
+&nbsp;    private Button resetBtn;
+&nbsp;    @FXML
+&nbsp;    private Button removeStudentBtn;
+&nbsp;    @FXML
+&nbsp;    private TableView enrollTable;
+&nbsp;    @FXML
+&nbsp;    private TableView notEnrollTable;
+&nbsp;    @FXML
+&nbsp;    private TableColumn enrollStudentUsername;
+&nbsp;    @FXML
+&nbsp;    private TableColumn enrollStudentName;
+&nbsp;    @FXML
+&nbsp;    private TableColumn notEnrollStudentUsername;
+&nbsp;    @FXML
+&nbsp;    private TableColumn notEnrollStudentName;
+&nbsp;    @FXML
+&nbsp;    private TableColumn teacherUsername;
+&nbsp;    @FXML
+&nbsp;    private TableColumn teacherName;
+&nbsp;    @FXML
+&nbsp;    private TableView teacherTable;
+&nbsp;    @FXML
+&nbsp;    private TextField courseIDSet;
+&nbsp;    @FXML
+&nbsp;    private TextField courseNameSet;
+&nbsp;    @FXML
+&nbsp;    private TextField departmentSet;
+&nbsp;    @FXML
+&nbsp;    private TableView courseTable;
+&nbsp;    @FXML
+&nbsp;    private TableColumn courseIDColumn;
+&nbsp;    @FXML
+&nbsp;    private TableColumn courseNameColumn;
+&nbsp;    @FXML
+&nbsp;    private TableColumn departmentColumn;
+&nbsp;    @FXML
+&nbsp;    private TextField courseIDFilter;
+&nbsp;    @FXML
+&nbsp;    private TextField courseNameFilter;
+&nbsp;    @FXML
+&nbsp;    private TextField departmentFilter;
+<b class="nc">&nbsp;    private Course updating = null;</b>
+<b class="nc">&nbsp;    private boolean filtering = false;</b>
+&nbsp;
+<b class="nc">&nbsp;    private ObservableList&lt;Course&gt; courseList = FXCollections.observableArrayList();</b>
+<b class="nc">&nbsp;    private ObservableList&lt;Teacher&gt; teacherList = FXCollections.observableArrayList();</b>
+<b class="nc">&nbsp;    private ObservableList&lt;Student&gt; studentList = FXCollections.observableArrayList();</b>
+<b class="nc">&nbsp;    private ObservableList&lt;Student&gt; enrollList = FXCollections.observableArrayList();</b>
+<b class="nc">&nbsp;    private ObservableList&lt;Student&gt; notEnrollList = FXCollections.observableArrayList();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initializes the UI components and sets up the data bindings.
+&nbsp;     *
+&nbsp;     * @param url the location used to resolve relative paths for the root object, or null if the
+&nbsp;    location is not known
+&nbsp;     * @param resourceBundle the resources used to localize the root object, or null if the root
+&nbsp;    object was not localized
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void initialize(URL url, ResourceBundle resourceBundle) {
+<b class="nc">&nbsp;        refresh();</b>
+<b class="nc">&nbsp;        courseTable.setItems(courseList);</b>
+<b class="nc">&nbsp;        courseIDColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;courseID&quot;));</b>
+<b class="nc">&nbsp;        courseNameColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;courseName&quot;));</b>
+<b class="nc">&nbsp;        departmentColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;department&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        teacherTable.setItems(teacherList);</b>
+<b class="nc">&nbsp;        teacherUsername.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;username&quot;));</b>
+<b class="nc">&nbsp;        teacherName.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        enrollTable.setItems(enrollList);</b>
+<b class="nc">&nbsp;        enrollStudentUsername.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;username&quot;));</b>
+<b class="nc">&nbsp;        enrollStudentName.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        notEnrollTable.setItems(notEnrollList);</b>
+<b class="nc">&nbsp;        notEnrollStudentUsername.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;username&quot;));</b>
+<b class="nc">&nbsp;        notEnrollStudentName.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        resetStudentList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the list of courses from the system database based on optional filters.
+&nbsp;     */
+&nbsp;    private void getCourseList() {
+<b class="nc">&nbsp;        String courseID = &quot;&quot;;</b>
+<b class="nc">&nbsp;        String name = &quot;&quot;;</b>
+<b class="nc">&nbsp;        String department = &quot;&quot;;</b>
+<b class="nc">&nbsp;        if (filtering) {</b>
+<b class="nc">&nbsp;            courseID = courseIDFilter.getText().toLowerCase().trim();</b>
+<b class="nc">&nbsp;            name = courseNameFilter.getText().toLowerCase().trim();</b>
+<b class="nc">&nbsp;            department = departmentFilter.getText().toLowerCase().trim();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        List&lt;Course&gt; courses = SystemDatabase.getCourseList(courseID, name, department);</b>
+<b class="nc">&nbsp;        courseList.clear();</b>
+<b class="nc">&nbsp;        courseList.addAll(courses);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the list of teachers from the system database.
+&nbsp;     */
+&nbsp;    private void getTeacherList() {
+<b class="nc">&nbsp;        teacherList.clear();</b>
+<b class="nc">&nbsp;        teacherList.addAll(SystemDatabase.getTeacherList(&quot;&quot;, &quot;&quot;, &quot;&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the list of students from the system database.
+&nbsp;     */
+&nbsp;    private void getStudentList() {
+<b class="nc">&nbsp;        studentList.clear();</b>
+<b class="nc">&nbsp;        studentList.addAll(SystemDatabase.getStudentList(&quot;&quot;, &quot;&quot;, &quot;&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Refreshes both the course and teacher lists by fetching them from the system database and
+&nbsp;     updating the UI tables.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void refresh() {
+<b class="nc">&nbsp;        getCourseList();</b>
+<b class="nc">&nbsp;        getTeacherList();</b>
+<b class="nc">&nbsp;        getStudentList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Resets the filtering criteria and refreshes the course list.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void reset() {
+<b class="nc">&nbsp;        filtering = false;</b>
+<b class="nc">&nbsp;        resetFilterFields();</b>
+<b class="nc">&nbsp;        getCourseList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Applies the current filter criteria to query the system database for courses matching those
+&nbsp;     criteria.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void query() {
+<b class="nc">&nbsp;        filtering = true;</b>
+<b class="nc">&nbsp;        getCourseList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a new Course instance based on the input fields, and assign teacher into the course.
+&nbsp;     *
+&nbsp;     * @param existing A flag indicating whether an existing course is being updated or a new one
+&nbsp;    is created.
+&nbsp;     * @return The newly created or updated Course instance.
+&nbsp;     */
+&nbsp;    private Course setCourse(boolean existing) {
+<b class="nc">&nbsp;        String courseID = courseIDSet.getText();</b>
+<b class="nc">&nbsp;        String name = courseNameSet.getText();</b>
+<b class="nc">&nbsp;        String department = departmentSet.getText();</b>
+<b class="nc">&nbsp;        Course course = (existing) ?</b>
+<b class="nc">&nbsp;                updating.update(courseID, name, department) :</b>
+<b class="nc">&nbsp;                new Course(courseID, name, department);</b>
+<b class="nc">&nbsp;        Teacher teacher = (Teacher) teacherTable.getSelectionModel().getSelectedItem();</b>
+<b class="nc">&nbsp;        course.setTeacher(teacher);</b>
+<b class="nc">&nbsp;        course.addStudents(enrollList);</b>
+<b class="nc">&nbsp;        return course;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a new course to the system based on the input fields.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void add() {
+<b class="nc">&nbsp;        Course newCourse = setCourse(false);</b>
+<b class="nc">&nbsp;        System.out.println(newCourse.getCourseName());</b>
+<b class="nc">&nbsp;        if (newCourse == null) return;</b>
+<b class="nc">&nbsp;        resetSetFields();</b>
+<b class="nc">&nbsp;        resetStudentList();</b>
+<b class="nc">&nbsp;        String msg = SystemDatabase.createCourse(newCourse);</b>
+<b class="nc">&nbsp;        if (!msg.isEmpty()) {</b>
+<b class="nc">&nbsp;            Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);</b>
+<b class="nc">&nbsp;            alert.setTitle(&quot;Creation error&quot;);</b>
+<b class="nc">&nbsp;            alert.show();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        refresh();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates an existing course&#39;s details in the system using the input fields.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void modify() {
+<b class="nc">&nbsp;        if (updating == null) {</b>
+&nbsp;            // no course is selected
+<b class="nc">&nbsp;            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);</b>
+<b class="nc">&nbsp;            alert.setTitle(&quot;Update Error&quot;);</b>
+<b class="nc">&nbsp;            alert.setHeaderText(&quot;No course is selected.&quot;);</b>
+<b class="nc">&nbsp;            alert.show();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            String old_courseID = updating.getCourseID();</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Updating course &quot; + old_courseID);</b>
+<b class="nc">&nbsp;            Course newCourse = setCourse(true);</b>
+<b class="nc">&nbsp;            if (newCourse == null) return;</b>
+<b class="nc">&nbsp;            resetSetFields();</b>
+<b class="nc">&nbsp;            resetStudentList();</b>
+<b class="nc">&nbsp;            SystemDatabase.modifyCourse(newCourse, old_courseID);</b>
+<b class="nc">&nbsp;            refresh();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deletes the selected course from the system.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void delete() {
+<b class="nc">&nbsp;        if (updating == null) {</b>
+&nbsp;            // no course is selected
+<b class="nc">&nbsp;            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);</b>
+<b class="nc">&nbsp;            alert.setTitle(&quot;Delete Error&quot;);</b>
+<b class="nc">&nbsp;            alert.setHeaderText(&quot;No course is selected.&quot;);</b>
+<b class="nc">&nbsp;            alert.show();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            String courseID = updating.getCourseID();</b>
+<b class="nc">&nbsp;            SystemDatabase.modifyCourse(null, courseID);</b>
+<b class="nc">&nbsp;            refresh();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles the selection of a course in the table view, updating related UI components and
+&nbsp;     setting the &#39;updating&#39; course.
+&nbsp;     *
+&nbsp;     * @param mouseEvent The MouseEvent associated with the selection action.
+&nbsp;     */
+&nbsp;    public void selected(MouseEvent mouseEvent) {
+<b class="nc">&nbsp;        Course selectedItem = (Course) courseTable.getSelectionModel().getSelectedItem();</b>
+<b class="nc">&nbsp;        if (selectedItem != updating) {</b>
+<b class="nc">&nbsp;            resetSetFields();</b>
+<b class="nc">&nbsp;            resetStudentList();</b>
+<b class="nc">&nbsp;            updating = selectedItem;</b>
+<b class="nc">&nbsp;            if (updating != null) {</b>
+<b class="nc">&nbsp;                courseIDSet.setText(updating.getCourseID());</b>
+<b class="nc">&nbsp;                courseNameSet.setText(updating.getCourseName());</b>
+<b class="nc">&nbsp;                departmentSet.setText(updating.getDepartment());</b>
+<b class="nc">&nbsp;                Teacher teacher = updating.getTeacher();</b>
+<b class="nc">&nbsp;                if (teacherList.contains(teacher)) {</b>
+<b class="nc">&nbsp;                    teacherTable.getSelectionModel().select(teacher);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                enrollList.clear();</b>
+<b class="nc">&nbsp;                enrollList.addAll(updating.getStudents());</b>
+<b class="nc">&nbsp;                notEnrollList.removeAll(updating.getStudents());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Clears all text fields used for setting new or updating course attributes.
+&nbsp;     */
+&nbsp;    private void resetSetFields() {
+<b class="nc">&nbsp;        courseIDSet.setText(&quot;&quot;);</b>
+<b class="nc">&nbsp;        courseNameSet.setText(&quot;&quot;);</b>
+<b class="nc">&nbsp;        departmentSet.setText(&quot;&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Puts all students into the not enrolled list
+&nbsp;     */
+&nbsp;    private void resetStudentList() {
+<b class="nc">&nbsp;        enrollList.clear();</b>
+<b class="nc">&nbsp;        notEnrollList.clear();</b>
+<b class="nc">&nbsp;        notEnrollList.addAll(studentList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Clears all text fields used for filtering teachers.
+&nbsp;     */
+&nbsp;    private void resetFilterFields() {
+<b class="nc">&nbsp;        courseIDFilter.setText(&quot;&quot;);</b>
+<b class="nc">&nbsp;        courseNameFilter.setText(&quot;&quot;);</b>
+<b class="nc">&nbsp;        departmentSet.setText(&quot;&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles the selection of a teacher in the table view.
+&nbsp;     *
+&nbsp;     * @param mouseEvent The MouseEvent associated with the selection action.
+&nbsp;     */
+&nbsp;    public void teacherSelected(MouseEvent mouseEvent) {
+&nbsp;
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes the selected teacher from the UI table.
+&nbsp;     */
+&nbsp;    public void removeTeacher() {
+<b class="nc">&nbsp;        teacherTable.getSelectionModel().clearSelection();</b>
+<b class="nc">&nbsp;        System.out.println(teacherTable.getSelectionModel().getSelectedItem());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles the selection of a student in the table view.
+&nbsp;     *
+&nbsp;     * @param mouseEvent The MouseEvent associated with the selection action.
+&nbsp;     */
+&nbsp;    public void studentSelected(MouseEvent mouseEvent) {
+&nbsp;
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds the selected student from the &quot;not enrolled&quot; table to the &quot;enrolled&quot; table.
+&nbsp;     *
+&nbsp;     * @param actionEvent the action event that triggered this method
+&nbsp;     */
+&nbsp;    public void addStudent(ActionEvent actionEvent) {
+<b class="nc">&nbsp;        Student student = (Student) notEnrollTable.getSelectionModel().getSelectedItem();</b>
+<b class="nc">&nbsp;        if (student == null) {</b>
+<b class="nc">&nbsp;            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);</b>
+<b class="nc">&nbsp;            alert.setTitle(&quot;Add Student Error&quot;);</b>
+<b class="nc">&nbsp;            alert.setHeaderText(&quot;No student is selected.&quot;);</b>
+<b class="nc">&nbsp;            alert.show();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            enrollList.add(student);</b>
+<b class="nc">&nbsp;            notEnrollList.remove(student);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes the selected student from the &quot;enrolled&quot; table and adds it to the &quot;not enrolled&quot; table.
+&nbsp;     *
+&nbsp;     * @param actionEvent the action event that triggered this method
+&nbsp;     */
+&nbsp;    public void removeStudent(ActionEvent actionEvent) {
+<b class="nc">&nbsp;        Student student = (Student) enrollTable.getSelectionModel().getSelectedItem();</b>
+<b class="nc">&nbsp;        if (student == null) {</b>
+<b class="nc">&nbsp;            Alert alert = new Alert(Alert.AlertType.ERROR, null, ButtonType.OK);</b>
+<b class="nc">&nbsp;            alert.setTitle(&quot;Remove Student Error&quot;);</b>
+<b class="nc">&nbsp;            alert.setHeaderText(&quot;No student is selected.&quot;);</b>
+<b class="nc">&nbsp;            alert.show();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            notEnrollList.add(student);</b>
+<b class="nc">&nbsp;            enrollList.remove(student);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

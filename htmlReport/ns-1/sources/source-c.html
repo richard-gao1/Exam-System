@@ -1,0 +1,930 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SystemDatabase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem</a>
+</div>
+
+<h1>Coverage Summary for Class: SystemDatabase (comp3111.examsystem)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SystemDatabase</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (48/48)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    69.8%
+  </span>
+  <span class="absValue">
+    (90/129)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.4%
+  </span>
+  <span class="absValue">
+    (266/288)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SystemDatabase$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (49/49)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    69.8%
+  </span>
+  <span class="absValue">
+    (90/129)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.4%
+  </span>
+  <span class="absValue">
+    (267/289)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem;
+&nbsp;
+&nbsp;import com.google.gson.Gson;
+&nbsp;import org.apache.commons.io.FileUtils;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * Communicates and writes between systemDatabase and actors
+&nbsp; * @author whwmaust2125
+&nbsp; * @since 2024-11-14
+&nbsp; */
+&nbsp;public class SystemDatabase {
+&nbsp;    /**
+&nbsp;     * The file format of the data stored
+&nbsp;     */
+&nbsp;    static final String data_filetype = &quot;.json&quot;;
+&nbsp;    /**
+&nbsp;     * Store the current logged-in user (Teacher or Student)
+&nbsp;     */
+&nbsp;    public static User currentUser;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a directory if it does not already exist.
+&nbsp;     *
+&nbsp;     * @param directory The path of the directory to create.
+&nbsp;     * @return true if the directory was created or already exists, false otherwise.
+&nbsp;     */
+&nbsp;    private boolean createFolder(String directory) {
+<b class="fc">&nbsp;        File folder = new File(directory);</b>
+<b class="fc">&nbsp;        if (!folder.exists()) return folder.mkdir();</b>
+<b class="fc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a file at the specified path if it does not already exist.
+&nbsp;     *
+&nbsp;     * @param filepath The path where the file should be created.
+&nbsp;     * @return true if the file was created or already exists, false otherwise.
+&nbsp;     */
+&nbsp;    private static boolean createFile(String filepath) {
+<b class="fc">&nbsp;        File file = new File(filepath);</b>
+<b class="fc">&nbsp;        if (file.exists()) return true;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            return file.createNewFile();</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            System.out.println(e);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a file at the specified path.
+&nbsp;     *
+&nbsp;     * @param filepath The path of the file to remove.
+&nbsp;     * @return true if the file was successfully removed, false otherwise.
+&nbsp;     */
+&nbsp;    private static boolean removeFile(String filepath) {
+<b class="fc">&nbsp;        File file = new File(filepath);</b>
+<b class="fc">&nbsp;        return file.delete();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes all files and directories of the database.
+&nbsp;     */
+&nbsp;    public static void removeAll() {
+&nbsp;        try {
+<b class="fc">&nbsp;            FileUtils.deleteDirectory(new File(&quot;data&quot;));</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new SystemDatabase instance, initializing necessary folders and files.
+&nbsp;     * Also creates a default Manager account if none exists.
+&nbsp;     */
+<b class="fc">&nbsp;    public SystemDatabase() {</b>
+&nbsp;        // create folders if not exist
+<b class="fc">&nbsp;        createFolder(&quot;data/&quot;);</b>
+<b class="fc">&nbsp;        createFolder(&quot;data/account&quot;);</b>
+<b class="fc">&nbsp;        createFolder(&quot;data/account/student&quot;);</b>
+<b class="fc">&nbsp;        createFolder(&quot;data/account/teacher&quot;);</b>
+<b class="fc">&nbsp;        createFolder(&quot;data/account/manager&quot;);</b>
+<b class="fc">&nbsp;        createFolder(&quot;data/course&quot;);</b>
+&nbsp;
+&nbsp;        // create files if not exist
+<b class="fc">&nbsp;        createFile(&quot;data/account/students&quot; + data_filetype);</b>
+<b class="fc">&nbsp;        createFile(&quot;data/account/teachers&quot; + data_filetype);</b>
+<b class="fc">&nbsp;        createFile(&quot;data/account/managers&quot; + data_filetype);</b>
+<b class="fc">&nbsp;        createFile(&quot;data/courses&quot; + data_filetype);</b>
+&nbsp;
+&nbsp;        // create Manager
+<b class="fc">&nbsp;        Manager manager = new Manager();</b>
+<b class="fc">&nbsp;        registerManager(manager);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the file path for the list of names based on the account type.
+&nbsp;     *
+&nbsp;     * @param type The type of account (STUDENT, TEACHER, or MANAGER).
+&nbsp;     * @return The file path as a string.
+&nbsp;     */
+&nbsp;    private static String getNameListFilePath(AccountType type) {
+<b class="pc">&nbsp;        String folder = switch (type) {</b>
+<b class="fc">&nbsp;            case STUDENT -&gt; &quot;students&quot;;</b>
+<b class="fc">&nbsp;            case TEACHER -&gt; &quot;teachers&quot;;</b>
+<b class="fc">&nbsp;            case MANAGER -&gt; &quot;managers&quot;;</b>
+&nbsp;        };
+<b class="fc">&nbsp;        return &quot;data/account/&quot; + folder + data_filetype;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the file path for a specific user&#39;s account based on the username and account type.
+&nbsp;     *
+&nbsp;     * @param username The unique identifier for the user.
+&nbsp;     * @param type     The type of account (STUDENT, TEACHER, or MANAGER).
+&nbsp;     * @return The file path as a string.
+&nbsp;     */
+&nbsp;    private static String getAccountFilePath(String username, AccountType type) {
+<b class="pc">&nbsp;        if (username.isEmpty()) return &quot;&quot;;</b>
+<b class="pc">&nbsp;        String folder = switch (type) {</b>
+<b class="fc">&nbsp;            case STUDENT -&gt; &quot;student&quot;;</b>
+<b class="fc">&nbsp;            case TEACHER -&gt; &quot;teacher&quot;;</b>
+<b class="fc">&nbsp;            case MANAGER -&gt; &quot;manager&quot;;</b>
+&nbsp;        };
+<b class="fc">&nbsp;        return &quot;data/account/&quot; + folder + &quot;/&quot; + username + data_filetype;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Logs in an account with the provided username, password, and account type.
+&nbsp;     *
+&nbsp;     * @param username The unique identifier for the user.
+&nbsp;     * @param password The password for the user.
+&nbsp;     * @param type     The type of account (STUDENT, TEACHER, or MANAGER).
+&nbsp;     * @return An Account object if login is successful, otherwise null.
+&nbsp;     */
+&nbsp;    public static Account login(String username, String password, AccountType type) {
+<b class="pc">&nbsp;        Account account = switch (type) {</b>
+<b class="fc">&nbsp;            case STUDENT -&gt; getStudent(username);</b>
+<b class="fc">&nbsp;            case TEACHER -&gt; getTeacher(username);</b>
+<b class="fc">&nbsp;            case MANAGER -&gt; getManager(username);</b>
+&nbsp;        };
+<b class="pc">&nbsp;        if (account == null || !account.login(password)) return null;</b>
+<b class="fc">&nbsp;        return account;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Converts a JSON string to a Student object.
+&nbsp;     *
+&nbsp;     * @param input The JSON string to be converted.
+&nbsp;     * @return A Student object if conversion is successful, otherwise null.
+&nbsp;     */
+&nbsp;    public static Student jsonStringToStudent(String input) {
+<b class="fc">&nbsp;        Gson gson = new Gson();</b>
+<b class="fc">&nbsp;        return gson.fromJson(input, Student.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Converts a JSON string to a Teacher object.
+&nbsp;     *
+&nbsp;     * @param input The JSON string to be converted.
+&nbsp;     * @return A Teacher object if conversion is successful, otherwise null.
+&nbsp;     */
+&nbsp;    public static Teacher jsonStringToTeacher(String input) {
+<b class="fc">&nbsp;        Gson gson = new Gson();</b>
+<b class="fc">&nbsp;        return gson.fromJson(input, Teacher.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Converts a JSON string to a Manager object.
+&nbsp;     *
+&nbsp;     * @param input The JSON string to be converted.
+&nbsp;     * @return A Manager object if conversion is successful, otherwise null.
+&nbsp;     */
+&nbsp;    public static Manager jsonStringToManager(String input) {
+<b class="fc">&nbsp;        Gson gson = new Gson();</b>
+<b class="fc">&nbsp;        return gson.fromJson(input, Manager.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Converts a JSON string to a Course object.
+&nbsp;     *
+&nbsp;     * @param input The JSON string to be converted.
+&nbsp;     * @return A Course object if conversion is successful, otherwise null.
+&nbsp;     */
+&nbsp;    public static Course jsonStringToCourse(String input) {
+<b class="fc">&nbsp;        Gson gson = new Gson();</b>
+<b class="fc">&nbsp;        return gson.fromJson(input, Course.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a Course object from the file system based on the provided course ID.
+&nbsp;     *
+&nbsp;     * @param courseID The unique identifier for the course.
+&nbsp;     * @return A Course object if found, otherwise null.
+&nbsp;     */
+&nbsp;    public static Course getCourse(String courseID) {
+<b class="fc">&nbsp;        courseID = courseID.replace(&quot; &quot;, &quot;&quot;);</b>
+<b class="fc">&nbsp;        String filepath = &quot;data/course/&quot; + courseID + data_filetype;</b>
+<b class="fc">&nbsp;        FileInputStream fis = null;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            fis = new FileInputStream(filepath);</b>
+<b class="fc">&nbsp;            byte[] content = fis.readAllBytes();</b>
+<b class="pc">&nbsp;            if (content.length == 0) return null;</b>
+<b class="fc">&nbsp;            String text = new String(content, StandardCharsets.UTF_8);</b>
+<b class="fc">&nbsp;            return jsonStringToCourse(text);</b>
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;
+&nbsp;        }
+<b class="fc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a Student object from the file system based on the provided username.
+&nbsp;     *
+&nbsp;     * @param username The unique identifier for the student.
+&nbsp;     * @return A Student object if found, otherwise null.
+&nbsp;     */
+&nbsp;    public static Student getStudent(String username) {
+<b class="fc">&nbsp;        String filepath = getAccountFilePath(username, AccountType.STUDENT);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            FileInputStream fis = new FileInputStream(filepath);</b>
+<b class="fc">&nbsp;            byte[] content = fis.readAllBytes();</b>
+<b class="pc">&nbsp;            if (content.length == 0) return null;</b>
+<b class="fc">&nbsp;            String text = new String(content, StandardCharsets.UTF_8);</b>
+<b class="fc">&nbsp;            Student student = jsonStringToStudent(text);</b>
+<b class="fc">&nbsp;            fis.close();</b>
+<b class="fc">&nbsp;            return student;</b>
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+<b class="fc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a Teacher object from the file system based on the provided username.
+&nbsp;     *
+&nbsp;     * @param username The unique identifier for the teacher.
+&nbsp;     * @return A Teacher object if found, otherwise null.
+&nbsp;     */
+&nbsp;    public static Teacher getTeacher(String username) {
+<b class="fc">&nbsp;        String filepath = getAccountFilePath(username, AccountType.TEACHER);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            FileInputStream fis = new FileInputStream(filepath);</b>
+<b class="fc">&nbsp;            byte[] content = fis.readAllBytes();</b>
+<b class="pc">&nbsp;            if (content.length == 0) return null;</b>
+<b class="fc">&nbsp;            String text = new String(content, StandardCharsets.UTF_8);</b>
+<b class="fc">&nbsp;            Teacher teacher = jsonStringToTeacher(text);</b>
+<b class="fc">&nbsp;            fis.close();</b>
+<b class="fc">&nbsp;            return teacher;</b>
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+<b class="fc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a Manager object from the file system based on the provided username.
+&nbsp;     *
+&nbsp;     * @param username The unique identifier for the manager.
+&nbsp;     * @return A Manager object if found, otherwise null.
+&nbsp;     */
+&nbsp;    public static Manager getManager(String username) {
+<b class="fc">&nbsp;        String filepath = getAccountFilePath(username, AccountType.MANAGER);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            FileInputStream fis = new FileInputStream(filepath);</b>
+<b class="fc">&nbsp;            byte[] content = fis.readAllBytes();</b>
+<b class="pc">&nbsp;            if (content.length == 0) return null;</b>
+<b class="fc">&nbsp;            String text = new String(content, StandardCharsets.UTF_8);</b>
+<b class="fc">&nbsp;            Manager manager = jsonStringToManager(text);</b>
+<b class="fc">&nbsp;            fis.close();</b>
+<b class="fc">&nbsp;            return manager;</b>
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+<b class="fc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Reads and returns a list of course IDs from a file.
+&nbsp;     *
+&nbsp;     * @return An ArrayList containing the course IDs, or null if an error occurs or the file is
+&nbsp;    empty.
+&nbsp;     */
+&nbsp;    private static ArrayList&lt;String&gt; getCourseIDArray() {
+<b class="fc">&nbsp;        String filename = &quot;data/courses&quot; + data_filetype;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            FileInputStream fis = new FileInputStream(filename);</b>
+<b class="fc">&nbsp;            byte[] bytes = fis.readAllBytes();</b>
+<b class="fc">&nbsp;            if (bytes.length == 0) {</b>
+<b class="fc">&nbsp;                return null;</b>
+&nbsp;            }
+<b class="fc">&nbsp;            String list_str = new String(bytes, StandardCharsets.UTF_8);</b>
+<b class="fc">&nbsp;            fis.close();</b>
+<b class="fc">&nbsp;            return new Gson().fromJson(list_str, ArrayList.class);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a list of students filtered by containing specific substring (not case-sensitive) in username, name, and department.
+&nbsp;     *
+&nbsp;     * @param usernameFilter The filter for student usernames.
+&nbsp;     * @param nameFilter     The filter for student names.
+&nbsp;     * @param departmentFilter The filter for student departments.
+&nbsp;     * @return An ArrayList containing the filtered list of Student objects.
+&nbsp;     */
+&nbsp;    public static ArrayList&lt;Student&gt; getStudentList(String usernameFilter, String nameFilter, String departmentFilter) {
+<b class="fc">&nbsp;        ArrayList&lt;Student&gt; studentList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        ArrayList&lt;String&gt; username_array = getUsernameArray(AccountType.STUDENT);</b>
+&nbsp;        Student student;
+<b class="pc">&nbsp;        if (username_array == null) return studentList;</b>
+<b class="fc">&nbsp;        for (String username : username_array) {</b>
+<b class="pc">&nbsp;            if ((student = getStudent(username)) != null) {</b>
+<b class="fc">&nbsp;                studentList.add(student);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return studentList.stream().filter(s -&gt;</b>
+<b class="fc">&nbsp;                s.getUsername().toLowerCase().contains(usernameFilter.toLowerCase()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        s.getName().toLowerCase().contains(nameFilter.toLowerCase()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        s.getDepartment().toLowerCase().contains(departmentFilter.toLowerCase())</b>
+<b class="fc">&nbsp;        ).collect(Collectors.toCollection(ArrayList::new));</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a list of teachers filtered by containing specific substring (not case-sensitive) in username, name, and department.
+&nbsp;     *
+&nbsp;     * @param usernameFilter The filter for teacher usernames.
+&nbsp;     * @param nameFilter     The filter for teacher names.
+&nbsp;     * @param departmentFilter The filter for teacher departments.
+&nbsp;     * @return An ArrayList containing the filtered list of Teacher objects.
+&nbsp;     */
+&nbsp;    public static ArrayList&lt;Teacher&gt; getTeacherList(String usernameFilter, String nameFilter, String departmentFilter) {
+<b class="fc">&nbsp;        ArrayList&lt;Teacher&gt; teacherList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        ArrayList&lt;String&gt; username_array = getUsernameArray(AccountType.TEACHER);</b>
+&nbsp;        Teacher teacher;
+<b class="pc">&nbsp;        if (username_array == null) return teacherList;</b>
+<b class="fc">&nbsp;        for (String username : username_array) {</b>
+<b class="pc">&nbsp;            if ((teacher = getTeacher(username)) != null) {</b>
+<b class="fc">&nbsp;                teacherList.add(teacher);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return teacherList.stream().filter(t -&gt;</b>
+<b class="pc">&nbsp;                t.getUsername().toLowerCase().contains(usernameFilter.toLowerCase()) &amp;&amp;</b>
+<b class="pc">&nbsp;                        t.getName().toLowerCase().contains(nameFilter.toLowerCase()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        t.getDepartment().toLowerCase().contains(departmentFilter.toLowerCase())</b>
+<b class="fc">&nbsp;        ).collect(Collectors.toCollection(ArrayList::new));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a list of courses filtered by containing specific substring (not case-sensitive) in course ID, course name, and department.
+&nbsp;     *
+&nbsp;     * @param courseIDFilter The filter for course IDs.
+&nbsp;     * @param courseNameFilter The filter for course names.
+&nbsp;     * @param departmentFilter The filter for course departments.
+&nbsp;     * @return An ArrayList containing the filtered list of Course objects.
+&nbsp;     */
+&nbsp;    public static ArrayList&lt;Course&gt; getCourseList(String courseIDFilter, String courseNameFilter, String departmentFilter) {
+<b class="fc">&nbsp;        ArrayList&lt;Course&gt; courseList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        ArrayList&lt;String&gt; courseID_array = getCourseIDArray();</b>
+&nbsp;        Course course;
+<b class="pc">&nbsp;        if (courseID_array == null) return courseList;</b>
+<b class="fc">&nbsp;        for (String courseID : courseID_array) {</b>
+<b class="pc">&nbsp;            if ((course = getCourse(courseID)) != null) {</b>
+<b class="fc">&nbsp;                courseList.add(course);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return courseList.stream().filter(c -&gt;</b>
+<b class="fc">&nbsp;                c.getCourseID().toLowerCase().contains(courseIDFilter.toLowerCase()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        c.getCourseName().toLowerCase().contains(courseNameFilter.toLowerCase()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        c.getDepartment().toLowerCase().contains(departmentFilter.toLowerCase())</b>
+<b class="fc">&nbsp;        ).collect(Collectors.toCollection(ArrayList::new));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Reads and returns a list of usernames from a file.
+&nbsp;     *
+&nbsp;     * @param type The AccountType specifying which list to read.
+&nbsp;     * @return An ArrayList containing the usernames, or an empty ArrayList if an error occurs or
+&nbsp;    the file is empty.
+&nbsp;     */
+&nbsp;    private static ArrayList&lt;String&gt; getUsernameArray(AccountType type) {
+&nbsp;        try {
+<b class="fc">&nbsp;            String filename = getNameListFilePath(type);</b>
+<b class="fc">&nbsp;            FileInputStream fis = new FileInputStream(filename);</b>
+<b class="fc">&nbsp;            byte[] bytes = fis.readAllBytes();</b>
+<b class="fc">&nbsp;            if (bytes.length == 0) {</b>
+<b class="fc">&nbsp;                return new ArrayList&lt;&gt;();</b>
+&nbsp;            }
+<b class="fc">&nbsp;            String list_str = new String(bytes, StandardCharsets.UTF_8);</b>
+<b class="fc">&nbsp;            fis.close();</b>
+<b class="fc">&nbsp;            return new Gson().fromJson(list_str, ArrayList.class);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;
+&nbsp;        }
+<b class="nc">&nbsp;        return new ArrayList&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Writes a list of usernames to a file.
+&nbsp;     *
+&nbsp;     * @param username_array The ArrayList containing the usernames to be written.
+&nbsp;     * @param type           The AccountType specifying which list to write to.
+&nbsp;     */
+&nbsp;    private static void writeUsernameFile(ArrayList&lt;String&gt; username_array, AccountType type) {
+<b class="fc">&nbsp;        String filename = getNameListFilePath(type);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            FileOutputStream fos = new FileOutputStream(filename);</b>
+<b class="fc">&nbsp;            String text = new Gson().toJson(username_array);</b>
+<b class="fc">&nbsp;            byte[] bytes = text.getBytes();</b>
+<b class="fc">&nbsp;            fos.write(bytes);</b>
+<b class="fc">&nbsp;            fos.close();</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Writes a list of course IDs to a file.
+&nbsp;     *
+&nbsp;     * @param course_array The ArrayList containing the course IDs to be written.
+&nbsp;     */
+&nbsp;    private static void writeCourseIDFile(ArrayList&lt;String&gt; course_array) {
+<b class="fc">&nbsp;        String filename = &quot;data/courses&quot; + data_filetype;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            FileOutputStream fos = new FileOutputStream(filename);</b>
+<b class="fc">&nbsp;            String text = new Gson().toJson(course_array);</b>
+<b class="fc">&nbsp;            byte[] bytes = text.getBytes();</b>
+<b class="fc">&nbsp;            fos.write(bytes);</b>
+<b class="fc">&nbsp;            fos.close();</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Writes JSON content to a specified file.
+&nbsp;     *
+&nbsp;     * @param filepath The path of the file where the JSON will be written.
+&nbsp;     * @param text     The JSON string to be written to the file.
+&nbsp;     */
+&nbsp;    private static void writeJson(String filepath, String text) {
+&nbsp;        try {
+<b class="fc">&nbsp;            FileOutputStream fos = new FileOutputStream(filepath);</b>
+<b class="fc">&nbsp;            byte[] content = text.getBytes(StandardCharsets.UTF_8);</b>
+<b class="fc">&nbsp;            fos.write(content);</b>
+<b class="fc">&nbsp;            fos.close();</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Writes a student&#39;s information to a file.
+&nbsp;     *
+&nbsp;     * @param student The Student object containing the information to be written.
+&nbsp;     */
+&nbsp;    private static void writeStudentFile(Student student) {
+<b class="pc">&nbsp;        if (student == null) return;</b>
+<b class="fc">&nbsp;        String username = student.getUsername();</b>
+<b class="fc">&nbsp;        String filepath = getAccountFilePath(username, AccountType.STUDENT);</b>
+<b class="fc">&nbsp;        createFile(filepath);</b>
+<b class="fc">&nbsp;        String text = new Gson().toJson(student);</b>
+<b class="fc">&nbsp;        writeJson(filepath, text);</b>
+<b class="fc">&nbsp;        ArrayList&lt;String&gt; username_array = getUsernameArray(AccountType.STUDENT);</b>
+<b class="fc">&nbsp;        username_array = addToList(username, username_array);</b>
+<b class="fc">&nbsp;        writeUsernameFile(username_array, AccountType.STUDENT);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Writes a teacher&#39;s information to a file.
+&nbsp;     *
+&nbsp;     * @param teacher The Teacher object containing the information to be written.
+&nbsp;     */
+&nbsp;    private static void writeTeacherFile(Teacher teacher) {
+<b class="pc">&nbsp;        if (teacher == null) return;</b>
+<b class="fc">&nbsp;        String username = teacher.getUsername();</b>
+<b class="fc">&nbsp;        String filepath = getAccountFilePath(username, AccountType.TEACHER);</b>
+<b class="fc">&nbsp;        createFile(filepath);</b>
+<b class="fc">&nbsp;        String text = new Gson().toJson(teacher);</b>
+<b class="fc">&nbsp;        writeJson(filepath, text);</b>
+<b class="fc">&nbsp;        ArrayList&lt;String&gt; username_array = getUsernameArray(AccountType.TEACHER);</b>
+<b class="fc">&nbsp;        username_array = addToList(username, username_array);</b>
+<b class="fc">&nbsp;        writeUsernameFile(username_array, AccountType.TEACHER);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Writes a manager&#39;s information to a file.
+&nbsp;     *
+&nbsp;     * @param manager The Manager object containing the information to be written.
+&nbsp;     */
+&nbsp;    private static void writeManagerFile(Manager manager) {
+<b class="pc">&nbsp;        if (manager == null) return;</b>
+<b class="fc">&nbsp;        String username = manager.getUsername();</b>
+<b class="fc">&nbsp;        String filepath = getAccountFilePath(username, AccountType.MANAGER);</b>
+<b class="fc">&nbsp;        createFile(filepath);</b>
+<b class="fc">&nbsp;        String text = new Gson().toJson(manager);</b>
+<b class="fc">&nbsp;        writeJson(filepath, text);</b>
+<b class="fc">&nbsp;        ArrayList&lt;String&gt; username_array = getUsernameArray(AccountType.MANAGER);</b>
+<b class="fc">&nbsp;        username_array = addToList(username, username_array);</b>
+<b class="fc">&nbsp;        writeUsernameFile(username_array, AccountType.MANAGER);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Writes a course&#39;s information to a file.
+&nbsp;     *
+&nbsp;     * @param course The Course object containing the information to be written.
+&nbsp;     */
+&nbsp;    private static void  writeCourseFile(Course course) {
+<b class="pc">&nbsp;        if (course == null) return;</b>
+<b class="fc">&nbsp;        String courseID = course.getCourseID();</b>
+<b class="fc">&nbsp;        String filepath = &quot;data/course/&quot; + courseID + data_filetype;</b>
+<b class="fc">&nbsp;        String text = new Gson().toJson(course);</b>
+<b class="fc">&nbsp;        writeJson(filepath, text);</b>
+<b class="fc">&nbsp;        ArrayList&lt;String&gt; courseID_array = getCourseIDArray();</b>
+&nbsp;        courseID_array = addToList(courseID, courseID_array);
+<b class="fc">&nbsp;        writeCourseIDFile(courseID_array);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;</b>
+&nbsp;    /**
+&nbsp;     * Updates a student&#39;s information using a new Student object and the old username.
+&nbsp;     *
+&nbsp;     * @param newStudent The updated Student object with new information.
+&nbsp;     * @param old_username The original username of the student to be updated.
+<b class="fc">&nbsp;     */</b>
+<b class="fc">&nbsp;    public static void updateStudent(Student newStudent, String old_username) {</b>
+<b class="fc">&nbsp;        changeStudentUsername(newStudent, old_username);</b>
+<b class="fc">&nbsp;        writeStudentFile(newStudent);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates a student&#39;s information using a new Student object.
+&nbsp;     *
+&nbsp;     * @param newStudent The updated Student object with new information.
+&nbsp;     */
+&nbsp;    public static void updateStudent(Student newStudent) {
+&nbsp;        updateStudent(newStudent, newStudent.getUsername());
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;</b>
+<b class="fc">&nbsp;    /**</b>
+&nbsp;     * Updates a teacher&#39;s information using a new Teacher object and the old username.
+&nbsp;     *
+&nbsp;     * @param newTeacher The updated Teacher object with new information.
+&nbsp;     * @param old_username The original username of the teacher to be updated.
+&nbsp;     */
+&nbsp;    public static void updateTeacher(Teacher newTeacher, String old_username) {
+&nbsp;        changeTeacherUsername(newTeacher, old_username);
+&nbsp;        writeTeacherFile(newTeacher);
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates a teacher&#39;s information using a new Teacher object.
+&nbsp;     *
+&nbsp;     * @param newTeacher The updated Teacher object with new information.
+&nbsp;     */
+&nbsp;    public static void updateTeacher(Teacher newTeacher) {
+&nbsp;        updateTeacher(newTeacher, newTeacher.getUsername());
+&nbsp;    }
+<b class="fc">&nbsp;</b>
+<b class="fc">&nbsp;    /**</b>
+<b class="fc">&nbsp;     * Modifies a course by updating its information using a new Course object and the old course</b>
+&nbsp;     ID.
+&nbsp;     *
+&nbsp;     * @param newCourse The updated Course object with new information.
+&nbsp;     * @param old_courseID The original course ID of the course to be modified.
+&nbsp;     */
+&nbsp;    public static void modifyCourse(Course newCourse, String old_courseID) {
+&nbsp;        if (getCourse(old_courseID) == null) return;
+&nbsp;        changeCourseID(newCourse, old_courseID);
+<b class="fc">&nbsp;        writeCourseFile(newCourse);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Changes the username of a given student.
+&nbsp;     *
+&nbsp;     * @param newStudent The student object with the new username information.
+&nbsp;     * @param old_username The original username that will be replaced.
+&nbsp;     */
+&nbsp;    private static void changeStudentUsername(Student newStudent, String old_username) {
+&nbsp;        String new_username = (newStudent == null) ? &quot;&quot; : newStudent.getUsername();
+<b class="fc">&nbsp;        if (Objects.equals(old_username, new_username)) return;</b>
+<b class="fc">&nbsp;        Student oldStudent = getStudent(old_username);</b>
+<b class="fc">&nbsp;        if (oldStudent == null) return;</b>
+&nbsp;        List&lt;Course&gt; courses = oldStudent.getCourses();
+&nbsp;        for (Course course : courses) {
+&nbsp;            course.dropStudent(oldStudent);
+&nbsp;            if (newStudent != null) course.addStudent(newStudent);
+&nbsp;        }
+&nbsp;        removeStudent(old_username);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+<b class="pc">&nbsp;     * Changes the username of a given teacher.</b>
+<b class="fc">&nbsp;     *</b>
+<b class="fc">&nbsp;     * @param newTeacher The teacher object with the new username information.</b>
+<b class="pc">&nbsp;     * @param old_username The original username that will be replaced.</b>
+<b class="fc">&nbsp;     */</b>
+<b class="pc">&nbsp;    private static void changeTeacherUsername(Teacher newTeacher, String old_username) {</b>
+<b class="nc">&nbsp;        String new_username = (newTeacher == null) ? &quot;&quot; : newTeacher.getUsername();</b>
+<b class="nc">&nbsp;        if (Objects.equals(old_username, new_username)) return;</b>
+&nbsp;        Teacher oldTeacher = getTeacher(old_username);
+<b class="fc">&nbsp;        if (oldTeacher == null) return;</b>
+&nbsp;        List&lt;Course&gt; courses = oldTeacher.getCourses();
+&nbsp;        for (Course course : courses) {
+&nbsp;            course.setTeacher(newTeacher);
+&nbsp;        }
+&nbsp;        removeTeacher(old_username);
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Changes the course ID of a given course.
+<b class="pc">&nbsp;     *</b>
+<b class="fc">&nbsp;     * @param newCourse The course object with the new username information.</b>
+<b class="fc">&nbsp;     * @param old_courseID The original courseID that will be replaced.</b>
+<b class="pc">&nbsp;     */</b>
+<b class="fc">&nbsp;    private static void changeCourseID(Course newCourse, String old_courseID) {</b>
+<b class="pc">&nbsp;        String new_courseID = (newCourse == null) ? &quot;&quot; : newCourse.getCourseID();</b>
+<b class="nc">&nbsp;        if (Objects.equals(old_courseID, new_courseID)) return;</b>
+&nbsp;        Course oldCourse = getCourse(old_courseID);
+<b class="fc">&nbsp;        if (oldCourse == null) return;</b>
+&nbsp;        Teacher teacher = oldCourse.getTeacher();
+&nbsp;        if (teacher != null) {
+&nbsp;            teacher.dropCourse(oldCourse);
+&nbsp;            if (newCourse != null) teacher.addCourse(newCourse);
+&nbsp;        }
+&nbsp;        List&lt;Student&gt; students = oldCourse.getStudents();
+&nbsp;        for (Student student : students) {
+&nbsp;            try {
+&nbsp;                student.dropCourse(oldCourse);
+<b class="pc">&nbsp;            } catch (Exception e) {}</b>
+<b class="fc">&nbsp;            if (newCourse != null) student.addCourse(newCourse);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="pc">&nbsp;        removeCourse(old_courseID);</b>
+<b class="fc">&nbsp;    }</b>
+<b class="pc">&nbsp;</b>
+<b class="nc">&nbsp;    /**</b>
+<b class="nc">&nbsp;     * Removes a specified item from an ArrayList of Strings.</b>
+&nbsp;     *
+<b class="fc">&nbsp;     * @param item The string item to be removed from the list.</b>
+<b class="pc">&nbsp;     * @param list The ArrayList of strings from which the item should be removed.</b>
+&nbsp;     * @return A new ArrayList of Strings with the specified item removed. If the input list is
+<b class="nc">&nbsp;    null, returns an empty ArrayList.</b>
+<b class="nc">&nbsp;     */</b>
+<b class="nc">&nbsp;    private static ArrayList&lt;String&gt; removeFromList(String item, ArrayList&lt;String&gt; list) {</b>
+&nbsp;        if (list == null) return new ArrayList&lt;&gt;();
+<b class="fc">&nbsp;        list.remove(item);</b>
+&nbsp;        return list;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds an item to a list if it does not already contain that item.
+&nbsp;     *
+&nbsp;     * @param item The item to be added to the list.
+&nbsp;     * @param list The list to which the item should be added. If the list is null, it will be
+&nbsp;    initialized as a new ArrayList.
+&nbsp;     * @return The updated list containing the item.
+&nbsp;     */
+<b class="pc">&nbsp;    private static ArrayList&lt;String&gt; addToList(String item, ArrayList&lt;String&gt; list) {</b>
+<b class="fc">&nbsp;        if (list == null) list = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        if (list.contains(item)) return list;</b>
+&nbsp;        list.add(item);
+&nbsp;        return list;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a teacher account by username.
+&nbsp;     *
+&nbsp;     * @param username The username of the teacher to be removed.
+&nbsp;     */
+&nbsp;    public static void removeStudent(String username) {
+&nbsp;        if (getStudent(username) != null) {
+<b class="fc">&nbsp;            removeFile(getAccountFilePath(username, AccountType.STUDENT));</b>
+<b class="fc">&nbsp;            ArrayList&lt;String&gt; username_array = getUsernameArray(AccountType.STUDENT);</b>
+<b class="fc">&nbsp;            username_array = removeFromList(username, username_array);</b>
+<b class="fc">&nbsp;            writeUsernameFile(username_array, AccountType.STUDENT);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a teacher account by username.
+&nbsp;     *
+&nbsp;     * @param username The username of the teacher to be removed.
+&nbsp;     */
+<b class="pc">&nbsp;    public static void removeTeacher(String username) {</b>
+<b class="fc">&nbsp;        if (getTeacher(username) != null) {</b>
+<b class="fc">&nbsp;            removeFile(getAccountFilePath(username, AccountType.TEACHER));</b>
+<b class="fc">&nbsp;            ArrayList&lt;String&gt; username_array = getUsernameArray(AccountType.TEACHER);</b>
+<b class="fc">&nbsp;            username_array = removeFromList(username, username_array);</b>
+&nbsp;            writeUsernameFile(username_array, AccountType.TEACHER);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a course by course ID.
+&nbsp;     *
+&nbsp;     * @param courseID The ID of the course to be removed.
+&nbsp;     */
+<b class="pc">&nbsp;    public static void removeCourse(String courseID) {</b>
+<b class="fc">&nbsp;        if (getCourse(courseID) != null) {</b>
+<b class="fc">&nbsp;            removeFile(&quot;data/course/&quot; + courseID + data_filetype);</b>
+<b class="fc">&nbsp;            ArrayList&lt;String&gt; courseID_array = getCourseIDArray();</b>
+<b class="fc">&nbsp;            courseID_array = removeFromList(courseID, courseID_array);</b>
+&nbsp;            writeCourseIDFile(courseID_array);
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Registers a new student by writing their information to a file.
+&nbsp;     *
+&nbsp;     * @param student The Student object containing the information to be registered.
+&nbsp;     * @return An empty string if registration is successful, or an error message if the username
+<b class="pc">&nbsp;    already exists.</b>
+<b class="fc">&nbsp;     */</b>
+<b class="fc">&nbsp;    public static String registerStudent(Student student) {</b>
+<b class="fc">&nbsp;        String username = student.getUsername();</b>
+<b class="fc">&nbsp;        if (getStudent(username) != null) {</b>
+&nbsp;            // teacher with this username already exists
+&nbsp;            return &quot;Student username &quot; + student.getUsername() + &quot; already exist&quot;;
+&nbsp;        }
+&nbsp;        writeStudentFile(student);
+&nbsp;        return &quot;&quot;;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Registers a new teacher by writing their information to a file.
+&nbsp;     *
+&nbsp;     * @param teacher The Teacher object containing the information to be registered.
+<b class="fc">&nbsp;     * @return An empty string if registration is successful, or an error message if the username</b>
+<b class="fc">&nbsp;    already exists.</b>
+&nbsp;     */
+<b class="fc">&nbsp;    public static String registerTeacher(Teacher teacher) {</b>
+&nbsp;        String username = teacher.getUsername();
+<b class="fc">&nbsp;        if (getTeacher(username) != null) {</b>
+<b class="fc">&nbsp;            // teacher with this username already exists</b>
+&nbsp;            return &quot;Teacher username &quot; + teacher.getUsername() + &quot; already exist&quot;;
+&nbsp;        }
+&nbsp;        writeTeacherFile(teacher);
+&nbsp;        return &quot;&quot;;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Registers a new manager by writing their information to a file.
+&nbsp;     *
+&nbsp;     * @param manager The Manager object containing the information to be registered.
+<b class="fc">&nbsp;     * @return An empty string if registration is successful, or an error message if the username</b>
+<b class="fc">&nbsp;    already exists.</b>
+&nbsp;     */
+<b class="fc">&nbsp;    public static String registerManager(Manager manager) {</b>
+&nbsp;        String username = manager.getUsername();
+<b class="fc">&nbsp;        if (getManager(username) != null) {</b>
+<b class="fc">&nbsp;            // manager with this username already exists</b>
+&nbsp;            return &quot;Manager username &quot; + manager.getUsername() + &quot; already exist&quot;;
+&nbsp;        }
+&nbsp;        writeManagerFile(manager);
+&nbsp;        return &quot;&quot;;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a new course by writing its information to a file.
+&nbsp;     *
+&nbsp;     * @param course The Course object containing the information to be created.
+<b class="fc">&nbsp;     * @return An empty string if creation is successful, or an error message if the course ID</b>
+<b class="fc">&nbsp;    already exists.</b>
+&nbsp;     */
+<b class="fc">&nbsp;    public static String createCourse(Course course) {</b>
+&nbsp;        String courseID = course.getCourseID();
+<b class="fc">&nbsp;        if (getCourse(courseID) != null) {</b>
+<b class="fc">&nbsp;            // course with this course ID already exists</b>
+&nbsp;            return &quot;Course ID &quot; + courseID + &quot; already exist&quot;;
+&nbsp;        }
+&nbsp;        writeCourseFile(course);
+&nbsp;        return &quot;&quot;;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

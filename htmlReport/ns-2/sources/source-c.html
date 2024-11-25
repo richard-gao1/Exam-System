@@ -1,0 +1,280 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > StudentMainController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: StudentMainController (comp3111.examsystem.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StudentMainController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/68)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem.controller;
+&nbsp;
+&nbsp;import comp3111.examsystem.*;
+&nbsp;import javafx.event.ActionEvent;
+&nbsp;import javafx.fxml.FXML;
+&nbsp;import javafx.fxml.FXMLLoader;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.Parent;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.scene.control.Alert;
+&nbsp;import javafx.scene.control.Button;
+&nbsp;import javafx.scene.control.ButtonType;
+&nbsp;import javafx.scene.control.ComboBox;
+&nbsp;import javafx.stage.Stage;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * The controller for the Student Main interface.
+&nbsp; */
+<b class="nc">&nbsp;public class StudentMainController implements Initializable {</b>
+&nbsp;    /**
+&nbsp;     * The combo box for selecting an exam.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    ComboBox&lt;String&gt; examCombox;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The current student instance.
+&nbsp;     */
+&nbsp;    Student student;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * A map of exam names to their corresponding Exam objects.
+&nbsp;     */
+<b class="nc">&nbsp;    Map&lt;String, Exam&gt; examPairs = new HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initializes the controller when the FXML file is loaded.
+&nbsp;     * Initializes the student and sets up the exams for selection.
+&nbsp;     *
+&nbsp;     * @param location  The location used to resolve relative paths for the root object, or
+&nbsp;    null if the location is not known.
+&nbsp;     * @param resources The resources used to localize the root object, or null if the root
+&nbsp;    object was not localized.
+&nbsp;     */
+&nbsp;    public void initialize(URL location, ResourceBundle resources) {
+<b class="nc">&nbsp;        this.student = (Student) SystemDatabase.currentUser;</b>
+<b class="nc">&nbsp;        initTestObjects();</b>
+&nbsp;        // add exam options to the dropdown
+<b class="nc">&nbsp;        ArrayList&lt;Course&gt; courses = student.getCourses();</b>
+<b class="nc">&nbsp;        ArrayList&lt;Exam&gt; exams = new ArrayList&lt;Exam&gt;();</b>
+<b class="nc">&nbsp;        for (Course course : courses) {</b>
+<b class="nc">&nbsp;            exams.addAll(course.getExams());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        for (Exam exam : exams) {</b>
+<b class="nc">&nbsp;            if (exam.getIsPublished()) {</b>
+<b class="nc">&nbsp;                examPairs.put(exam.getExamName(), exam);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        examCombox.getItems().removeAll(examCombox.getItems());</b>
+<b class="nc">&nbsp;        examCombox.getItems().addAll(examPairs.keySet());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initializes courses, exams, and grades used for manual testing
+&nbsp;     */
+&nbsp;    public void initTestObjects() {
+<b class="nc">&nbsp;        System.out.println(&quot;Student before any course registration: &quot; + student);</b>
+&nbsp;
+&nbsp;        // manually make a new course and add the student to it (reset course)
+<b class="nc">&nbsp;        SystemDatabase.removeCourse(&quot;CourseID0&quot;);</b>
+<b class="nc">&nbsp;        SystemDatabase.removeCourse(&quot;CourseID1&quot;);</b>
+<b class="nc">&nbsp;        ArrayList&lt;Student&gt; students = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        students.add(this.student);</b>
+<b class="nc">&nbsp;        ArrayList&lt;Exam&gt; initExams = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        ArrayList&lt;Question&gt; questions = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        String[] options = {&quot;option1&quot;, &quot;option2&quot;, &quot;option3&quot;, &quot;option4&quot;};</b>
+<b class="nc">&nbsp;        Question q1 = new Question(&quot;Question 1&quot;, options, &quot;A&quot;, 10, 0);</b>
+<b class="nc">&nbsp;        Question q2 = new Question(&quot;Question 2&quot;, options, &quot;AB&quot;, 10, 1);</b>
+<b class="nc">&nbsp;        Question q3 = new Question(&quot;Question 3&quot;, options, &quot;ABC&quot;, 10, 1);</b>
+<b class="nc">&nbsp;        Question q4 = new Question(&quot;Question 4&quot;, options, &quot;A&quot;, 10, 0);</b>
+<b class="nc">&nbsp;        questions.add(q1);</b>
+<b class="nc">&nbsp;        questions.add(q2);</b>
+<b class="nc">&nbsp;        questions.add(q3);</b>
+<b class="nc">&nbsp;        questions.add(q4);</b>
+<b class="nc">&nbsp;        Course course0 = new Course(&quot;CourseID0&quot;,&quot;Course0&quot;, &quot;dept&quot;, null, students, initExams);</b>
+<b class="nc">&nbsp;        Course course1 = new Course(&quot;CourseID1&quot;,&quot;Course1&quot;, &quot;dept&quot;, null, students, initExams);</b>
+&nbsp;
+<b class="nc">&nbsp;        System.out.println(&quot;Student after course initialized: &quot; + student);</b>
+<b class="nc">&nbsp;        SystemDatabase.createCourse(course0);</b>
+<b class="nc">&nbsp;        SystemDatabase.createCourse(course1);</b>
+<b class="nc">&nbsp;        Exam testExamUnpubC0 = new Exam(&quot;C0 examUnpublished&quot;, &quot;CourseID0&quot;, true, 30, questions);</b>
+<b class="nc">&nbsp;        Exam testExamPubC0 = new Exam(&quot;C0 examPublished&quot;, &quot;CourseID0&quot;, true, 30, questions);</b>
+<b class="nc">&nbsp;        Exam testExamUnpubC1 = new Exam(&quot;C1 examUnpublished&quot;, &quot;CourseID1&quot;, true, 30, questions);</b>
+<b class="nc">&nbsp;        Exam testExamPubC1 = new Exam(&quot;C1 examPublished&quot;, &quot;CourseID1&quot;, true, 30, questions);</b>
+&nbsp;
+&nbsp;        // add test grades
+<b class="nc">&nbsp;        testExamPubC0.gradeStudent((Student) SystemDatabase.currentUser, 10, 12);</b>
+<b class="nc">&nbsp;        testExamUnpubC0.gradeStudent((Student) SystemDatabase.currentUser, 15, 7);</b>
+<b class="nc">&nbsp;        testExamPubC1.gradeStudent((Student) SystemDatabase.currentUser, 20, 19);</b>
+<b class="nc">&nbsp;        testExamUnpubC1.gradeStudent((Student) SystemDatabase.currentUser, 5, 27);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Opens the Quiz Taking UI and sets the selected exam.
+&nbsp;     *
+&nbsp;     * @param e The action event triggered by selecting an option in the combo box.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void openExamUI(ActionEvent e) {
+<b class="nc">&nbsp;        FXMLLoader quizLoader = new FXMLLoader();</b>
+<b class="nc">&nbsp;        quizLoader.setLocation(Main.class.getResource(&quot;QuizTakingUI.fxml&quot;));</b>
+<b class="nc">&nbsp;        Stage stage = new Stage();</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            Parent root = quizLoader.load();</b>
+<b class="nc">&nbsp;            QuizController quizController = quizLoader.getController();</b>
+<b class="nc">&nbsp;            String examName = examCombox.getValue();</b>
+<b class="nc">&nbsp;            stage.setTitle(&quot;Taking Exam: &quot; + examName);</b>
+<b class="nc">&nbsp;            if (examName != null &amp;&amp; !examName.isEmpty()) {</b>
+<b class="nc">&nbsp;                quizController.setExam(examPairs.get(examName));</b>
+<b class="nc">&nbsp;                stage.setScene(new Scene(root));</b>
+<b class="nc">&nbsp;                stage.show();</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                Alert alert = new Alert(Alert.AlertType.WARNING, &quot;Select Exam&quot;, ButtonType.OK);</b>
+<b class="nc">&nbsp;                alert.setTitle(&quot;Exam selection error&quot;);</b>
+<b class="nc">&nbsp;                alert.show();</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (IOException e1) {</b>
+<b class="nc">&nbsp;            e1.printStackTrace();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Opens the Grade Statistics UI.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void openGradeStatistic(ActionEvent e) {
+<b class="nc">&nbsp;        FXMLLoader gradeLoader = new FXMLLoader();</b>
+<b class="nc">&nbsp;        gradeLoader.setLocation(Main.class.getResource(&quot;StudentGradeStatistic.fxml&quot;));</b>
+<b class="nc">&nbsp;        Stage stage = new Stage();</b>
+<b class="nc">&nbsp;        stage.setTitle(&quot;Grade Statistics&quot;);</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            Parent root = gradeLoader.load();</b>
+<b class="nc">&nbsp;            stage.setScene(new Scene(root));</b>
+&nbsp;
+<b class="nc">&nbsp;        } catch (IOException e1) {</b>
+<b class="nc">&nbsp;            e1.printStackTrace();</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        stage.show();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Exits the application.
+&nbsp;     */
+&nbsp;    @FXML
+&nbsp;    public void exit() {
+<b class="nc">&nbsp;        System.exit(0);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

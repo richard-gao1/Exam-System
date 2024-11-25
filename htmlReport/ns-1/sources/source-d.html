@@ -1,0 +1,561 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Teacher</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem</a>
+</div>
+
+<h1>Coverage Summary for Class: Teacher (comp3111.examsystem)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Teacher</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75.9%
+  </span>
+  <span class="absValue">
+    (22/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    65%
+  </span>
+  <span class="absValue">
+    (39/60)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.2%
+  </span>
+  <span class="absValue">
+    (89/107)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem;
+&nbsp;
+&nbsp;import com.google.gson.Gson;
+&nbsp;
+&nbsp;import java.lang.reflect.Array;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * A class representing a teacher, which extends the User class.
+&nbsp; */
+&nbsp;public class Teacher extends User {
+&nbsp;    private String position;
+&nbsp;
+&nbsp;    // Changes: Replace `courses` with `courseIDs`
+<b class="fc">&nbsp;    private ArrayList&lt;String&gt; courseIDs = new ArrayList&lt;&gt;(); // Store course IDs instead of Course objects</b>
+&nbsp;
+<b class="fc">&nbsp;    private ArrayList&lt;Question&gt; questionBank = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;    private ArrayList&lt;Course&gt; courses = new ArrayList&lt;&gt;();</b>
+&nbsp;    private HashMap&lt;String, Double&gt; course_scores;
+&nbsp;    private HashMap&lt;String, Double&gt; student_scores;
+&nbsp;    private HashMap&lt;String, Double&gt; exam_scores;
+&nbsp;    // private List&lt;Grade&gt; grades;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Teacher account with the provided details.
+&nbsp;     *
+&nbsp;     * @param username   The new username to set.
+&nbsp;     * @param password   The new password to set.
+&nbsp;     * @param name       The new name to set.
+&nbsp;     * @param gender     The new gender to set.
+&nbsp;     * @param age        The new age to set.
+&nbsp;     * @param department The new department to set.
+&nbsp;     * @param position   The new position to set.
+&nbsp;     * @return This Teacher instance after updating the details.
+&nbsp;     */
+&nbsp;    public Teacher(String username, String password, String name, String gender, int age, String department, String position) {
+<b class="fc">&nbsp;        super(username, password, name, gender, age, department);</b>
+<b class="fc">&nbsp;        this.position = position;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the details of a Teacher account.
+&nbsp;     *
+&nbsp;     * @param username   The new username to set.
+&nbsp;     * @param password   The new password to set.
+&nbsp;     * @param name       The new name to set.
+&nbsp;     * @param gender     The new gender to set.
+&nbsp;     * @param age        The new age to set.
+&nbsp;     * @param department The new department to set.
+&nbsp;     * @param position   The new position to set.
+&nbsp;     * @return This Teacher instance after updating the details.
+&nbsp;     */
+&nbsp;    public Teacher update(String username, String password, String name, String gender, int age, String department, String position) {
+<b class="fc">&nbsp;        super.update(username, password, name, gender, age, department);</b>
+<b class="fc">&nbsp;        this.position = position;</b>
+<b class="fc">&nbsp;        return this;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a new course to the list of courses taught by this teacher.
+&nbsp;     *
+&nbsp;     * @param courseID The ID of the course to be added.
+&nbsp;     *
+&nbsp;     */
+&nbsp;    public void addCourse(String courseID) {
+<b class="pc">&nbsp;        if (!courseIDs.contains(courseID)) {</b>
+<b class="fc">&nbsp;            courseIDs.add(courseID);</b>
+<b class="fc">&nbsp;            SystemDatabase.updateTeacher(this);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a course from the list of courses taught by this teacher.
+&nbsp;     *
+&nbsp;     * @param courseID The ID of the course to be removed.
+&nbsp;     */
+&nbsp;    public void dropCourse(String courseID) {
+<b class="fc">&nbsp;        courseIDs.remove(courseID);</b>
+<b class="fc">&nbsp;        SystemDatabase.updateTeacher(this);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a list of Course objects associated with the teacher.
+&nbsp;     *
+&nbsp;     * @return A list of Course objects.
+&nbsp;     */
+&nbsp;    public List&lt;Course&gt; getCourses() {
+&nbsp;        // Changes: Retrieve Course objects dynamically using SystemDatabase
+<b class="fc">&nbsp;        ArrayList&lt;Course&gt; courses = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (String courseID : courseIDs) {</b>
+<b class="fc">&nbsp;            Course course = SystemDatabase.getCourse(courseID);</b>
+<b class="fc">&nbsp;            if (course != null) {</b>
+<b class="fc">&nbsp;                courses.add(course);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return courses;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns a list of course IDs taught by the teacher.
+&nbsp;     *
+&nbsp;     * @return A list of course IDs.
+&nbsp;     */
+&nbsp;    public List&lt;String&gt; getCourseID() {
+<b class="fc">&nbsp;        return new ArrayList&lt;&gt;(courseIDs); // Return a copy to avoid external modifications</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a new exam for a specified course.
+&nbsp;     *
+&nbsp;     * @param examName   The name of the exam.
+&nbsp;     * @param courseID   The ID of the course for which the exam is created.
+&nbsp;     * @param isPublished Indicates whether the exam is published.
+&nbsp;     * @param duration   The duration of the exam in minutes.
+&nbsp;     * @param questions  A list of questions for the exam.
+&nbsp;     *
+&nbsp;     * @throws IllegalArgumentException If the teacher does not have permission to manage the
+&nbsp;    specified course
+&nbsp;                                        or if there is no such course.
+&nbsp;     */
+&nbsp;    public void createExam(String examName, String courseID, boolean isPublished, int duration, ArrayList&lt;Question&gt; questions) {
+<b class="fc">&nbsp;        Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID</b>
+<b class="fc">&nbsp;        if (course != null) {</b>
+<b class="fc">&nbsp;            if (courseIDs.contains(courseID)){</b>
+<b class="fc">&nbsp;                Exam exam = new Exam(examName, course, isPublished, duration, questions);</b>
+&nbsp;                return;
+&nbsp;            }
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;You are not permitted to manage this course. Please contact administrator.&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        throw new IllegalArgumentException(&quot;No such course&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds an existing exam to a specified course.
+&nbsp;     *
+&nbsp;     * @param exam     The exam object to be added.
+&nbsp;     * @param courseID The ID of the course to which the exam should be added.
+&nbsp;     *
+&nbsp;     * @throws IllegalArgumentException If the teacher does not have permission to manage the
+&nbsp;    specified course
+&nbsp;     *                                  or if there is no such course.
+&nbsp;     */
+&nbsp;    public void addExam(Exam exam, String courseID) {
+&nbsp;        // Exams are added to courses when they are constructed.
+&nbsp;        // This method is called when the exam is not initialized with a course.
+<b class="pc">&nbsp;        if (courseIDs.contains(courseID)) {</b>
+<b class="fc">&nbsp;            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID</b>
+<b class="pc">&nbsp;            if (course != null) {</b>
+<b class="fc">&nbsp;                exam.setCourse(course);</b>
+&nbsp;                return;
+&nbsp;            }
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;No such course&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        throw new IllegalArgumentException(&quot;You are not permitted to manage this course. Please contact administrator.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deletes an exam from a specified course.
+&nbsp;     *
+&nbsp;     * @param examName The name of the exam to be deleted.
+&nbsp;     * @param courseID The ID of the course from which the exam should be deleted.
+&nbsp;     *
+&nbsp;     * @throws IllegalArgumentException If the teacher does not have permission to manage the
+&nbsp;    specified course
+&nbsp;     *                                  or if there is no such course.
+&nbsp;     */
+&nbsp;    public void deleteExam(String examName, String courseID) {
+<b class="pc">&nbsp;        if (courseIDs.contains(courseID)) {</b>
+<b class="fc">&nbsp;            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID</b>
+<b class="pc">&nbsp;            if (course != null) {</b>
+<b class="fc">&nbsp;                course.dropExam(examName);</b>
+&nbsp;                return;
+&nbsp;            }
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;No such course&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        throw new IllegalArgumentException(&quot;You are not permitted to manage this course. Please contact administrator.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deletes an exam from a specified course.
+&nbsp;     *
+&nbsp;     * @param exam  The exam object to be deleted.
+&nbsp;     * @param course The course object from which the exam should be deleted.
+&nbsp;     *
+&nbsp;     * @throws IllegalArgumentException If the teacher does not have permission to manage the
+&nbsp;    specified course
+&nbsp;     *                                  or if there is no such course.
+&nbsp;     */
+&nbsp;    public void deleteExam(Exam exam, Course course){
+<b class="fc">&nbsp;        if (course != null){</b>
+<b class="fc">&nbsp;            if (courseIDs.contains(course.getCourseID())){</b>
+<b class="fc">&nbsp;                course.dropExam(exam);</b>
+&nbsp;                return;
+&nbsp;            }
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;You are not permitted to manage this course. Please contact administrator.&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        throw new IllegalArgumentException(&quot;No such course&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates an existing exam with new details.
+&nbsp;     *
+&nbsp;     * @param oldExamName The original name of the exam to be updated.
+&nbsp;     * @param oldCourse   The original course associated with the exam.
+&nbsp;     * @param examName    The new name for the exam.
+&nbsp;     * @param courseID    The ID of the new course for the exam.
+&nbsp;     * @param isPublished Indicates whether the updated exam should be published.
+&nbsp;     * @param duration    The new duration of the exam in minutes.
+&nbsp;     * @param questions   A list of new questions for the exam.
+&nbsp;     *
+&nbsp;     * @throws IllegalArgumentException If there is no such course or if the teacher does not
+&nbsp;    have permission
+&nbsp;     *                                  to manage the specified course.
+&nbsp;     */
+&nbsp;    public void updateExam(String oldExamName, Course oldCourse, String examName, String courseID, boolean isPublished, int duration, ArrayList&lt;Question&gt; questions) {
+<b class="fc">&nbsp;        Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID</b>
+<b class="fc">&nbsp;        updateExam(oldExamName, oldCourse, examName,  course,  isPublished,  duration, questions);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates an existing exam with new details.
+&nbsp;     *
+&nbsp;     * @param oldExamName The original name of the exam to be updated.
+&nbsp;     * @param oldCourse   The original course associated with the exam.
+&nbsp;     * @param examName    The new name for the exam.
+&nbsp;     * @param course      The new course for the exam.
+&nbsp;     * @param isPublished Indicates whether the updated exam should be published.
+&nbsp;     * @param duration    The new duration of the exam in minutes.
+&nbsp;     * @param questions   A list of new questions for the exam.
+&nbsp;     *
+&nbsp;     * @throws IllegalArgumentException If there is no such course or if the teacher does not
+&nbsp;    have permission
+&nbsp;     *                                  to manage the specified course.
+&nbsp;     */
+&nbsp;    public void updateExam(String oldExamName, Course oldCourse, String examName, Course course, boolean isPublished, int duration, ArrayList&lt;Question&gt; questions) {
+<b class="pc">&nbsp;        if (course != null) {</b>
+<b class="pc">&nbsp;            if (course.getTeacher().equals(this)) {</b>
+&nbsp;                // Case 1: course is the same
+&nbsp;                //if (course.getCourseID().equals(oldCourse.getCourseID()))
+<b class="fc">&nbsp;                    oldCourse.updateExam(oldExamName,  examName,  course,  isPublished,  duration, questions);</b>
+&nbsp;                // Case 2: need to update the course as well
+&nbsp;            } else {
+<b class="nc">&nbsp;                throw new IllegalArgumentException(&quot;Not allowed to access this course&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        else throw new IllegalArgumentException(&quot;No such course&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a list of all exams associated with the teacher&#39;s courses.
+&nbsp;     *
+&nbsp;     * @return An ArrayList containing all exam objects managed by the teacher.
+&nbsp;     */
+&nbsp;    public ArrayList&lt;Exam&gt; getExams() {
+<b class="fc">&nbsp;        ArrayList&lt;Exam&gt; exams = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (String courseID : courseIDs) {</b>
+<b class="fc">&nbsp;            Course course = SystemDatabase.getCourse(courseID); // Changes: Retrieve Course using courseID</b>
+<b class="pc">&nbsp;            if (course != null) {</b>
+<b class="fc">&nbsp;                exams.addAll(course.getExams());</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return exams;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a course to the teacher&#39;s list of courses.
+&nbsp;     *
+&nbsp;     * @param course The Course object to be added.
+&nbsp;     */
+&nbsp;    public void addCourse(Course course) {
+<b class="fc">&nbsp;        addCourse(course.getCourseID()); // Changes: Store course ID instead of Course object</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a course from the teacher&#39;s list of courses.
+&nbsp;     *
+&nbsp;     * @param course The Course object to be removed.
+&nbsp;     */
+&nbsp;    public void dropCourse(Course course) {
+<b class="fc">&nbsp;        dropCourse(course.getCourseID()); // Changes: Use course ID to remove course</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the position of the teacher.
+&nbsp;     *
+&nbsp;     * @return A string representing the teacher&#39;s position.
+&nbsp;     */
+&nbsp;    public String getPosition() {
+<b class="nc">&nbsp;        return this.position;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object other) {
+<b class="pc">&nbsp;        return super.equals(other) &amp;&amp; (Objects.equals(this.position, ((Teacher) other).position));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Displays all questions in the teacher&#39;s question bank.
+&nbsp;     */
+&nbsp;    public void viewQuestion() {
+<b class="nc">&nbsp;        for (Question question : questionBank) {</b>
+<b class="nc">&nbsp;            System.out.println(question.getContent());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a new question and adds it to the teacher&#39;s question bank.
+&nbsp;     *
+&nbsp;     * @param content The content of the question.
+&nbsp;     * @param options An array of strings representing the answer choices.
+&nbsp;     * @param answer  The correct answer to the question.
+&nbsp;     * @param score   The score assigned to this question.
+&nbsp;     * @param type    The type of the question (e.g., multiple-choice, true/false).
+&nbsp;     *
+&nbsp;     * @throws IllegalArgumentException If a question with the same content and options
+&nbsp;    already exists in the question bank.
+&nbsp;     */
+&nbsp;    public void createQuestion(String content, String[] options, String answer, int score, int type) {
+<b class="fc">&nbsp;        Question question = new Question(content, options, answer, score, type);</b>
+<b class="fc">&nbsp;        for (Question q: questionBank){</b>
+<b class="pc">&nbsp;            if (q.getContent().equals(question.getContent())</b>
+<b class="nc">&nbsp;                    &amp;&amp; q.getOptions().containsAll(question.getOptions())</b>
+<b class="nc">&nbsp;                    &amp;&amp; question.getOptions().containsAll(q.getOptions())){</b>
+<b class="nc">&nbsp;                throw new IllegalArgumentException(&quot;This question already existed.&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        questionBank.add(question);</b>
+<b class="fc">&nbsp;        SystemDatabase.updateTeacher(this);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a new question and adds it to the teacher&#39;s question bank.
+&nbsp;     *
+&nbsp;     * @param question The Question object to be added.
+&nbsp;     *
+&nbsp;     * @throws IllegalArgumentException If a question with the same content and options
+&nbsp;    already exists in the question bank.
+&nbsp;     */
+&nbsp;    public void createQuestion(Question question) {
+<b class="fc">&nbsp;        for (Question q: questionBank){</b>
+<b class="pc">&nbsp;            if (q.getContent().equals(question.getContent())</b>
+<b class="pc">&nbsp;                    &amp;&amp; q.getOptions().containsAll(question.getOptions())</b>
+<b class="pc">&nbsp;                    &amp;&amp; question.getOptions().containsAll(q.getOptions())){</b>
+<b class="fc">&nbsp;                throw new IllegalArgumentException(&quot;This question already existed.&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        questionBank.add(question);</b>
+<b class="fc">&nbsp;        SystemDatabase.updateTeacher(this);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deletes a specified question from the teacher&#39;s question bank and removes it from all
+&nbsp;     associated exams.
+&nbsp;     *
+&nbsp;     * @param question The Question object to be deleted.
+&nbsp;     */
+&nbsp;    public void deleteQuestion(Question question) {
+<b class="fc">&nbsp;        String result = &quot;no exam&quot;;</b>
+<b class="fc">&nbsp;        questionBank.remove(question);</b>
+<b class="fc">&nbsp;        for (Course c:getCourses()){</b>
+<b class="fc">&nbsp;            c.deleteExamQuestions(question);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        SystemDatabase.updateTeacher(this);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void viewQuestionBank() {
+<b class="nc">&nbsp;        for (Question question : questionBank) {</b>
+<b class="nc">&nbsp;            System.out.println(question.getContent());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Displays the content of all questions in the teacher&#39;s question bank.
+&nbsp;     */
+&nbsp;    public ArrayList&lt;Question&gt; getQuestionBank() {
+<b class="fc">&nbsp;        return questionBank;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void viewStudent() {
+&nbsp;        // TODO: implement
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public void viewStudentAnswer() {
+&nbsp;        // TODO: implement
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public void gradeStudentAnswer() {
+&nbsp;        // TODO: implement
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the details of an existing question in the teacher&#39;s question bank.
+&nbsp;     *
+&nbsp;     * @param question The Question object to be updated.
+&nbsp;     * @param content  The new content for the question.
+&nbsp;     * @param options  An array of strings representing the new answer choices.
+&nbsp;     * @param answer   The new correct answer to the question.
+&nbsp;     * @param score    The new score assigned to this question.
+&nbsp;     * @param type     The new type of the question as integer (0 - Single, 1 - Multiple).
+&nbsp;     */
+&nbsp;    public void updateQuestion(Question question, String content, String[] options, String answer, int score, int type) {
+<b class="fc">&nbsp;        ArrayList&lt;Exam&gt; examList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Course course: getCourses()){</b>
+<b class="fc">&nbsp;            course.updateExamQuestions(question,  content,  options,  answer,  score,  (type ==0?&quot;Single&quot;:&quot;Multiple&quot;));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        question.setContent(content);</b>
+<b class="fc">&nbsp;        question.setOptions(options);</b>
+<b class="fc">&nbsp;        question.setTypeChoice(type);</b>
+<b class="fc">&nbsp;        question.setAnswer(answer);</b>
+<b class="fc">&nbsp;        question.setScore(score);</b>
+<b class="fc">&nbsp;        SystemDatabase.updateTeacher(this);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the details of an existing question in the teacher&#39;s question bank.
+&nbsp;     *
+&nbsp;     * @param question The Question object to be updated.
+&nbsp;     * @param content  The new content for the question.
+&nbsp;     * @param options  An array of strings representing the new answer choices.
+&nbsp;     * @param answer   The new correct answer to the question.
+&nbsp;     * @param score    The new score assigned to this question.
+&nbsp;     * @param type     The new type of the question (&quot;Multiple&quot;, &quot;Single&quot;).
+&nbsp;     */
+&nbsp;    public void updateQuestion(Question question, String content, String[] options, String answer, int score, String type) {
+<b class="fc">&nbsp;        ArrayList&lt;Exam&gt; examList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Course course: getCourses()){</b>
+<b class="fc">&nbsp;                course.updateExamQuestions(question,  content,  options,  answer,  score,  type);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        question.setContent(content);</b>
+<b class="fc">&nbsp;        question.setOptions(options);</b>
+<b class="fc">&nbsp;        question.setTypeChoice(type.equals(&quot;Multiple&quot;) ? 1 : 0);</b>
+<b class="fc">&nbsp;        question.setAnswer(answer);</b>
+<b class="fc">&nbsp;        question.setScore(score);</b>
+<b class="fc">&nbsp;        SystemDatabase.updateTeacher(this);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        return new Gson().toJson(this);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>

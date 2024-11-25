@@ -1,0 +1,202 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Grade</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">comp3111.examsystem</a>
+</div>
+
+<h1>Coverage Summary for Class: Grade (comp3111.examsystem)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Grade</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package comp3111.examsystem;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a grade record for a student after taking an exam.
+&nbsp; * @author whwmaust2125
+&nbsp; */
+&nbsp;public class Grade {
+&nbsp;    private final String studentName; // The name of the student who took the exam.
+&nbsp;    private final String courseNum;   // The number or identifier of the course.
+&nbsp;    private final String examName;    // The name of the exam taken.
+&nbsp;    private final int score;          // The score achieved by the student on the exam.
+&nbsp;    private final int fullScore;      // The maximum possible score on the exam.
+&nbsp;    private final int timeSpend;      // The amount of time the student spent taking the exam.
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the name of the student who took the exam.
+&nbsp;     *
+&nbsp;     * @return The student&#39;s name as a String.
+&nbsp;     */
+&nbsp;    public String getStudentName() {
+<b class="nc">&nbsp;        return studentName;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the course number or identifier for which the exam was taken.
+&nbsp;     *
+&nbsp;     * @return The course number as a String.
+&nbsp;     */
+&nbsp;    public String getCourseNum() {
+<b class="nc">&nbsp;        return courseNum;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the name of the exam taken by the student.
+&nbsp;     *
+&nbsp;     * @return The exam name as a String.
+&nbsp;     */
+&nbsp;    public String getExamName() {
+<b class="nc">&nbsp;        return examName;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the score achieved by the student on the exam.
+&nbsp;     *
+&nbsp;     * @return The score as an integer value.
+&nbsp;     */
+<b class="nc">&nbsp;    public int getScore() { return score; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the maximum possible score on the exam.
+&nbsp;     *
+&nbsp;     * @return The full score as an integer value.
+&nbsp;     */
+<b class="nc">&nbsp;    public int getFullScore() { return fullScore; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the amount of time the student spent taking the exam.
+&nbsp;     *
+&nbsp;     * @return The time spent in minutes as an integer value.
+&nbsp;     */
+<b class="nc">&nbsp;    public int getTimeSpend() { return timeSpend; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Grade object with default values for all fields except
+&nbsp;     * studentName, which is set to &quot;student&quot;, courseNum set to &quot;COMP3111&quot;,
+&nbsp;     * examName set to &quot;final&quot;, and other numeric fields initialized to 100 for fullScore,
+&nbsp;     * score, and 60 for timeSpend.
+&nbsp;     */
+&nbsp;    public Grade() {
+<b class="nc">&nbsp;        this(&quot;student&quot;, &quot;COMP3111&quot;, &quot;final&quot;, 100, 100, 60);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Grade object with the specified values for all fields.
+&nbsp;     *
+&nbsp;     * @param studentName The name of the student who took the exam.
+&nbsp;     * @param courseNum   The number or identifier of the course.
+&nbsp;     * @param examName    The name of the exam taken.
+&nbsp;     * @param score       The score achieved by the student on the exam.
+&nbsp;     * @param fullScore   The maximum possible score on the exam.
+&nbsp;     * @param timeSpend   The amount of time the student spent taking the exam in minutes.
+&nbsp;     */
+&nbsp;    public Grade(
+&nbsp;            String studentName,
+&nbsp;            String courseNum,
+&nbsp;            String examName,
+&nbsp;            int score,
+&nbsp;            int fullScore,
+&nbsp;            int timeSpend
+<b class="nc">&nbsp;    ) {</b>
+<b class="nc">&nbsp;        this.studentName = studentName;</b>
+<b class="nc">&nbsp;        this.courseNum = courseNum;</b>
+<b class="nc">&nbsp;        this.examName = examName;</b>
+<b class="nc">&nbsp;        this.score = score;</b>
+<b class="nc">&nbsp;        this.fullScore = fullScore;</b>
+<b class="nc">&nbsp;        this.timeSpend = timeSpend;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-25 21:53</div>
+</div>
+</body>
+</html>
