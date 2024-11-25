@@ -355,6 +355,5 @@ public class Exam {
     @Override
     public int hashCode() {
         return Objects.hash(getExamName(), isPublished, getDuration(), getQuestions(), getCourse(), studentToGrades);
-
     }
 }

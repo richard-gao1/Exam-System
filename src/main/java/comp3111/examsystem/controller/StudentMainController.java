@@ -8,7 +8,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
@@ -48,6 +47,26 @@ public class StudentMainController implements Initializable {
      */
     public void initialize(URL location, ResourceBundle resources) {
         this.student = (Student) SystemDatabase.currentUser;
+        initTestObjects();
+        // add exam options to the dropdown
+        ArrayList<Course> courses = student.getCourses();
+        ArrayList<Exam> exams = new ArrayList<Exam>();
+        for (Course course : courses) {
+            exams.addAll(course.getExams());
+        }
+        for (Exam exam : exams) {
+            if (exam.getIsPublished()) {
+                examPairs.put(exam.getExamName(), exam);
+            }
+        }
+        examCombox.getItems().removeAll(examCombox.getItems());
+        examCombox.getItems().addAll(examPairs.keySet());
+    }
+
+    /**
+     * Initializes courses, exams, and grades used for manual testing
+     */
+    public void initTestObjects() {
         System.out.println("Student before any course registration: " + student);
 
         // manually make a new course and add the student to it (reset course)
@@ -83,20 +102,6 @@ public class StudentMainController implements Initializable {
         testExamPubC1.gradeStudent((Student) SystemDatabase.currentUser, 20, 19);
         testExamUnpubC1.gradeStudent((Student) SystemDatabase.currentUser, 5, 27);
 
-        // add exam options to the dropdown
-        ArrayList<Course> courses = student.getCourses();
-        System.out.println(courses);
-        ArrayList<Exam> exams = new ArrayList<Exam>();
-        for (Course course : courses) {
-            exams.addAll(course.getExams());
-        }
-        for (Exam exam : exams) {
-            if (exam.getIsPublished()) {
-                examPairs.put(exam.getExamName(), exam);
-            }
-        }
-        examCombox.getItems().removeAll(examCombox.getItems());
-        examCombox.getItems().addAll(examPairs.keySet());
     }
 
     /**
@@ -109,19 +114,15 @@ public class StudentMainController implements Initializable {
         FXMLLoader quizLoader = new FXMLLoader();
         quizLoader.setLocation(Main.class.getResource("QuizTakingUI.fxml"));
         Stage stage = new Stage();
-        stage.setTitle("Taking Exam");
         try {
-            System.out.println("This is before loading");
             Parent root = quizLoader.load();
             QuizController quizController = quizLoader.getController();
-            System.out.println("init exam with controller: " + quizController);
             String examName = examCombox.getValue();
+            stage.setTitle("Taking Exam: " + examName);
             if (examName != null && !examName.isEmpty()) {
                 quizController.setExam(examPairs.get(examName));
                 stage.setScene(new Scene(root));
                 stage.show();
-                // don't close the main window
-//                ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING, "Select Exam", ButtonType.OK);
                 alert.setTitle("Exam selection error");
@@ -140,7 +141,6 @@ public class StudentMainController implements Initializable {
         stage.setTitle("Grade Statistics");
         try {
             Parent root = gradeLoader.load();
-            StudentGradeStatisticController gradeController = gradeLoader.getController();
             stage.setScene(new Scene(root));
 
         } catch (IOException e1) {
@@ -148,8 +148,6 @@ public class StudentMainController implements Initializable {
         }
 
         stage.show();
-        // don't close main page
-//        ((Stage) ((Button) e.getSource()).getScene().getWindow()).close();
     }
 
     /**

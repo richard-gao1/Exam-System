@@ -89,7 +89,6 @@ public class StudentGradeStatisticController implements Initializable {
         gradeTable.setItems(displayGradeList);
         courseCombox.setItems(courseList);
 
-//        studentColumn.setCellValueFactory(new PropertyValueFactory<>("studentName"));
         courseColumn.setCellValueFactory(new PropertyValueFactory<>("courseNum"));
         examColumn.setCellValueFactory(new PropertyValueFactory<>("examName"));
         scoreColumn.setCellValueFactory(new PropertyValueFactory<>("score"));
@@ -101,9 +100,6 @@ public class StudentGradeStatisticController implements Initializable {
     }
 
     private void loadChart() {
-//        XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();
-//
-//        seriesBar.getData().clear();
         barChart.getData().clear();
         barChart.setAnimated(false);
         barChart.getData().add(seriesBar);
@@ -129,14 +125,12 @@ public class StudentGradeStatisticController implements Initializable {
         gradeList.clear();
         ArrayList<Exam> exams = new ArrayList<>();
         if (student != null) exams = student.getExams();
-//        System.out.println(exams);
         for (Exam exam : exams) {
             Grade grade = exam.getStudentGrades().get(this.student.getUsername());
             if (grade != null) {
                 gradeList.add(grade);
             }
         }
-//        System.out.println(gradeList);
 
         updateHashMaps();
     }
@@ -176,8 +170,6 @@ public class StudentGradeStatisticController implements Initializable {
     }
 
     private void updateChart() {
-//        XYChart.Series<String, Number> seriesBar = new XYChart.Series<>();
-
         seriesBar.getData().clear();
 
         by_exam.forEach((exam, score) -> {
