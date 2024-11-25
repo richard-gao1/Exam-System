@@ -14,3 +14,5 @@ Open {root directory}/index.html to read the
 * Unit Test Result
 * Coverage Report; and
 * JavaDoc
+
+The PDF of supplementary notes can be found in {root directory} 
