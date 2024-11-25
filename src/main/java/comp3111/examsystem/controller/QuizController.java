@@ -108,7 +108,6 @@ public class QuizController implements Initializable {
                     timer.setText("Elapsed time: " + time.getCurrentTime());
                     if (time.getTotalTime() >= exam.getDuration()) {
                         submitButton.fire();
-//                        submit(e);
                     }
                 }));
         timer.setText("Elapsed time: " + time.getCurrentTime());
@@ -148,9 +147,6 @@ public class QuizController implements Initializable {
             }
         });
         this.questionList.setItems(FXCollections.observableArrayList(questions));
-//        for (Question question : exam.getQuestions()) {
-//
-//        }
         Question q1 = exam.getQuestions().getFirst();
         setQuestion(q1);
 
@@ -160,7 +156,6 @@ public class QuizController implements Initializable {
                 if (currentQuestion != null){
                     if (currentQuestion.getTypeChoice() == 0 && answerGroup.getSelectedToggle() != null) {
                         answerChoices.set(questionMap.get(currentQuestion), 1 << (buttonMap.get(answerGroup.getSelectedToggle()) - 1));
-                        System.out.println(answerChoices.toString());
                     } else if (currentQuestion.getTypeChoice() == 1) {
                         int answer = 0;
                         for (CheckBox sata: sataChoiceButtons) {
@@ -169,7 +164,6 @@ public class QuizController implements Initializable {
                             }
                         }
                         answerChoices.set(questionMap.get(currentQuestion), answer);
-                        System.out.println(answerChoices.toString());
                     }
                 }
                 setQuestion(questionList.getSelectionModel().getSelectedItem());
@@ -186,7 +180,6 @@ public class QuizController implements Initializable {
     public void setQuestion(Question question) {
         this.currentQuestion = question;
         if (this.currentQuestion.getTypeChoice() == 0){
-            System.out.println("0 question type");
             this.mcqBox.setManaged(true);
             this.mcqBox.setVisible(true);
             this.sataBox.setManaged(false);
@@ -205,7 +198,6 @@ public class QuizController implements Initializable {
                 answerChoiceButtons[i].setText(choices.get(i));
             }
         } else {
-            System.out.println("1 question type");
             this.sataBox.setManaged(true);
             this.sataBox.setVisible(true);
             this.mcqBox.setManaged(false);
@@ -217,7 +209,6 @@ public class QuizController implements Initializable {
             int answer = this.answerChoices.get(this.questionMap.get(this.currentQuestion));
             for (int i = 3; i >= 0; i--) {
                 if (answer - (1 << i) >= 0) {
-//                    System.out.println(answer + " - " + (1 << i));
                     this.sataChoiceButtons[i].setSelected(true);
                     answer -= (1 << i);
                 }
@@ -241,7 +232,6 @@ public class QuizController implements Initializable {
         if (currentQuestion != null){
             if (currentQuestion.getTypeChoice() == 0 && answerGroup.getSelectedToggle() != null) {
                 answerChoices.set(questionMap.get(currentQuestion), 1 << (buttonMap.get(answerGroup.getSelectedToggle()) - 1));
-                System.out.println(answerChoices.toString());
             } else if (currentQuestion.getTypeChoice() == 1) {
                 int answer = 0;
                 for (CheckBox sata: sataChoiceButtons) {
@@ -250,7 +240,6 @@ public class QuizController implements Initializable {
                     }
                 }
                 answerChoices.set(questionMap.get(currentQuestion), answer);
-                System.out.println(answerChoices.toString());
             }
         }
 
