@@ -539,6 +539,7 @@ public class SystemDatabase {
      * @param old_username The original username of the student to be updated.
      */
     public static void updateStudent(Student newStudent, String old_username) {
+        if (getStudent(old_username) == null) return;
         changeStudentUsername(newStudent, old_username);
         writeStudentFile(newStudent);
     }
@@ -559,6 +560,7 @@ public class SystemDatabase {
      * @param old_username The original username of the teacher to be updated.
      */
     public static void updateTeacher(Teacher newTeacher, String old_username) {
+        if (getTeacher(old_username) == null) return;
         changeTeacherUsername(newTeacher, old_username);
         writeTeacherFile(newTeacher);
     }
@@ -780,12 +782,10 @@ public class SystemDatabase {
     public static String createCourse(Course course) {
         String courseID = course.getCourseID();
         if (getCourse(courseID) != null) {
-            writeCourseFile(course);
-            return "Course ID " + courseID + " updated";
+            // course with this course ID already exists
+            return "Course ID " + courseID + " already exist";
         }
         writeCourseFile(course);
         return "";
     }
-
-
 }

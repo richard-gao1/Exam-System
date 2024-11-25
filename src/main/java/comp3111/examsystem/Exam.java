@@ -288,10 +288,10 @@ public class Exam {
         if (questions.contains(question)){
             Question q = questions.get(questions.indexOf(question));
             q.setScore(score);
+            q.setTypeChoice(type);
             q.setAnswer(answer);
             q.setOptions(options);
             q.setContent(content);
-            q.setTypeChoice(type);
             return true;
         }
         return false;
