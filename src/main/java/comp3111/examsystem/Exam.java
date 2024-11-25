@@ -86,7 +86,7 @@ public class Exam {
      * @param duration   The duration of the exam in minutes.
      */
     public Exam(String examName, String courseID, boolean isPublished, int duration) {
-        this(examName, (Course) SystemDatabase.getCourse(courseID), isPublished, duration);
+        this(examName, SystemDatabase.getCourse(courseID), isPublished, duration);
     }
 
     /**
@@ -259,11 +259,13 @@ public class Exam {
      * @throws IllegalArgumentException If the question already exists in the exam.
      */
     public void addQuestion(Question question) {
-        if (!questions.contains(question)) {
-            questions.add(question);
-        } else {
+        if (this.questions == null) {
+            this.questions = new ArrayList<>();
+        }
+        if (this.questions.contains(question)) {
             throw new IllegalArgumentException("Question already exists in the exam");
         }
+        this.questions.add(question);
     }
 
     /**
@@ -287,11 +289,10 @@ public class Exam {
         if (questions.contains(question)){
             Question q = questions.get(questions.indexOf(question));
             q.setScore(score);
-            q.setTypeChoice(type);
             q.setAnswer(answer);
             q.setOptions(options);
             q.setContent(content);
-
+            q.setTypeChoice(type);
             return true;
         }
         return false;
