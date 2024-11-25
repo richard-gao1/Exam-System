@@ -267,6 +267,8 @@ public class CourseManagementController implements Initializable {
     public void selected(MouseEvent mouseEvent) {
         Course selectedItem = (Course) courseTable.getSelectionModel().getSelectedItem();
         if (selectedItem != updating) {
+            resetSetFields();
+            resetStudentList();
             updating = selectedItem;
             if (updating != null) {
                 courseIDSet.setText(updating.getCourseID());
@@ -279,11 +281,7 @@ public class CourseManagementController implements Initializable {
                 enrollList.clear();
                 enrollList.addAll(updating.getStudents());
                 notEnrollList.removeAll(updating.getStudents());
-            } else {
-                resetSetFields();
-                resetStudentList();
             }
-
         }
     }
 
@@ -328,6 +326,7 @@ public class CourseManagementController implements Initializable {
      */
     public void removeTeacher() {
         teacherTable.getSelectionModel().clearSelection();
+        System.out.println(teacherTable.getSelectionModel().getSelectedItem());
     }
 
     /**
@@ -351,8 +350,10 @@ public class CourseManagementController implements Initializable {
             alert.setTitle("Add Student Error");
             alert.setHeaderText("No student is selected.");
             alert.show();
-        }        enrollList.add(student);
-        notEnrollList.remove(student);
+        } else {
+            enrollList.add(student);
+            notEnrollList.remove(student);
+        }
     }
 
     /**
@@ -367,8 +368,9 @@ public class CourseManagementController implements Initializable {
             alert.setTitle("Remove Student Error");
             alert.setHeaderText("No student is selected.");
             alert.show();
+        } else {
+            notEnrollList.add(student);
+            enrollList.remove(student);
         }
-        notEnrollList.add(student);
-        enrollList.remove(student);
     }
 }
