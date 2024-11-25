@@ -47,18 +47,9 @@ public class StudentMainController implements Initializable {
     object was not localized.
      */
     public void initialize(URL location, ResourceBundle resources) {
-//        System.out.println("in initialize");
+        this.student = (Student) SystemDatabase.currentUser;
+        System.out.println(student);
 
-//        examCombox.getSelectionModel().select("Option B");
-    }
-
-    /**
-     * Initializes the student and sets up the exams for selection.
-     *
-     * @param student The current student.
-     */
-    public void initStudent(Student student) {
-        this.student = student;
         // manually make a new course and add the student to it
         ArrayList<Student> students = new ArrayList<>();
         students.add(this.student);
@@ -76,8 +67,12 @@ public class StudentMainController implements Initializable {
         Course testCourse = new Course("CourseID","testCourse", "dept", null, students, initExams);
         Exam testExam = new Exam("exam", testCourse, false, 30, questions);
         initExams.add(testExam);
+        // put it in the database
+        SystemDatabase.createCourse(testCourse);
 
+        // add exam options to the dropdown
         ArrayList<Course> courses = student.getCourses();
+        System.out.println(courses);
         ArrayList<Exam> exams = new ArrayList<Exam>();
         for (Course course : courses) {
             exams.addAll(course.getExams());
