@@ -10,12 +10,7 @@
 | **MA, Wai Him Wesley** | whwmaust2125 | whwma |   systemDatabase             | N | N | Task 3 |
 | **GAO, Richard Daniel** | richard-gao1 | rdgao |  task_1           | N | Y | Task 1 |
 
-# Coverage and Unit Testing Report
-
-To view the unit testing report, open {root directory}/htmlReport/UnitTestResult.html
-
-To view the Coverage report, open {root directory}/htmlReport/index.html
-
-# Javadoc
-
-To view the Javadoc, open {root directory}/JavaDoc/index.html
+Open {root directory}/index.html to read the
+* Unit Test Result
+* Coverage Report; and
+* JavaDoc
