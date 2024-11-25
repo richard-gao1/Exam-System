@@ -1,6 +1,7 @@
 package comp3111.examsystem.controller;
 
 import comp3111.examsystem.*;
+import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
@@ -10,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class ExamManagementController implements Initializable {
     @FXML private HBox tableBox;
     @FXML private VBox leftPane, rightPane;
     @FXML private BorderPane borderPane;
+    @FXML private Label scoreFilterHint, durationHint;
 
     private Teacher currentTeacher = (Teacher) SystemDatabase.currentUser;
     private ObservableList<Exam> examList = FXCollections.observableArrayList(currentTeacher.getExams());
@@ -51,10 +54,22 @@ public class ExamManagementController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        setHint();
         initializeTables();
         initializeChoiceBoxes();
         addListener();
         bindButtonStates();
+    }
+
+    private void setHint(){
+        // Hints are hidden
+        durationHint.setVisible(false);
+        durationHint.setPrefHeight(0);
+        scoreFilterHint.setVisible(false);
+        scoreFilterHint.setPrefHeight(0);
+        // Add TextFormatter
+        setTextFormatter(durationInput,durationHint,"[0-9]*","Exam Time must be a number.",false);
+        setTextFormatter(scoreFilter,scoreFilterHint,"[0-9]*","Must be a number",false);
     }
 
     /**
@@ -317,8 +332,8 @@ public class ExamManagementController implements Initializable {
         // Create and add new exam
 
         try {
-            Exam newExam = new Exam(examName, courseID, isPublished, duration, new ArrayList<>(examQuestionList));
-
+            Exam newExam = new Exam(examName, courseID, isPublished, duration,new ArrayList<>(examQuestionList)); //Create the display exam
+            currentTeacher.updateExam(examName,SystemDatabase.getCourse(courseID),examName,courseID,isPublished,duration,new ArrayList<>(examQuestionList)); // Synchronise the change to SystemDatabase
             // Update the table
             examList.add(newExam);
             // Clear input fields
@@ -361,14 +376,14 @@ public class ExamManagementController implements Initializable {
                     return;
                 }
             }
-            // Now update won't update the question according to the
             currentTeacher.updateExam(selectedExam.getExamName(),selectedExam.getCourse(), updatedExamName,updatedCourseID,updatedIsPublished,updatedDuration,new ArrayList<>(selectedExam.getQuestions()));
             examList.setAll(currentTeacher.getExams());
             clearInputFields();
         } catch (IllegalArgumentException e){
             showAlert(Alert.AlertType.ERROR, "Invalid Exam", e.getMessage());
         }
-        refresh();
+        //refreshExam();
+        //refreshQuestion();
     }
     /* 
      *
@@ -531,7 +546,33 @@ public class ExamManagementController implements Initializable {
         onExamReset();
         onQuestionReset();
     }
+    private void setTextFormatter(TextField textField, Label hintLabel, String regex, String hintMessage, boolean toUpperCase){
+        textField.setTextFormatter(new TextFormatter<>(change -> {
+            String newText = change.getText();
+            if (!newText.matches(regex)) {
+                hintLabel.setText(hintMessage); // Set hint message dynamically
+                hintLabel.setVisible(true); // Show hint
+                hintLabel.setPrefHeight(18);
+                startHintHideTimer(hintLabel); // Schedule to hide the hint
+                return null; // Reject invalid input
+            }
+            hintLabel.setVisible(false); // Hide hint for valid input
+            if (toUpperCase) {
+                change.setText(newText.toUpperCase()); // Convert to uppercase if specified
+            }
+            return change; // Accept valid input
+        }));
+    }
 
+    // Showing hint when input is invalid
+    private void startHintHideTimer(Label hintLabel) {
+        PauseTransition delay = new PauseTransition(Duration.seconds(2)); // Delay before hiding the hint
+        delay.setOnFinished(event -> {
+            hintLabel.setVisible(false);
+            hintLabel.setPrefHeight(0);
+        });
+        delay.play();
+    }
 
 
 }
